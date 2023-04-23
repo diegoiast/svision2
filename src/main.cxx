@@ -25,12 +25,14 @@ struct PlatformWindowX11 : public PlatformWindow
 
 class PlatformX11
 {
-    std::map<Window, std::shared_ptr<PlatformWindow>> windows;
+    std::map<Window, std::shared_ptr<PlatformWindowX11>> windows;
     Display *dpy = nullptr;
     int screen = -1;
     bool exit_loop = false;
+    Atom wmDeleteMessage;
 
 public:
+    bool close_on_last_window = true;
     auto init() -> void;
     auto done() -> void;
     auto open_window(int x, int y, int width, int height, const std::string title) -> std::shared_ptr<PlatformWindow>;
@@ -48,10 +50,10 @@ auto PlatformX11::init() -> void
 auto PlatformX11::done() -> void
 {
     // TODO close all windows
-    // TODO close connection to X server
+    XCloseDisplay(dpy);
 }
 
-auto PlatformX11::open_window(int x, int y, int width, int height, const  std::string title) -> std::shared_ptr<PlatformWindow>
+auto PlatformX11::open_window(int x, int y, int width, int height, const std::string title) -> std::shared_ptr<PlatformWindow>
 {
     auto window = std::make_shared<PlatformWindowX11>();
     window->title = title;
@@ -60,9 +62,12 @@ auto PlatformX11::open_window(int x, int y, int width, int height, const  std::s
                                     WhitePixel(dpy, screen));
     window->gc = XCreateGC(dpy, window->w, 0, 0);
     XSelectInput(dpy, window->w,
-                 ExposureMask | KeyPressMask | KeyReleaseMask | ButtonPressMask |
+                 ExposureMask | StructureNotifyMask | KeyPressMask | KeyReleaseMask | ButtonPressMask |
                      ButtonReleaseMask | PointerMotionMask);
     XStoreName(dpy, window->w, title.c_str());
+    wmDeleteMessage = XInternAtom(dpy, "WM_DELETE_WINDOW", False);
+    XSetWMProtocols(dpy, window->w, &wmDeleteMessage, 1);
+
     XMapWindow(dpy, window->w);
     XSync(dpy, window->w);
     window->img = XCreateImage(dpy, DefaultVisual(dpy, 0), 24, ZPixmap, 0,
@@ -82,14 +87,31 @@ auto PlatformX11::main_loop() -> void
     while (pending = XPending(dpy) || !this->exit_loop)
     {
         auto k = XNextEvent(dpy, &ev);
-        auto target_window = windows.at(ev.xany.window);
-        std::cout  << "Sending message " << ev.type << " to " << target_window->title << std::endl;
+        std::shared_ptr<PlatformWindowX11> target_window;
+        
+        if (windows.find(ev.xany.window) == windows.end()) {
+            std::cout << "Window no longer alive, ignoring event" << ev.type << std::endl;
+            continue;
+        }
+        target_window = windows.at(ev.xany.window);
+        std::cout << "Sending message " << ev.type << " to " << target_window->title << std::endl;
 
         switch (ev.type)
         {
+        case ClientMessage:
+            std::cout << "Atom " << ev.xclient.data.l[0] << std::endl;
+            if (ev.xclient.data.l[0] == wmDeleteMessage)
+            {
+                XDestroyWindow(dpy, target_window->w);
+            }
+            break;
+
+        case UnmapNotify:
+            break;
         case DestroyNotify:
             windows.extract(ev.xany.window);
             break;
+
         case ButtonPress:
         case ButtonRelease:
             // f->mouse = (ev.type == ButtonPress);
@@ -113,13 +135,19 @@ auto PlatformX11::main_loop() -> void
             //          (!!(m & Mod1Mask) << 2) | (!!(m & Mod4Mask) << 3);
             break;
         }
+        if (this->close_on_last_window && this->windows.size() == 0) {
+            this->exit_loop = true;
+            std::cout << "No more windows - closing event loop" << std::endl;
+        }
     }
+
 }
 
 int main()
 {
     auto platform = PlatformX11();
     platform.init();
+    platform.close_on_last_window = true;
     auto w1 = platform.open_window(100, 100, 640, 480, "test 1");
     auto w2 = platform.open_window(300, 300, 640, 480, "test 2");
 
