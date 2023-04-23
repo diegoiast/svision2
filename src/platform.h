@@ -3,10 +3,43 @@
 #include <string>
 #include <memory>
 
+struct Event
+{
+};
+
+struct EventKeyboard : public Event
+{
+    int modifiers;
+    int key;
+    bool keydown;
+};
+
+struct EventMouse : public Event
+{
+    bool pressed = false;
+    int button = -1;
+    int x = -1;
+    int y = -1;
+};
+
 struct PlatformWindow
 {
     uint32_t *buf;
     std::string title;
+
+    virtual auto on_keyboard(const EventKeyboard &) -> void
+    {
+        // by default, do nothing
+    }
+    virtual auto on_mouse(const EventMouse &) -> void
+    {
+        // by default, do nothing
+    }
+
+    virtual auto can_close() -> bool
+    {
+        return true;
+    }
 };
 
 class Platform
