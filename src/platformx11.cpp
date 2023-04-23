@@ -151,7 +151,8 @@ auto PlatformX11::open_window(int x, int y, int width, int height, const std::st
     XSync(dpy, window->w);
     window->img = XCreateImage(dpy, DefaultVisual(dpy, 0), 24, ZPixmap, 0,
                                (char *)window->buf, width, height, 32, 0);
-
+    window->size.width = width;
+    window->size.height = height;
     windows[window->w] = window;
     return window;
 }
@@ -200,7 +201,7 @@ auto PlatformX11::main_loop() -> void
         case MotionNotify:
             target_window->on_mouse(convert_x11_mouse_event(ev, this->dpy));
             break;
-            
+
         case KeyPress:
         case KeyRelease:
             target_window->on_keyboard(convert_x11_key_event(ev, this->dpy));
