@@ -11,7 +11,7 @@
 
 struct PlatformWindowX11;
 
-class PlatformX11
+class PlatformX11 : public Platform
 {
     std::map<Window, std::shared_ptr<PlatformWindowX11>> windows;
     Display *dpy = nullptr;
@@ -22,8 +22,8 @@ public:
     bool exit_loop = false;
 
     bool close_on_last_window = true;
-    auto init() -> void;
-    auto done() -> void;
-    auto open_window(int x, int y, int width, int height, const std::string title) -> std::shared_ptr<PlatformWindow>;
-    void main_loop();
+    virtual auto init() -> void override;
+    virtual auto done() -> void override;
+    virtual auto main_loop() -> void override;
+    virtual auto open_window(int x, int y, int width, int height, const std::string title) -> std::shared_ptr<PlatformWindow> override;
 };
