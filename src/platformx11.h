@@ -19,11 +19,11 @@ class PlatformX11 : public Platform
     Atom wmDeleteMessage;
 
 public:
-    bool exit_loop = false;
-
-    bool close_on_last_window = true;
     virtual auto init() -> void override;
     virtual auto done() -> void override;
     virtual auto main_loop() -> void override;
     virtual auto open_window(int x, int y, int width, int height, const std::string title) -> std::shared_ptr<PlatformWindow> override;
 };
+
+
+using ThePlatform = PlatformX11;

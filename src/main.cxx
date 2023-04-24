@@ -1,6 +1,10 @@
 // https://zserge.com/posts/fenster/
 
+#if defined(__linux__)
 #include "platformx11.h"
+#elif defined(_win32) || defined(WIN32)
+#include "platformwin32.h"
+#endif
 
 
 auto handle_event(std::shared_ptr<PlatformWindow> w, const Event &ev);
@@ -8,7 +12,7 @@ auto handle_event(int window_id, int widget_id, const Event &ev);
 
 int main()
 {
-    auto platform = PlatformX11();
+    auto platform = ThePlatform();
     platform.init();
     platform.close_on_last_window = true;
     auto w1 = platform.open_window(100, 100, 640, 480, "test 1");
