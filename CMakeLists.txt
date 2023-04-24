@@ -11,12 +11,11 @@ set(SVISION_SOURCES
     src/platform.h
 )
 
-if (linux)
+if (LINUX)
     list(APPEND SVISION_SOURCES
         src/platformx11.cpp
         src/platformx11.h
     )
-    target_link_libraries(svision2 X11)
 elseif(WIN32)
     list(APPEND SVISION_SOURCES
         src/platformwin32.cpp
@@ -24,6 +23,10 @@ elseif(WIN32)
     )
 endif()
 add_library(svision2 ${SVISION_SOURCES})
+
+if (LINUX)
+target_link_libraries(svision2 X11)
+endif()
 
 target_include_directories(svision2 PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src")
 
