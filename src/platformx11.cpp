@@ -1,7 +1,9 @@
 #include <iostream>
+
 #include <X11/XKBlib.h>
 #include <X11/Xlib.h>
 #include <X11/keysym.h>
+#include <X11/Xutil.h>
 
 #include "platformx11.h"
 
@@ -113,11 +115,30 @@ auto convert_x11_mouse_event(const XEvent &ev, Display *dpy) -> EventMouse
     return event;
 }
 
+auto convert_x11_configure_event(const XEvent &ev) -> EventResize
+{
+    auto event = EventResize();
+    event.size.width = ev.xconfigure.width;
+    event.size.height = ev.xconfigure.height;
+    event.position.x = ev.xconfigure.x;
+    event.position.y = ev.xconfigure.y;
+    return event;
+}
+
 struct PlatformWindowX11 : public PlatformWindow
 {
-    Window w;
+    Window x11_window;
+    XImage *x11_image = nullptr;
+
+    // TODO - is a GContent a global variable, and not per window?
     GC gc;
-    XImage *img;
+
+    virtual ~PlatformWindowX11() override
+    {
+        XFree(x11_image);
+        // XDestroyWindow(dpy, x11_window);
+        // XFreeGC(dpy, gc);
+    }
 };
 
 auto PlatformX11::init() -> void
@@ -136,24 +157,27 @@ auto PlatformX11::open_window(int x, int y, int width, int height, const std::st
 {
     auto window = std::make_shared<PlatformWindowX11>();
     window->title = title;
-    window->w = XCreateSimpleWindow(dpy, RootWindow(dpy, screen), 0, 0, width,
-                                    height, 0, BlackPixel(dpy, screen),
-                                    WhitePixel(dpy, screen));
-    window->gc = XCreateGC(dpy, window->w, 0, 0);
-    XSelectInput(dpy, window->w,
+    window->x11_window = XCreateSimpleWindow(dpy, RootWindow(dpy, screen), 0, 0, width,
+                                             height, 0, BlackPixel(dpy, screen),
+                                             WhitePixel(dpy, screen));
+    window->gc = XCreateGC(dpy, window->x11_window, 0, 0);
+    XSelectInput(dpy, window->x11_window,
                  ExposureMask | StructureNotifyMask | KeyPressMask | KeyReleaseMask | ButtonPressMask |
                      ButtonReleaseMask | PointerMotionMask);
-    XStoreName(dpy, window->w, title.c_str());
+    XStoreName(dpy, window->x11_window, title.c_str());
+    XSetWindowBackgroundPixmap(dpy, window->x11_window, None);
     wmDeleteMessage = XInternAtom(dpy, "WM_DELETE_WINDOW", False);
-    XSetWMProtocols(dpy, window->w, &wmDeleteMessage, 1);
+    XSetWMProtocols(dpy, window->x11_window, &wmDeleteMessage, 1);
 
-    XMapWindow(dpy, window->w);
-    XSync(dpy, window->w);
-    window->img = XCreateImage(dpy, DefaultVisual(dpy, 0), 24, ZPixmap, 0,
-                               (char *)window->buf, width, height, 32, 0);
-    window->size.width = width;
-    window->size.height = height;
-    windows[window->w] = window;
+    XMapWindow(dpy, window->x11_window);
+    XSync(dpy, window->x11_window);
+
+    window->content.resize(width, height);
+    window->x11_image = XCreateImage(dpy, DefaultVisual(dpy, 0), 24, ZPixmap, 0,
+                                     (char *)window->content.buf,
+                                     window->content.size.width,
+                                     window->content.size.height, 32, 0);
+    windows[window->x11_window] = window;
     return window;
 }
 
@@ -162,8 +186,6 @@ auto PlatformX11::main_loop() -> void
     XEvent ev;
     int pending;
 
-    // XPutImage(f->dpy, f->w, f->gc, f->img, 0, 0, 0, 0, f->width, f->height);
-    // XFlush(f->dpy);
     while (pending = XPending(dpy) || !this->exit_loop)
     {
         auto k = XNextEvent(dpy, &ev);
@@ -175,17 +197,29 @@ auto PlatformX11::main_loop() -> void
             continue;
         }
         target_window = windows.at(ev.xany.window);
-        std::cout << "Sending message " << ev.type << " to " << target_window->title << std::endl;
+        // std::cout << "Sending message " << ev.type << " to " << target_window->title << std::endl;
 
         switch (ev.type)
         {
+        case Expose:
+            // dump bitmap to ximage
+            XPutImage(dpy,
+                      target_window->x11_window,
+                      target_window->gc,
+                      target_window->x11_image,
+                      0, 0, 0, 0,
+                      target_window->x11_image->width,
+                      target_window->x11_image->height);
+            XFlush(dpy);
+            break;
+
         case ClientMessage:
             std::cout << "Atom " << ev.xclient.data.l[0] << std::endl;
             if (ev.xclient.data.l[0] == wmDeleteMessage)
             {
                 if (target_window->can_close())
                 {
-                    XDestroyWindow(dpy, target_window->w);
+                    XDestroyWindow(dpy, target_window->x11_window);
                 }
             }
             break;
@@ -206,6 +240,29 @@ auto PlatformX11::main_loop() -> void
         case KeyRelease:
             target_window->on_keyboard(convert_x11_key_event(ev, this->dpy));
             break;
+
+        case ConfigureNotify:
+        {
+            auto event = convert_x11_configure_event(ev);
+            if (event.size != target_window->content.size)
+            {
+                std::cout << "Resing window " << target_window->title << " to "
+                          << event.size.width << "x" << event.size.height << std::endl;
+                target_window->content.resize(event.size.width, event.size.height);
+
+                // TODO - How about I just modify the x11_image with the
+                //        needed values? I should modify only the width/height and
+                //        byteperline or something.
+                XFree(target_window->x11_image);
+                target_window->x11_image = XCreateImage(dpy, DefaultVisual(dpy, 0), 24, ZPixmap, 0,
+                                                        (char *)target_window->content.buf,
+                                                        target_window->content.size.width,
+                                                        target_window->content.size.height, 32, 0);
+
+                target_window->on_resize(event);
+            }
+            break;
+        }
         }
 
         if (this->close_on_last_window && this->windows.size() == 0)
