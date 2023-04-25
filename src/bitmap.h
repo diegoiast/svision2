@@ -24,7 +24,6 @@ struct Position
     int y;
 };
 
-
 auto inline MakeColor(char r, char g, char b) -> uint32_t
 {
     auto color = r << 16 | g << 8 | b;

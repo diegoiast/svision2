@@ -8,48 +8,6 @@
 #include <memory>
 #include <list>
 
-struct PlatformWindow
-{
-    std::string title;
-    Bitmap content;
-    uint32_t background_color = 0;
-    std::list<std::shared_ptr<Widget>> widgets;
-
-    virtual ~PlatformWindow()
-    {
-    }
-
-    virtual auto draw() -> void
-    {
-        content.fill_rect(0, 0, content.size.width, content.size.height, background_color);
-        for (auto w : widgets) {
-            w->draw();
-            content.draw(w->position, w->content);
-        }
-    }
-
-    virtual auto on_keyboard(const EventKeyboard &) -> void
-    {
-        // by default, do nothing
-    }
-
-    virtual auto on_mouse(const EventMouse &) -> void;
-
-    virtual auto on_resize(const EventResize &) -> void
-    {
-        // by default, do nothing
-    }
-
-    virtual auto can_close() -> bool
-    {
-        return true;
-    }
-
-    auto add(std::shared_ptr<Widget> w) 
-    {
-        widgets.push_back(w);
-    }
-};
 
 class Platform
 {
