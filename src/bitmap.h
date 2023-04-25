@@ -30,6 +30,24 @@ auto inline MakeColor(char r, char g, char b) -> uint32_t
     return color;
 }
 
+auto inline GetRed(uint32_t color) -> char
+{
+    return color >> 16;
+}
+
+auto inline GetGreen(uint32_t color) -> char
+{
+    return (color >> 8) & 0x00ff;
+}
+
+auto inline GetBlue(uint32_t color) -> char
+{
+    return color & 0x00ff;
+}
+
+auto Lighter(uint32_t color, double percentage = 0.1) -> uint32_t;
+auto Darker(uint32_t color, double percentage = 0.1) -> uint32_t;
+
 struct Bitmap
 {
     uint32_t background_color = 0;

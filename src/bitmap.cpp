@@ -1,6 +1,45 @@
 #include "bitmap.h"
 #include <cstdlib>
 #include <algorithm>
+#include <algorithm>
+
+auto Darker(uint32_t color, double percentage) -> uint32_t
+{
+    auto r = GetRed(color);
+    auto g = GetGreen(color);
+    auto b = GetBlue(color);
+
+    r = int(r - r * percentage);
+    if (r < 0)
+        r = 0;
+    g = int(g - g * percentage);
+    if (g < 0)
+        g = 0;
+    b = int(b - b * percentage);
+    if (b < 0)
+        b = 0;
+
+    return MakeColor(r, g, b);
+}
+
+auto Lighter(uint32_t color, double percentage) -> uint32_t
+{
+    auto r = GetRed(color);
+    auto g = GetGreen(color);
+    auto b = GetBlue(color);
+
+    r = int(r + r * percentage);
+    if (r > 255)
+        r = 255;
+    g = int(g + g * percentage);
+    if (g > 255)
+        g = 255;
+    b = int(b + b * percentage);
+    if (b > 255)
+        b = 255;
+
+    return MakeColor(r, g, b);
+}
 
 auto Bitmap::resize(int width, int height) -> void
 {

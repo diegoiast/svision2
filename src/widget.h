@@ -11,7 +11,8 @@ struct Widget
     uint32_t background_color;
     Bitmap content;
     Position position;
-    bool mouse_over;
+    bool mouse_over = false;
+    bool needs_redraw = false;
 
     Widget(Position pp, Size size, uint32_t color);
     virtual auto draw() -> void;
@@ -27,6 +28,7 @@ struct PlatformWindow
     uint32_t background_color = 0;
     std::list<std::shared_ptr<Widget>> widgets;
     std::shared_ptr<Widget> last_overed_widget;
+    bool needs_redraw = false;
 
     virtual ~PlatformWindow()
     {

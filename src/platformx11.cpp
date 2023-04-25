@@ -148,6 +148,13 @@ auto PlatformX11::init() -> void
     spdlog::info("PlatformX11 initialized");
     dpy = XOpenDisplay(NULL);
     screen = DefaultScreen(dpy);
+
+    wmDeleteMessage = XInternAtom(dpy, "WM_DELETE_WINDOW", False);
+    if (wmDeleteMessage == None)
+    {
+        spdlog::error("Could not get redraw atom from WM");
+        return;
+    }
 }
 
 auto PlatformX11::done() -> void
@@ -205,16 +212,7 @@ auto PlatformX11::main_loop() -> void
         switch (ev.type)
         {
         case Expose:
-            // dump bitmap to ximage
-            target_window->draw();
-            XPutImage(dpy,
-                      target_window->x11_window,
-                      target_window->gc,
-                      target_window->x11_image,
-                      0, 0, 0, 0,
-                      target_window->x11_image->width,
-                      target_window->x11_image->height);
-            XFlush(dpy);
+            target_window->needs_redraw = true;
             break;
 
         case ClientMessage:
@@ -266,6 +264,22 @@ auto PlatformX11::main_loop() -> void
             }
             break;
         }
+        }
+
+        if (target_window->needs_redraw)
+        {
+            // or call this - 
+            // XClearArea(display, window, 0, 0, 500, 500, False); 
+            // and then handle the draw in expose? 
+            target_window->draw();
+            XPutImage(dpy,
+                      target_window->x11_window,
+                      target_window->gc,
+                      target_window->x11_image,
+                      0, 0, 0, 0,
+                      target_window->x11_image->width,
+                      target_window->x11_image->height);
+            XFlush(dpy);
         }
 
         if (this->close_on_last_window && this->windows.size() == 0)
