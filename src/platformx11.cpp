@@ -206,6 +206,7 @@ auto PlatformX11::main_loop() -> void
         {
         case Expose:
             // dump bitmap to ximage
+            target_window->draw();
             XPutImage(dpy,
                       target_window->x11_window,
                       target_window->gc,

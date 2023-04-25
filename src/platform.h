@@ -1,48 +1,31 @@
 #pragma once
 
 #include <bitmap.h>
+#include <widget.h>
+#include <events.h>
 
 #include <string>
 #include <memory>
-
-struct Position
-{
-    int x;
-    int y;
-};
-
-struct Event
-{
-};
-
-struct EventKeyboard : public Event
-{
-    int modifiers;
-    int key;
-    bool keydown;
-};
-
-struct EventMouse : public Event
-{
-    bool pressed = false;
-    int button = -1;
-    int x = -1;
-    int y = -1;
-};
-
-struct EventResize : public Event
-{
-    Size size{-1, -1};
-    Position position = {-1, -1};
-};
+#include <list>
 
 struct PlatformWindow
 {
     std::string title;
     Bitmap content;
+    uint32_t background_color = 0;
+    std::list<std::shared_ptr<Widget>> widgets;
 
     virtual ~PlatformWindow()
     {
+    }
+
+    virtual auto draw() -> void
+    {
+        content.fill_rect(0, 0, content.size.width, content.size.height, background_color);
+        for (auto w : widgets) {
+            w->draw();
+            content.draw(w->position, w->content);
+        }
     }
 
     virtual auto on_keyboard(const EventKeyboard &) -> void
@@ -50,10 +33,7 @@ struct PlatformWindow
         // by default, do nothing
     }
 
-    virtual auto on_mouse(const EventMouse &) -> void
-    {
-        // by default, do nothing
-    }
+    virtual auto on_mouse(const EventMouse &) -> void;
 
     virtual auto on_resize(const EventResize &) -> void
     {
@@ -63,6 +43,11 @@ struct PlatformWindow
     virtual auto can_close() -> bool
     {
         return true;
+    }
+
+    auto add(std::shared_ptr<Widget> w) 
+    {
+        widgets.push_back(w);
     }
 };
 

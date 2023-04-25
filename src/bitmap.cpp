@@ -93,3 +93,25 @@ auto Bitmap::fill(int x, int y, uint32_t old, uint32_t c) -> void
         fill(x, y + 1, old, c);
     }
 }
+
+auto Bitmap::draw(Position position, const Bitmap &other) -> void
+{
+    for (auto y = 0; y < other.size.height; y++)
+    {
+        auto yy = y + position.y;
+        if (yy > size.height)
+        {
+            break;
+        }
+        for (auto x = 0; x < other.size.width; x++)
+        {
+            auto xx = x + position.x;
+            if (xx > size.width)
+            {
+                break;
+            }
+
+            put_pixel(xx, yy, other.get_pixel(x, y));
+        }
+    }
+}

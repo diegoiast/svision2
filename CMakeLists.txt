@@ -22,6 +22,8 @@ find_package(spdlog CONFIG REQUIRED)
 set(SVISION_SOURCES
     src/bitmap.h
     src/bitmap.cpp
+    src/widget.h
+    src/widget.cpp
     src/platform.cpp
     src/platform.h
 )

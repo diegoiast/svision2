@@ -18,6 +18,13 @@ struct Size
     }
 };
 
+struct Position
+{
+    int x;
+    int y;
+};
+
+
 auto inline MakeColor(char r, char g, char b) -> uint32_t
 {
     auto color = r << 16 | g << 8 | b;
@@ -40,7 +47,7 @@ struct Bitmap
         buf[(y * size.width) + x] = color;
     }
 
-    auto inline get_pixel(int x, int y) -> uint32_t
+    auto inline get_pixel(int x, int y) const -> uint32_t
     {
         return buf[(y * size.width) + x];
     }
@@ -55,4 +62,5 @@ struct Bitmap
     auto fill_circle(int x, int y, int r, uint32_t c) -> void;
     auto line(int x0, int y0, int x1, int y1, uint32_t c) -> void;
     auto fill(int x, int y, uint32_t old, uint32_t c) -> void;
+    auto draw(Position position, const Bitmap &other) -> void;
 };
