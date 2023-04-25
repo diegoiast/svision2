@@ -17,6 +17,7 @@ conan_cmake_run(CONANFILE conanfile.txt
                 BUILD missing)
 
 find_package(fmt CONFIG REQUIRED)
+find_package(spdlog CONFIG REQUIRED)
 
 set(SVISION_SOURCES
     src/bitmap.h
@@ -39,7 +40,9 @@ elseif(WIN32)
 endif()
 add_library(svision2 ${SVISION_SOURCES})
 
-target_link_libraries(svision2 PUBLIC fmt::fmt ${SVISION_PLATFORM_LIBS})
+target_link_libraries(svision2 PUBLIC 
+    spdlog::spdlog $<$<BOOL:${MINGW}>:ws2_32>
+    ${SVISION_PLATFORM_LIBS})
 target_include_directories(svision2 PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src")
 
 add_executable (demo src/main.cxx )

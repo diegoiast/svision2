@@ -6,6 +6,7 @@
 #include <X11/Xutil.h>
 
 #include "platformx11.h"
+#include "spdlog/spdlog.h"
 
 // lookup table to convert X11 keyboard events to "Psuedo ASCII"
 // TODO - make constants for our own keyboard events
@@ -143,6 +144,8 @@ struct PlatformWindowX11 : public PlatformWindow
 
 auto PlatformX11::init() -> void
 {
+    spdlog::set_level(spdlog::level::info);
+    spdlog::info("PlatformX11 initialized");
     dpy = XOpenDisplay(NULL);
     screen = DefaultScreen(dpy);
 }
@@ -193,11 +196,11 @@ auto PlatformX11::main_loop() -> void
 
         if (windows.find(ev.xany.window) == windows.end())
         {
-            std::cout << "Window no longer alive, ignoring event" << ev.type << std::endl;
+            spdlog::critical("Window =({}) no longer alive, ignoring event {}", ev.xany.window, ev.type);
             continue;
         }
         target_window = windows.at(ev.xany.window);
-        // std::cout << "Sending message " << ev.type << " to " << target_window->title << std::endl;
+        spdlog::debug("Sending message {} to \"{}\"", ev.type, target_window->title);
 
         switch (ev.type)
         {
@@ -214,7 +217,7 @@ auto PlatformX11::main_loop() -> void
             break;
 
         case ClientMessage:
-            std::cout << "Atom " << ev.xclient.data.l[0] << std::endl;
+            spdlog::debug("Atom {}", ev.xclient.data.l[0]);
             if (ev.xclient.data.l[0] == wmDeleteMessage)
             {
                 if (target_window->can_close())
@@ -246,8 +249,7 @@ auto PlatformX11::main_loop() -> void
             auto event = convert_x11_configure_event(ev);
             if (event.size != target_window->content.size)
             {
-                std::cout << "Resing window " << target_window->title << " to "
-                          << event.size.width << "x" << event.size.height << std::endl;
+                spdlog::info("Resing window {} to {}x{}", target_window->title, event.size.width, event.size.height);
                 target_window->content.resize(event.size.width, event.size.height);
 
                 // TODO - How about I just modify the x11_image with the
@@ -268,7 +270,7 @@ auto PlatformX11::main_loop() -> void
         if (this->close_on_last_window && this->windows.size() == 0)
         {
             this->exit_loop = true;
-            std::cout << "No more windows - closing event loop" << std::endl;
+            spdlog::info("No more windows - closing event loop");
         }
     }
 }

@@ -2,6 +2,7 @@
 #include <iostream>
 
 #include "platformwin32.h"
+#include "spdlog/spdlog.h"
 
 static const uint8_t WIN32_KEYCODES[] = {
     0,
@@ -453,7 +454,7 @@ static LRESULT CALLBACK svision_wndproc(HWND hwnd, UINT msg, WPARAM wParam,
       {
             title = window->title;
       }
-      std::cout << "Sending message " << msg << " to " << title << std::endl;
+      spdlog::debug("Sending message {} to \"{}\"", msg, title);
 
       switch (msg)
       {
@@ -478,8 +479,7 @@ static LRESULT CALLBACK svision_wndproc(HWND hwnd, UINT msg, WPARAM wParam,
                         auto event = convert_win32_resize_event(msg, wParam, lParam);
                         if (event.size != window->content.size)
                         {
-                              std::cout << "Resing window " << window->title << " to "
-                                        << event.size.width << "x" << event.size.height << std::endl;
+                              spdlog::info("Resizing window \"{}\" to {}x{}", window->title, event.size.width, event.size.height);
                               window->content.resize(event.size.width, event.size.height);
                               window->on_resize(event);
                         }
@@ -508,6 +508,8 @@ PlatformWin32::PlatformWin32()
 
 auto PlatformWin32::init() -> void
 {
+      spdlog::set_level(spdlog::level::info);
+      spdlog::info("PlatformWin32 initialized");
 }
 
 auto PlatformWin32::done() -> void
@@ -528,7 +530,7 @@ auto PlatformWin32::main_loop() -> void
             if (this->close_on_last_window && this->windows.size() == 0)
             {
                   this->exit_loop = true;
-                  std::cout << "No more windows - closing event loop" << std::endl;
+                  spdlog::info("No more windows - closing event loop");
             }
 #endif
       }
