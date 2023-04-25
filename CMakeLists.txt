@@ -1,8 +1,22 @@
 
-cmake_minimum_required (VERSION 3.14)
+cmake_minimum_required (VERSION 3.25)
 
 project (svision2)
 
+
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
+list(APPEND CMAKE_PREFIX_PATH ${CMAKE_BINARY_DIR})
+
+include(FetchContent)
+include(cmake/conan.cmake)
+include(FetchContent)
+
+conan_cmake_autodetect(settings)
+conan_cmake_run(CONANFILE conanfile.txt
+                BASIC_SETUP CMAKE_TARGETS
+                BUILD missing)
+
+find_package(fmt CONFIG REQUIRED)
 
 set(SVISION_SOURCES
     src/bitmap.h
@@ -25,11 +39,11 @@ endif()
 add_library(svision2 ${SVISION_SOURCES})
 
 if (LINUX)
-target_link_libraries(svision2 X11)
+target_link_libraries(svision2 PUBLIC fmt::fmt X11)
+else()
+target_link_libraries(svision2 PUBLIC fmt::fmt)
 endif()
-
 target_include_directories(svision2 PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src")
 
 add_executable (demo src/main.cxx )
-target_include_directories(demo PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src")
 target_link_libraries(demo svision2)
