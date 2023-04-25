@@ -30,6 +30,7 @@ if (LINUX)
         src/platformx11.cpp
         src/platformx11.h
     )
+    set(SVISION_PLATFORM_LIBS X11)
 elseif(WIN32)
     list(APPEND SVISION_SOURCES
         src/platformwin32.cpp
@@ -38,11 +39,7 @@ elseif(WIN32)
 endif()
 add_library(svision2 ${SVISION_SOURCES})
 
-if (LINUX)
-target_link_libraries(svision2 PUBLIC fmt::fmt X11)
-else()
-target_link_libraries(svision2 PUBLIC fmt::fmt)
-endif()
+target_link_libraries(svision2 PUBLIC fmt::fmt ${SVISION_PLATFORM_LIBS})
 target_include_directories(svision2 PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src")
 
 add_executable (demo src/main.cxx )
