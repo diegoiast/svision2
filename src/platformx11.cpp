@@ -179,20 +179,21 @@ auto PlatformX11::open_window(int x, int y, int width, int height, const std::st
     wmDeleteMessage = XInternAtom(dpy, "WM_DELETE_WINDOW", False);
     XSetWMProtocols(dpy, window->x11_window, &wmDeleteMessage, 1);
 
+    window->content.resize(width, height);
+    window->x11_image = XCreateImage(dpy, DefaultVisual(dpy, 0), 24, ZPixmap, 0,
+                                     (char *)window->content.buf,
+                                     window->content.size.width,
+                                     window->content.size.height, 32, 0);
+
     windows[window->x11_window] = window;
     return window;
 }
 
 auto PlatformX11::show_window(std::shared_ptr<PlatformWindow> w) -> void
 {
+    auto window = std::dynamic_pointer_cast<PlatformWindowX11>(w);
     XMapWindow(dpy, window->x11_window);
     XSync(dpy, window->x11_window);
-
-    window->content.resize(width, height);
-    window->x11_image = XCreateImage(dpy, DefaultVisual(dpy, 0), 24, ZPixmap, 0,
-                                     (char *)window->content.buf,
-                                     window->content.size.width,
-                                     window->content.size.height, 32, 0);
 }
 
 auto PlatformX11::main_loop() -> void

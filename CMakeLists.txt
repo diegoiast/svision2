@@ -9,7 +9,8 @@ list(APPEND CMAKE_PREFIX_PATH ${CMAKE_BINARY_DIR})
 
 include(FetchContent)
 include(cmake/conan.cmake)
-include(FetchContent)
+include(cmake/CPM.cmake)
+include(cmake/CreateResources.cmake)
 
 conan_cmake_autodetect(settings)
 conan_cmake_run(CONANFILE conanfile.txt
@@ -18,6 +19,9 @@ conan_cmake_run(CONANFILE conanfile.txt
 
 find_package(fmt CONFIG REQUIRED)
 find_package(spdlog CONFIG REQUIRED)
+
+create_resources("src/*.bin"  "fontdos.h")
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 set(SVISION_SOURCES
     src/bitmap.h

@@ -33,6 +33,16 @@ auto Widget::draw() -> void
     }
 
     content.fill_rect(0, 0, content.size.width, content.size.height, color);
+
+    if (mouse_over)
+    {
+        auto str = fmt::format("Position = {}x{}", position.x, position.y);
+        content.write_fixed(Position{4, 4}, str, MakeColor(0xf, 0xf, 0));
+    }
+    else
+    {
+        content.write_fixed_char(Position{4, 4}, 177, MakeColor(0x0, 0x0, 0));
+    }
 }
 
 auto Widget::on_hover(const EventMouse &event) -> void

@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <cassert>
+#include <string>
 
 struct Size
 {
@@ -45,6 +46,26 @@ auto inline GetBlue(uint32_t color) -> char
     return color & 0x00ff;
 }
 
+auto inline get_bit(unsigned char number, char n) -> bool
+{
+    return (number >> n) & 1;
+}
+
+auto inline set_bit(unsigned char  number, char n, bool on) -> int
+{
+    if (on)
+    {
+        return number |= 1 << n;
+    }
+
+    return number &= ~(1 << n);
+}
+
+auto inline toggle_bit(unsigned char  number, char n) -> int
+{
+    return number ^= 1 << n;
+}
+
 auto Lighter(uint32_t color, double percentage = 0.1) -> uint32_t;
 auto Darker(uint32_t color, double percentage = 0.1) -> uint32_t;
 
@@ -80,4 +101,6 @@ struct Bitmap
     auto line(int x0, int y0, int x1, int y1, uint32_t c) -> void;
     auto fill(int x, int y, uint32_t old, uint32_t c) -> void;
     auto draw(Position position, const Bitmap &other) -> void;
+    auto write_fixed(Position, const std::string &str, const uint32_t color) -> void;
+    auto write_fixed_char(Position, char c, const uint32_t color) -> void;
 };
