@@ -556,10 +556,10 @@ auto PlatformWin32::open_window(int x, int y, int width, int height, const std::
       wc.style = CS_VREDRAW | CS_HREDRAW;
       wc.lpfnWndProc = svision_wndproc;
       wc.hInstance = hInstance;
-      wc.lpszClassName = title.c_str();
+      wc.lpszClassName = "svision2";
       RegisterClassEx(&wc);
       window->hwnd = CreateWindowEx(WS_EX_CLIENTEDGE,
-                                    window->title.c_str(),
+                                    "svision2",
                                     window->title.c_str(),
                                     WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT,
                                     width, height,
