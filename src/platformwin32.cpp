@@ -431,12 +431,12 @@ static auto win32_paint_window(PlatformWindowWin32 *window) -> void
       HDC memdc = CreateCompatibleDC(hdc);
       HBITMAP hbmp = CreateCompatibleBitmap(hdc, window->content.size.width, window->content.size.height);
       HGDIOBJ oldbmp = SelectObject(memdc, hbmp);
-      BITMAPINFO bi = {{sizeof(bi), window->content.size.width, window->content.size.height, 1, 32, BI_RGB}};
+      BITMAPINFO bi = {{sizeof(bi), window->content.size.width, -window->content.size.height, 1, 32, BI_RGB}};
       bi.bmiColors[0].rgbRed = 0xff;
       bi.bmiColors[1].rgbGreen = 0xff;
       bi.bmiColors[2].rgbBlue = 0xff;
 
-      SetDIBitsToDevice(memdc, 0, 0, window->content.size.width, window->content.size.height, 0, 0, 0, window->content.size.width,
+      SetDIBitsToDevice(memdc, 0, 0, window->content.size.width, window->content.size.height, 0, 0, 0, window->content.size.height,
                         window->content.buf, (BITMAPINFO *)&bi, DIB_RGB_COLORS);
       BitBlt(hdc, 0, 0, window->content.size.width, window->content.size.height, memdc, 0, 0, SRCCOPY);
       SelectObject(memdc, oldbmp);
