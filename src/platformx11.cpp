@@ -179,6 +179,12 @@ auto PlatformX11::open_window(int x, int y, int width, int height, const std::st
     wmDeleteMessage = XInternAtom(dpy, "WM_DELETE_WINDOW", False);
     XSetWMProtocols(dpy, window->x11_window, &wmDeleteMessage, 1);
 
+    windows[window->x11_window] = window;
+    return window;
+}
+
+auto PlatformX11::show_window(std::shared_ptr<PlatformWindow> w) -> void
+{
     XMapWindow(dpy, window->x11_window);
     XSync(dpy, window->x11_window);
 
@@ -187,8 +193,6 @@ auto PlatformX11::open_window(int x, int y, int width, int height, const std::st
                                      (char *)window->content.buf,
                                      window->content.size.width,
                                      window->content.size.height, 32, 0);
-    windows[window->x11_window] = window;
-    return window;
 }
 
 auto PlatformX11::main_loop() -> void
@@ -268,9 +272,9 @@ auto PlatformX11::main_loop() -> void
 
         if (target_window->needs_redraw)
         {
-            // or call this - 
-            // XClearArea(display, window, 0, 0, 500, 500, False); 
-            // and then handle the draw in expose? 
+            // or call this -
+            // XClearArea(display, window, 0, 0, 500, 500, False);
+            // and then handle the draw in expose?
             target_window->draw();
             XPutImage(dpy,
                       target_window->x11_window,

@@ -23,6 +23,7 @@ int main()
     auto size = Size{30, 300};
     w1->add(std::make_shared<Widget>(Position{10,10}, Size{200, 40}, 0x22dd37));
     w1->add(std::make_shared<Widget>(Position{10,100}, Size{200, 40}, 0x3788aa));
+    platform.show_window(w1);
 
     // auto w2 = platform.open_window(300, 300, 640, 480, "test 2");
     // w2->background_color = 0x00FF00;

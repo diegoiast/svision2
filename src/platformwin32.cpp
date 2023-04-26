@@ -422,6 +422,7 @@ static auto win32_paint_window(PlatformWindowWin32 *window) -> void
 {
       if (window->content.buf == nullptr || window->content.size.height <= 0 || window->content.size.height <= 0)
       {
+            spdlog::warn("win32_paint_window: Window has invalid size! ptr={}, size={}x{}", fmt::ptr(window->content.buf), window->content.size.width, window->content.size.height);
             return;
       }
 
@@ -449,21 +450,27 @@ static LRESULT CALLBACK svision_wndproc(HWND hwnd, UINT msg, WPARAM wParam,
 {
       PlatformWindowWin32 *window = (struct PlatformWindowWin32 *)GetWindowLongPtr(hwnd, GWLP_USERDATA);
 
-      auto title = std::string("???");
-      if (window != NULL)
+      if (window == nullptr)
       {
-            title = window->title;
+            spdlog::critical("Window =({}), message={}: is not managed by us, ignoring", (long long)hwnd, msg);
+            return DefWindowProcW(hwnd, msg, wParam, lParam);
       }
+
+      auto title = window->title;
       spdlog::debug("Sending message {} to \"{}\"", msg, title);
 
       switch (msg)
       {
       case WM_PAINT:
+            window->draw();
             win32_paint_window(window);
             break;
 
       case WM_CLOSE:
-            DestroyWindow(hwnd);
+            if (window->can_close())
+            {
+                  DestroyWindow(hwnd);
+            }
             break;
       case WM_DESTROY:
             PostQuitMessage(0);
@@ -474,18 +481,15 @@ static LRESULT CALLBACK svision_wndproc(HWND hwnd, UINT msg, WPARAM wParam,
       case WM_SIZE:
             //      case WM_SIZING:
             {
-                  if (window != NULL)
+                  auto event = convert_win32_resize_event(msg, wParam, lParam);
+                  if (event.size != window->content.size)
                   {
-                        auto event = convert_win32_resize_event(msg, wParam, lParam);
-                        if (event.size != window->content.size)
-                        {
-                              spdlog::info("Resizing window \"{}\" to {}x{}", window->title, event.size.width, event.size.height);
-                              window->content.resize(event.size.width, event.size.height);
-                              window->on_resize(event);
-                        }
+                        window->needs_redraw = true;
+                        window->content.resize(event.size.width, event.size.height);
+                        window->on_resize(event);
                   }
-                  break;
-            };
+            }
+            break;
       case WM_LBUTTONDOWN:
       case WM_LBUTTONUP:
       case WM_MOUSEMOVE:
@@ -498,6 +502,11 @@ static LRESULT CALLBACK svision_wndproc(HWND hwnd, UINT msg, WPARAM wParam,
             break;
       default:
             return DefWindowProc(hwnd, msg, wParam, lParam);
+      }
+
+      if (window->needs_redraw)
+      {
+            InvalidateRect(window->hwnd, 0, 1);
       }
       return 0;
 }
@@ -540,7 +549,6 @@ auto PlatformWin32::open_window(int x, int y, int width, int height, const std::
 {
       auto window = std::make_shared<PlatformWindowWin32>();
       window->title = title;
-      //      window->content.resize(width, height);
 
       HINSTANCE hInstance = GetModuleHandle(NULL);
       WNDCLASSEX wc = {};
@@ -564,7 +572,12 @@ auto PlatformWin32::open_window(int x, int y, int width, int height, const std::
       }
 
       SetWindowLongPtr(window->hwnd, GWLP_USERDATA, (LONG_PTR)window.get());
+      return window;
+}
+
+auto PlatformWin32::show_window(std::shared_ptr<PlatformWindow> w) -> void
+{
+      auto window = std::dynamic_pointer_cast<PlatformWindowWin32>(w);
       ShowWindow(window->hwnd, SW_NORMAL);
       UpdateWindow(window->hwnd);
-      return window;
 }
