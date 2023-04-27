@@ -28,6 +28,8 @@ set(SVISION_SOURCES
     src/bitmap.cpp
     src/widget.h
     src/widget.cpp
+    src/button.h
+    src/button.cpp
     src/platform.cpp
     src/platform.h
 )
