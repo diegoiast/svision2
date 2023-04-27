@@ -11,14 +11,14 @@ struct Event
 {
 };
 
-struct EventKeyboard : public Event
+struct EventKeyboard :  Event
 {
     int modifiers;
     int key;
     bool keydown;
 };
 
-struct EventMouse : public Event
+struct EventMouse :  Event
 {
     MouseEvents type = MouseEvents::Unknown;
     bool pressed = false;
@@ -37,7 +37,7 @@ struct EventMouse : public Event
     }
 };
 
-struct EventResize : public Event
+struct EventResize :  Event
 {
     Size size{-1, -1};
     Position position = {-1, -1};

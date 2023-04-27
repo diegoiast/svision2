@@ -2,7 +2,7 @@
 
 #include <platform.h>
 
-class PlatformWin32 : public Platform
+struct PlatformWin32 : Platform
 {
 public:
     PlatformWin32();

@@ -51,7 +51,7 @@ auto inline get_bit(unsigned char number, char n) -> bool
     return (number >> n) & 1;
 }
 
-auto inline set_bit(unsigned char  number, char n, bool on) -> int
+auto inline set_bit(unsigned char number, char n, bool on) -> int
 {
     if (on)
     {
@@ -61,7 +61,7 @@ auto inline set_bit(unsigned char  number, char n, bool on) -> int
     return number &= ~(1 << n);
 }
 
-auto inline toggle_bit(unsigned char  number, char n) -> int
+auto inline toggle_bit(unsigned char number, char n) -> int
 {
     return number ^= 1 << n;
 }
