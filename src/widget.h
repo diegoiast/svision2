@@ -12,13 +12,19 @@ struct Widget
     Bitmap content;
     Position position;
     bool mouse_over = false;
-    bool needs_redraw = false;
+    bool needs_redraw = true;
+
+    // used for debug. will get removed soon
+    bool state_pressed = false;
+    Position pos;
+    bool unclick_inside;
 
     Widget(Position pp, Size size, uint32_t color);
     virtual auto draw() -> void;
-    virtual auto on_hover(const EventMouse &ev) -> void;
+    virtual auto on_hover(const EventMouse &event) -> void;
     virtual auto on_mouse_enter() -> void;
     virtual auto on_mouse_leave() -> void;
+    virtual auto on_mouse_click(const EventMouse &event) -> void;
 };
 
 struct PlatformWindow

@@ -101,14 +101,17 @@ auto convert_x11_mouse_event(const XEvent &ev, Display *dpy) -> EventMouse
     switch (ev.type)
     {
     case MotionNotify:
+        event.type = MouseEvents::MouseMove;
         event.x = ev.xmotion.x;
         event.y = ev.xmotion.y;
         break;
     case ButtonPress:
+        event.type = MouseEvents::Press;
         event.button = ev.xbutton.button;
         event.pressed = true;
         break;
     case ButtonRelease:
+        event.type = MouseEvents::Release;
         event.button = ev.xbutton.button;
         event.pressed = false;
         break;
@@ -200,6 +203,7 @@ auto PlatformX11::main_loop() -> void
 {
     XEvent ev;
     int pending;
+    Position last_mouse_position;
 
     while (pending = XPending(dpy) || !this->exit_loop)
     {
@@ -239,9 +243,25 @@ auto PlatformX11::main_loop() -> void
 
         case ButtonPress:
         case ButtonRelease:
+        {
+            // TODO - verify this!
+            // mouse events on X11 do not tell you the position of the click, we
+            // need to save that data and pass it along
+            auto event = convert_x11_mouse_event(ev, this->dpy);
+            event.x = last_mouse_position.x;
+            event.y = last_mouse_position.y;
+            target_window->on_mouse(event);
+        }
+        break;
+
         case MotionNotify:
-            target_window->on_mouse(convert_x11_mouse_event(ev, this->dpy));
-            break;
+        {
+            auto event = convert_x11_mouse_event(ev, this->dpy);
+            target_window->on_mouse(event);
+            last_mouse_position.x = event.x;
+            last_mouse_position.y = event.y;
+        }
+        break;
 
         case KeyPress:
         case KeyRelease:
