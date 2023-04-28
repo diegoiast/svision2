@@ -21,13 +21,13 @@ struct Position {
     int y;
 };
 
-auto inline MakeColor(u_char r, u_char g, u_char b) -> uint32_t { return r << 16 | g << 8 | b; }
+auto inline MakeColor(uint8_t r, uint8_t g, uint8_t b) -> uint32_t { return r << 16 | g << 8 | b; }
 
-auto inline GetRed(uint32_t color) -> char { return color >> 16; }
+auto inline GetRed(uint32_t color) -> uint8_t { return color >> 16; }
 
-auto inline GetGreen(uint32_t color) -> char { return (color >> 8) & 0x00ff; }
+auto inline GetGreen(uint32_t color) -> uint8_t { return (color >> 8) & 0x00ff; }
 
-auto inline GetBlue(uint32_t color) -> char { return color & 0x00ff; }
+auto inline GetBlue(uint32_t color) -> uint8_t { return color & 0x00ff; }
 
 auto inline get_bit(unsigned char number, char n) -> bool { return (number >> n) & 1; }
 
