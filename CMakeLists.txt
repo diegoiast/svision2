@@ -33,10 +33,12 @@ conan_cmake_run(CONANFILE conanfile.txt
 
 find_package(fmt CONFIG REQUIRED)
 find_package(spdlog CONFIG REQUIRED)
+find_package(Catch2 3 REQUIRED)
 
 create_resources("src/*.bin"  "fontdos.h")
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
+# Main library
 set(SVISION_SOURCES
     src/bitmap.h
     src/bitmap.cpp
@@ -67,5 +69,14 @@ target_link_libraries(svision2 PUBLIC
     ${SVISION_PLATFORM_LIBS})
 target_include_directories(svision2 PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src")
 
+# Development demo
 add_executable (demo src/main.cxx )
 target_link_libraries(demo svision2)
+
+# Unit tests
+include(CTest)
+include(Catch)
+
+add_executable(test-buttons tests/test_buttons.cpp)
+target_link_libraries(test-buttons PRIVATE Catch2::Catch2WithMain svision2)
+catch_discover_tests(test-buttons)

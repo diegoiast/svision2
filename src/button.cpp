@@ -118,11 +118,19 @@ auto Button::on_mouse_leave() -> void {
 auto Button::on_mouse_click(const EventMouse &event) -> void {
     switch (state) {
     case States::ClickedInside:
-        state = States::Hovered;
-        needs_redraw = true;
-        if (on_button_click) {
-            on_button_click();
+        if (!event.pressed)
+        {
+            if (event.is_local) {
+                state = States::Hovered;
+                if (on_button_click) {
+                    on_button_click();
+                }
+            } else {
+                state = States::Normal;
+            }
+            needs_redraw = true;
         }
+
         break;
     case States::ClickedOutside:
         if (event.pressed) {

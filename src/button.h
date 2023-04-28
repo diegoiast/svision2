@@ -18,7 +18,7 @@ struct Button : Widget {
         ClickedOutside,
     };
 
-    States state;
+    States state = States::Normal;
     std::string text;
     std::function<void()> on_button_click;
 
