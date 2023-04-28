@@ -12,6 +12,20 @@ include(cmake/conan.cmake)
 include(cmake/CPM.cmake)
 include(cmake/CreateResources.cmake)
 
+cpmaddpackage(
+    NAME
+    Format.cmake
+    VERSION
+    1.7.2
+    GITHUB_REPOSITORY
+    TheLartians/Format.cmake
+    OPTIONS # set to yes skip cmake formatting
+    "FORMAT_SKIP_CMAKE NO"
+    # path to exclude (optional, supports regular expressions)
+    "CMAKE_FORMAT_EXCLUDE cmake/*"
+)
+
+
 conan_cmake_autodetect(settings)
 conan_cmake_run(CONANFILE conanfile.txt
                 BASIC_SETUP CMAKE_TARGETS

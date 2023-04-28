@@ -7,19 +7,15 @@ enum class MouseEvents {
     MouseMove,
 };
 
-struct Event
-{
-};
+struct Event {};
 
-struct EventKeyboard :  Event
-{
+struct EventKeyboard : Event {
     int modifiers;
     int key;
     bool keydown;
 };
 
-struct EventMouse :  Event
-{
+struct EventMouse : Event {
     MouseEvents type = MouseEvents::Unknown;
     bool pressed = false;
     bool is_local = false;
@@ -27,18 +23,15 @@ struct EventMouse :  Event
     int x = -1;
     int y = -1;
 
-    auto invalidate() -> auto {
+    auto invalidate() -> auto{
         x = -1;
         y = -1;
     }
 
-    auto is_valid() -> const bool {
-        return x <0 || y < 0;
-    }
+    auto is_valid() -> const bool { return x < 0 || y < 0; }
 };
 
-struct EventResize :  Event
-{
+struct EventResize : Event {
     Size size{-1, -1};
     Position position = {-1, -1};
 };

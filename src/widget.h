@@ -3,11 +3,10 @@
 #include <bitmap.h>
 #include <events.h>
 #include <list>
-#include <string>
 #include <memory>
+#include <string>
 
-struct Widget
-{
+struct Widget {
     uint32_t background_color;
     Bitmap content;
     Position position;
@@ -27,8 +26,7 @@ struct Widget
     virtual auto on_mouse_click(const EventMouse &event) -> void;
 };
 
-struct PlatformWindow
-{
+struct PlatformWindow {
     std::string title;
     Bitmap content;
     uint32_t background_color = 0;
@@ -36,31 +34,21 @@ struct PlatformWindow
     std::shared_ptr<Widget> last_overed_widget;
     bool needs_redraw = false;
 
-    virtual ~PlatformWindow()
-    {
-    }
+    virtual ~PlatformWindow() {}
 
     virtual auto draw() -> void;
 
-    virtual auto on_keyboard(const EventKeyboard &) -> void
-    {
+    virtual auto on_keyboard(const EventKeyboard &) -> void {
         // by default, do nothing
     }
 
     virtual auto on_mouse(const EventMouse &) -> void;
 
-    virtual auto on_resize(const EventResize &) -> void
-    {
+    virtual auto on_resize(const EventResize &) -> void {
         // by default, do nothing
     }
 
-    virtual auto can_close() -> bool
-    {
-        return true;
-    }
+    virtual auto can_close() -> bool { return true; }
 
-    auto add(std::shared_ptr<Widget> w)
-    {
-        widgets.push_back(w);
-    }
+    auto add(std::shared_ptr<Widget> w) { widgets.push_back(w); }
 };
