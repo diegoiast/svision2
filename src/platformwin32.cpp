@@ -155,6 +155,8 @@ static auto win32_paint_window(PlatformWindowWin32 *window) -> void {
     EndPaint(window->hwnd, &ps);
 }
 
+static auto total_open_windows = 0;
+
 static LRESULT CALLBACK svision_wndproc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
     PlatformWindowWin32 *window =
         (struct PlatformWindowWin32 *)GetWindowLongPtr(hwnd, GWLP_USERDATA);
@@ -167,8 +169,14 @@ static LRESULT CALLBACK svision_wndproc(HWND hwnd, UINT msg, WPARAM wParam, LPAR
 
     auto title = window->title;
     spdlog::debug("Sending message {} to \"{}\"", msg, title);
-
     switch (msg) {
+    case WM_SHOWWINDOW:
+        total_open_windows += 1;
+        break;
+
+    case WM_DESTROY:
+        break;
+
     case WM_PAINT:
         window->draw();
         win32_paint_window(window);
@@ -177,10 +185,8 @@ static LRESULT CALLBACK svision_wndproc(HWND hwnd, UINT msg, WPARAM wParam, LPAR
     case WM_CLOSE:
         if (window->can_close()) {
             DestroyWindow(hwnd);
+            total_open_windows -= 1;
         }
-        break;
-    case WM_DESTROY:
-        PostQuitMessage(0);
         break;
 
         //      case WM_MOVE:
@@ -227,11 +233,22 @@ static LRESULT CALLBACK svision_wndproc(HWND hwnd, UINT msg, WPARAM wParam, LPAR
     }
     return 0;
 }
+static constexpr auto WINDOW_CLASS_NAME = "svision2";
 
 PlatformWin32::PlatformWin32() {}
 
 auto PlatformWin32::init() -> void {
     spdlog::set_level(spdlog::level::info);
+
+    HINSTANCE hInstance = GetModuleHandle(NULL);
+    WNDCLASSEX wc = {};
+    wc.cbSize = sizeof(WNDCLASSEX);
+    wc.style = CS_VREDRAW | CS_HREDRAW;
+    wc.lpfnWndProc = svision_wndproc;
+    wc.hInstance = hInstance;
+    wc.lpszClassName = WINDOW_CLASS_NAME;
+    RegisterClassEx(&wc);
+
     spdlog::info("PlatformWin32 initialized");
 }
 
@@ -241,37 +258,29 @@ auto PlatformWin32::main_loop() -> void {
     MSG msg;
     while (GetMessage(&msg, NULL, 0, 0) && !this->exit_loop) {
         if (msg.message == WM_QUIT) {
+            spdlog::debug("Closing event loop, due to request from WM");
             return;
         }
         TranslateMessage(&msg);
         DispatchMessage(&msg);
 
-#if 0
-            if (this->close_on_last_window && this->windows.size() == 0)
-            {
-                  this->exit_loop = true;
-                  spdlog::info("No more windows - closing event loop");
-            }
-#endif
+        if (this->close_on_last_window && total_open_windows == 0) {
+            spdlog::info("No more windows - closing event loop");
+            PostQuitMessage(0);
+            this->exit_loop = true;
+        }
     }
 }
 
 auto PlatformWin32::open_window(int x, int y, int width, int height, const std::string title)
     -> std::shared_ptr<PlatformWindow> {
+    HINSTANCE hInstance = GetModuleHandle(NULL);
+
     auto window = std::make_shared<PlatformWindowWin32>();
     window->title = title;
-
-    HINSTANCE hInstance = GetModuleHandle(NULL);
-    WNDCLASSEX wc = {};
-    wc.cbSize = sizeof(WNDCLASSEX);
-    wc.style = CS_VREDRAW | CS_HREDRAW;
-    wc.lpfnWndProc = svision_wndproc;
-    wc.hInstance = hInstance;
-    wc.lpszClassName = "svision2";
-    RegisterClassEx(&wc);
-    window->hwnd =
-        CreateWindowEx(WS_EX_CLIENTEDGE, "svision2", window->title.c_str(), WS_OVERLAPPEDWINDOW,
-                       CW_USEDEFAULT, CW_USEDEFAULT, width, height, NULL, NULL, hInstance, NULL);
+    window->hwnd = CreateWindowEx(WS_EX_CLIENTEDGE, WINDOW_CLASS_NAME, window->title.c_str(),
+                                  WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, width, height,
+                                  NULL, NULL, hInstance, NULL);
 
     if (window->hwnd == NULL) {
         return nullptr;
