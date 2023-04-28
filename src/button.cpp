@@ -12,32 +12,39 @@ Button::Button(Position pp, Size size, std::string text, std::function<void()> o
 }
 
 auto Button::draw() -> void {
-    auto background_color = MakeColor(0x80, 0x80, 0x80);
-    auto line1 = MakeColor(0xe0, 0xe0, 0xe0);
-    auto line2 = MakeColor(0x80, 0x80, 0x80);
+    auto background_color_normal = MakeColor(0xb0, 0xb0, 0xb0);
+    auto background_color_hover = MakeColor(0xc3, 0xc3, 0xc3);
+    auto line_color1 = MakeColor(0xff, 0xff, 0xff);
+    auto line_color2 = MakeColor(0x64, 0x64, 0x64);
+    auto text_padding = 5;
+    auto shadow_padding = text_padding + 1;
+
+    auto background_color = background_color_normal;
+    auto line1 = line_color1;
+    auto line2 = line_color2;
     auto shadow_offset = 0;
     auto text_offset = 0;
 
     switch (state) {
     case States::Normal:
-        line1 = MakeColor(0xe0, 0xe0, 0xe0);
-        line2 = MakeColor(0x80, 0x80, 0x80);
+        line1 = line_color1;
+        line2 = line_color2;
         break;
     case States::Hovered:
-        // line1 = MakeColor(0x00, 0xff, 0x00);
-        // line2 = MakeColor(0x00, 0xff, 0x00);
-        background_color = MakeColor(0x90, 0x90, 0x90);
+         line1 = MakeColor(0x00, 0xff, 0x00);
+         line2 = MakeColor(0x00, 0xff, 0x00);
+        background_color = background_color_hover;
         break;
     case States::ClickedInside:
-        line2 = MakeColor(0xe0, 0xe0, 0xe0);
-        line1 = MakeColor(0x80, 0x80, 0x80);
-        background_color = MakeColor(0x90, 0x90, 0x90);
+        line1 = line_color2;
+        line2 = line_color1;
+        background_color = background_color_hover;
         shadow_offset = 1;
         break;
     case States::ClickedOutside:
-        line1 = MakeColor(0xe0, 0xe0, 0xe0);
-        line2 = MakeColor(0x80, 0x80, 0x80);
-        background_color = MakeColor(0x90, 0x90, 0x90);
+        line1 = line_color1;
+        line2 = line_color2;
+        background_color = background_color_hover;
         shadow_offset = 0;
         break;
 
@@ -51,8 +58,8 @@ auto Button::draw() -> void {
     content.line(0, content.size.height - 1, content.size.width - 1, content.size.height - 1,
                  line2);
     content.fill_rect(1, 1, content.size.width - 2, content.size.height - 2, background_color);
-    content.write_fixed(Position{7 + shadow_offset, 7 + shadow_offset}, text, 0);
-    content.write_fixed(Position{5 + text_offset, 5 + text_offset}, text, 0xffffff);
+    content.write_fixed(Position{shadow_padding + shadow_offset, shadow_padding + shadow_offset}, text, 0);
+    content.write_fixed(Position{text_padding + text_offset, text_padding + text_offset}, text, 0xffffff);
 }
 
 auto Button::on_hover(const EventMouse &event) -> void {
