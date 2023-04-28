@@ -23,7 +23,12 @@ static const uint8_t WIN32_KEYCODES[] = {
 
 auto convert_win32_mouse_event(UINT msg, WPARAM wParam, LPARAM lParam) -> EventMouse {
     auto event = EventMouse();
-    if (msg == WM_LBUTTONDOWN) {
+    switch (msg) {
+    case WM_LBUTTONDOWN:
+    case WM_RBUTTONDOWN:
+    case WM_MBUTTONDOWN:
+    case WM_XBUTTONDOWN:
+        event.type = MouseEvents::Press;
         event.pressed = true;
         if (wParam & MK_LBUTTON) {
             event.button = 1;
@@ -34,11 +39,46 @@ auto convert_win32_mouse_event(UINT msg, WPARAM wParam, LPARAM lParam) -> EventM
         if (wParam & MK_MBUTTON) {
             event.button = 3;
         }
-    }
-    if (msg == WM_MOUSEMOVE) {
         event.y = HIWORD(lParam);
         event.x = LOWORD(lParam);
+        break;
+
+    case WM_LBUTTONUP:
+    case WM_RBUTTONUP:
+    case WM_MBUTTONUP:
+    case WM_XBUTTONUP:
+        event.type = MouseEvents::Release;
+        event.pressed = false;
+        if (wParam & MK_LBUTTON) {
+            event.button = 1;
+        }
+        if (wParam & MK_RBUTTON) {
+            event.button = 2;
+        }
+        if (wParam & MK_MBUTTON) {
+            event.button = 3;
+        }
+        event.y = HIWORD(lParam);
+        event.x = LOWORD(lParam);
+        break;
+
+    case WM_LBUTTONDBLCLK:
+    case WM_XBUTTONDBLCLK:
+    case WM_RBUTTONDBLCLK:
+    case WM_MBUTTONDBLCLK:
+        break;
+
+    case WM_MOUSEWHEEL:
+        break;
+
+    case WM_MOUSEMOVE:
+        event.type = MouseEvents::MouseMove;
+        event.y = HIWORD(lParam);
+        event.x = LOWORD(lParam);
+        break;
     }
+
+    //    spdlog::info("Mouse event at {}x{}", event.x, event.y);
     return event;
 }
 
@@ -156,8 +196,20 @@ static LRESULT CALLBACK svision_wndproc(HWND hwnd, UINT msg, WPARAM wParam, LPAR
             }
         }
         break;
+
     case WM_LBUTTONDOWN:
     case WM_LBUTTONUP:
+    case WM_LBUTTONDBLCLK:
+    case WM_RBUTTONDOWN:
+    case WM_RBUTTONUP:
+    case WM_RBUTTONDBLCLK:
+    case WM_MBUTTONDOWN:
+    case WM_MBUTTONUP:
+    case WM_MBUTTONDBLCLK:
+    case WM_MOUSEWHEEL:
+    case WM_XBUTTONDOWN:
+    case WM_XBUTTONUP:
+    case WM_XBUTTONDBLCLK:
     case WM_MOUSEMOVE:
         window->on_mouse(convert_win32_mouse_event(msg, wParam, lParam));
         break;
@@ -188,8 +240,9 @@ auto PlatformWin32::done() -> void {}
 auto PlatformWin32::main_loop() -> void {
     MSG msg;
     while (GetMessage(&msg, NULL, 0, 0) && !this->exit_loop) {
-        if (msg.message == WM_QUIT)
+        if (msg.message == WM_QUIT) {
             return;
+        }
         TranslateMessage(&msg);
         DispatchMessage(&msg);
 
