@@ -14,6 +14,7 @@
 #endif
 
 #include <button.h>
+#include <label.h>
 #include <spdlog/spdlog.h>
 
 auto handle_event(std::shared_ptr<PlatformWindow> w, const Event &ev);
@@ -28,13 +29,14 @@ int main() {
     platform.show_window(w2);
 
     auto w1 = platform.open_window(100, 100, 640, 480, "test 1");
-    w1->add(std::make_shared<Widget>(Position{10, 10}, Size{200, 40}, 0x22dd37));
+    w1->add(std::make_shared<Widget>(Position{350, 10}, Size{200, 40}, 0x22dd37));
     w1->add(std::make_shared<Button>(Position{10, 100}, Size{200, 40}, "OK", true, [&platform]() {
         spdlog::info("OK clicked!");
         platform.exit_loop = true;
     }));
     w1->add(std::make_shared<Button>(Position{220, 100}, Size{200, 40}, "Cancel", false,
-                                     [&platform]() { spdlog::info("Cancel clicked!"); }));
+                                     [&platform]() { spdlog::info("Cancel clicke1d!"); }));
+    w1->add(std::make_shared<Label>(Position{10, 10}, Size{100, 20}, "Hello world!"));
     platform.show_window(w1);
 
     platform.main_loop();

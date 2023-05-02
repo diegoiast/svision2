@@ -216,7 +216,7 @@ auto PlatformX11::init() -> void {
         return;
     }
 
-#if 0
+#if 1
     default_theme = std::make_shared<ThemePlasma>();
 #else
     default_theme = std::make_shared<ThemeRedmond>();

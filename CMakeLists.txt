@@ -42,14 +42,16 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(SVISION_SOURCES
     src/bitmap.h
     src/bitmap.cpp
-    src/widget.h
-    src/widget.cpp
     src/button.h
     src/button.cpp
+    src/label.cpp
+    src/label.h
     src/platform.cpp
     src/platform.h
     src/theme.cpp
     src/theme.h
+    src/widget.h
+    src/widget.cpp
 )
 
 if (LINUX)

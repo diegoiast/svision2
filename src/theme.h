@@ -1,3 +1,10 @@
+/*
+ * This file is part of SVision2
+ * Copyright (c) Diego Iastrubni <diegoiast@gmail.com>
+ *
+ * SPDX-License-Identifier: MIT
+ */
+
 #pragma once
 
 #include <bitmap.h>
@@ -11,6 +18,7 @@ enum class ButtonStates {
 
 struct Theme {
     virtual auto init() -> void = 0;
+    virtual auto draw_widget_background(Bitmap &content) -> void = 0;
     virtual auto draw_window_background(Bitmap &content) -> void = 0;
     virtual auto draw_button(Bitmap &content, bool has_focus, bool is_default, ButtonStates state,
                              const std::string &text) -> void = 0;
@@ -25,6 +33,9 @@ struct ThemeOldie : Theme {
     static const int32_t line_color2 = MakeColor(0x64, 0x64, 0x64);
 
     virtual auto init() -> void override{};
+    virtual auto draw_widget_background(Bitmap &content) -> void {
+        content.fill(background_color);
+    };
     virtual auto draw_window_background(Bitmap &content) -> void override;
     virtual auto draw_button(Bitmap &content, bool has_focus, bool is_default, ButtonStates state,
                              const std::string &text) -> void override;
@@ -43,6 +54,9 @@ struct ThemeRedmond : Theme {
     static const int32_t text_color = 0x000000;
 
     virtual auto init() -> void override{};
+    virtual auto draw_widget_background(Bitmap &content) -> void {
+        content.fill(background_color);
+    };
     virtual auto draw_window_background(Bitmap &content) -> void override;
     virtual auto draw_button(Bitmap &content, bool has_focus, bool is_default, ButtonStates state,
                              const std::string &text) -> void override;
@@ -61,6 +75,9 @@ struct ThemeVision : Theme {
     static const int32_t button_background_click= MakeColor(204, 208, 247);
 
     virtual auto init() -> void override{};
+    virtual auto draw_widget_background(Bitmap &content) -> void {
+        content.fill(window_background_color);
+    };
     virtual auto draw_window_background(Bitmap &content) -> void override;
     virtual auto draw_button(Bitmap &content, bool has_focus, bool is_default, ButtonStates state,
                              const std::string &text) -> void override;
@@ -82,6 +99,9 @@ struct ThemePlasma : Theme {
     const int32_t button_selected_text = 0x31373b;
 
     virtual auto init() -> void override{};
+    virtual auto draw_widget_background(Bitmap &content) -> void {
+        content.fill(window_background_color);
+    };
     virtual auto draw_window_background(Bitmap &content) -> void override;
     virtual auto draw_button(Bitmap &content, bool has_focus, bool is_default, ButtonStates state,
                              const std::string &text) -> void override;
