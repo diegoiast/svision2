@@ -8,7 +8,6 @@
 #pragma once
 
 #include <bitmap.h>
-#include <events.h>
 #include <theme.h>
 #include <widget.h>
 

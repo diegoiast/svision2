@@ -8,17 +8,16 @@
 #include <button.h>
 #include <spdlog/spdlog.h>
 
-Button::Button(Position pp, Size size, std::string text) : Widget(pp, size, 0) {
-    this->text = text;
-}
-
-Button::Button(Position pp, Size size, std::string text, std::function<void()> on_button_click)
+Button::Button(Position pp, Size size, std::string text, bool is_default,
+               std::function<void()> on_button_click)
     : Widget(pp, size, 0) {
     this->text = text;
+    this->is_default = is_default;
     this->on_button_click = on_button_click;
+    this->can_focus = true;
 }
 
-auto Button::draw() -> void { theme->draw_button(content, state, text); }
+auto Button::draw() -> void { theme->draw_button(content, has_focus, is_default, state, text); }
 
 auto Button::on_hover(const EventMouse &event) -> void {
     // default implementation demands redraw, we
@@ -69,9 +68,8 @@ auto Button::on_mouse_leave() -> void {
 auto Button::on_mouse_click(const EventMouse &event) -> void {
     switch (state) {
     case ButtonStates::ClickedInside:
-        if (!event.pressed && event.button == 1)
-        {
-            if (event.is_local ) {
+        if (!event.pressed && event.button == 1) {
+            if (event.is_local) {
                 state = ButtonStates::Hovered;
                 if (on_button_click) {
                     on_button_click();
@@ -107,3 +105,16 @@ auto Button::on_mouse_click(const EventMouse &event) -> void {
         break;
     }
 }
+
+auto Button::on_focus_change(bool new_state) -> void { needs_redraw = true; }
+
+auto Button::on_keyboard(const EventKeyboard &event) -> void {
+    if (event.keydown) {
+        if (event.key == KeyCodes::Enter || event.key == KeyCodes::Space) {
+            // TODO - animate the button click
+            if (on_button_click) {
+                on_button_click();
+            }
+        }
+    }
+};

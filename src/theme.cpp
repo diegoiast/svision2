@@ -1,10 +1,9 @@
 #include "theme.h"
 
-auto ThemeOldie::draw_window_background(Bitmap &content) -> void {
-    content.fill(background_color);
-}
+auto ThemeOldie::draw_window_background(Bitmap &content) -> void { content.fill(background_color); }
 
-auto ThemeOldie::draw_button(Bitmap &content, ButtonStates state, const std::string &text) -> void {
+auto ThemeOldie::draw_button(Bitmap &content, bool has_focus, bool is_default, ButtonStates state,
+                             const std::string &text) -> void {
     auto text_padding = 5;
     auto shadow_padding = text_padding + 1;
 
@@ -53,14 +52,12 @@ auto ThemeOldie::draw_button(Bitmap &content, ButtonStates state, const std::str
                         0xffffff);
 }
 
-
-auto ThemeRedmond::draw_window_background(Bitmap &content) -> void
-{
+auto ThemeRedmond::draw_window_background(Bitmap &content) -> void {
     content.fill(background_color);
 }
 
-auto ThemeRedmond::draw_button(Bitmap &content, ButtonStates state, const std::string &text) -> void
-{
+auto ThemeRedmond::draw_button(Bitmap &content, bool has_focus, bool is_default, ButtonStates state,
+                               const std::string &text) -> void {
     auto text_padding = 5;
     auto shadow_padding = text_padding + 1;
 
@@ -93,7 +90,7 @@ auto ThemeRedmond::draw_button(Bitmap &content, ButtonStates state, const std::s
         line3 = ThemeRedmond::line_color4;
         line4 = ThemeRedmond::line_color3;
         background_color = ThemeRedmond::background_color_hover;
-        shadow_offset = 1;
+        shadow_offset = is_default ? 2 : 1;
         break;
     case ButtonStates::ClickedOutside:
         line1 = ThemeRedmond::line_color1;
@@ -108,27 +105,38 @@ auto ThemeRedmond::draw_button(Bitmap &content, ButtonStates state, const std::s
         break;
     }
 
-    content.fill_rect(0, 0, content.size.width , content.size.height, 0xffaabb);
-    content.draw_rectangle(0, 0, content.size.width, content.size.height , line1, line2);
-    content.draw_rectangle(1, 1, content.size.width-2, content.size.height - 2, line3, line4);
+    content.fill_rect(0, 0, content.size.width, content.size.height, 0xffaabb);
+    if (!is_default) {
+        content.draw_rectangle(0, 0, content.size.width, content.size.height, line1, line2);
+        content.draw_rectangle(1, 1, content.size.width - 2, content.size.height - 2, line3, line4);
+        content.fill_rect(2, 2, content.size.width - 4, content.size.height - 4, background_color);
+    } else {
+        content.draw_rectangle(0, 0, content.size.width, content.size.height, line2, line2);
+        content.draw_rectangle(1, 1, content.size.width - 2, content.size.height - 2, line1, line2);
+        content.draw_rectangle(2, 2, content.size.width - 4, content.size.height - 4, line3, line4);
+        content.fill_rect(3, 3, content.size.width - 6, content.size.height - 6, background_color);
+    }
 
-    content.fill_rect(2, 2, content.size.width - 4, content.size.height - 4, background_color);
-    content.write_fixed(Position{shadow_padding + shadow_offset, shadow_padding + shadow_offset},
-                        text, 0);
-    content.write_fixed(Position{text_padding + text_offset, text_padding + text_offset}, text,
-                        0xffffff);
-
+    auto text_size = Bitmap::text_size(text) + (std::max(text_padding, shadow_padding) +
+                                                std::max(text_offset, shadow_offset));
+    auto text_position = Position{((content.size.width - text_size.width) / 2) + text_padding,
+                                  ((content.size.height - text_size.height) / 2) + text_padding};
+    auto shadow_position =
+        Position{((content.size.width - text_size.width) / 2) + shadow_padding,
+                 ((content.size.height - text_size.height) / 2) + shadow_padding};
+    content.write_fixed(shadow_position, text, 0x0);
+    content.write_fixed(text_position, text, 0xffffff);
 }
 
-
 auto ThemePlasma::draw_window_background(Bitmap &content) -> void {
-    content.fill_rect(0, 0, content.size.width, content.size.height, ThemePlasma::window_background_color);
+    content.fill_rect(0, 0, content.size.width, content.size.height,
+                      ThemePlasma::window_background_color);
     content.line(0, 0, content.size.width - 1, 0, button_border);
 }
 
-auto ThemePlasma::draw_button(Bitmap &content, ButtonStates state, const std::string &text) -> void {
+auto ThemePlasma::draw_button(Bitmap &content, bool has_focus, bool is_default, ButtonStates state,
+                              const std::string &text) -> void {
     auto text_padding = 5;
-    auto shadow_padding = text_padding + 1;
 
     auto background1 = ThemePlasma::button_background_1;
     auto background2 = ThemePlasma::button_background_2;
@@ -137,8 +145,13 @@ auto ThemePlasma::draw_button(Bitmap &content, ButtonStates state, const std::st
 
     switch (state) {
     case ButtonStates::Normal:
-        background1 = ThemePlasma::button_background_1;
-        background2 = ThemePlasma::button_background_2;
+        if (has_focus) {
+            background1 = ThemePlasma::button_selected_background;
+            background2 = ThemePlasma::button_selected_background;
+        } else {
+            background1 = ThemePlasma::button_background_1;
+            background2 = ThemePlasma::button_background_2;
+        }
         border = button_border;
         break;
     case ButtonStates::Hovered:
@@ -162,20 +175,27 @@ auto ThemePlasma::draw_button(Bitmap &content, ButtonStates state, const std::st
         break;
     }
 
-    content.draw_rounded_rectangle(0, 0, content.size.width, content.size.height - 1, 5, border, border);
+    content.draw_rounded_rectangle(0, 0, content.size.width, content.size.height - 1, 5, border,
+                                   border);
     content.line(2, content.size.height - 1, content.size.width - 2, content.size.height - 1,
                  button_shadow);
 
     // TODO - widet should be filled with real content from parent
     content.put_pixel(0, content.size.height - 1, ThemePlasma::window_background_color);
     content.put_pixel(1, content.size.height - 1, ThemePlasma::window_background_color);
-    content.put_pixel(content.size.width - 1, content.size.height - 1, ThemePlasma::window_background_color);
+    content.put_pixel(content.size.width - 1, content.size.height - 1,
+                      ThemePlasma::window_background_color);
 
     if (background1 == background2) {
-    content.fill_rect(1, 1, content.size.width - 2, content.size.height - 3, background1);
+        content.fill_rect(1, 1, content.size.width - 2, content.size.height - 3, background1);
     } else {
-    content.fill_rect_gradient(1, 1, content.size.width - 2, content.size.height - 3, background1, background2);
-
+        content.fill_rect_gradient(1, 1, content.size.width - 2, content.size.height - 3,
+                                   background1, background2);
     }
-    content.write_fixed(Position{shadow_padding, shadow_padding}, text, color);
+
+    auto text_size = Bitmap::text_size(text) + text_padding;
+    auto text_position = Position{((content.size.width - text_size.width) / 2) + text_padding,
+                                  ((content.size.height - text_size.height) / 2) + text_padding};
+
+    content.write_fixed(text_position, text, color);
 }

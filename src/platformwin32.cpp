@@ -256,8 +256,11 @@ auto PlatformWin32::init() -> void {
     wc.lpszClassName = WINDOW_CLASS_NAME;
     RegisterClassEx(&wc);
 
+#if 0
     default_theme = std::make_shared<ThemePlasma>();
-    // default_theme = std::make_shared<ThemeRedmond>();
+#else
+    default_theme = std::make_shared<ThemeRedmond>();
+#endif
     spdlog::info("PlatformWin32 initialized");
 }
 

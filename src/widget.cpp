@@ -101,8 +101,96 @@ auto PlatformWindow::draw() -> void {
             w->needs_redraw = false;
         }
         content.draw(w->position, w->content);
+
+        if (w->has_focus) {
+            if (theme->needs_frame_for_focus()) {
+                auto offset = 3;
+                auto p = w->position - offset;
+                auto s = w->content.size + offset * 2;
+                content.draw_rectangle(p.x, p.y, s.width, s.height, 0x808080, 0x808080);
+            }
+        }
     }
     needs_redraw = false;
+}
+
+auto PlatformWindow::on_keyboard(const EventKeyboard &event) -> void {
+    if (event.keydown) {
+        switch (event.key) {
+        /*
+        TODO - find button with defaults, and send it this event
+        case KeyCodes::Enter:
+            break;
+        case KeyCodes::Escape:
+            break;
+        */
+        case KeyCodes::Tab: {
+            auto last_focus_index = -1;
+
+            if (focus_widget)
+                last_focus_index = focus_widget->focus_index;
+
+            std::shared_ptr<Widget> best_focus_widget;
+            std::shared_ptr<Widget> least_focus_widget;
+            for (auto w : this->widgets) {
+                if (!w->can_focus) {
+                    continue;
+                }
+
+                if (!least_focus_widget) {
+                    spdlog::info("Widget {} is now first (*)", w->focus_index);
+                    least_focus_widget = w;
+                } else {
+                    if (w->focus_index < least_focus_widget->focus_index) {
+                        least_focus_widget = w;
+                        spdlog::info("Widget {} is now first", w->focus_index);
+                    }
+                }
+
+                if (w->focus_index <= last_focus_index) {
+                    continue;
+                }
+                if (!best_focus_widget) {
+                    best_focus_widget = w;
+                } else {
+                    if (w->focus_index < best_focus_widget->focus_index) {
+                        best_focus_widget = w;
+                    }
+                }
+            }
+
+            if (!best_focus_widget) {
+                best_focus_widget = least_focus_widget;
+                if (focus_widget) {
+                    spdlog::info("No best focus, keeping {}", focus_widget->focus_index);
+                } else
+                    spdlog::info("No widget in focus");
+            }
+            if (best_focus_widget != focus_widget) {
+                if (focus_widget) {
+                    spdlog::info("widget {} lost focus", focus_widget->focus_index);
+                    focus_widget->on_focus_change(false);
+                    focus_widget->has_focus = false;
+                    last_focus_index = focus_widget->focus_index;
+                    needs_redraw |= focus_widget->needs_redraw;
+                    focus_widget.reset();
+                }
+
+                spdlog::info("widget {} got focus", best_focus_widget->focus_index);
+                best_focus_widget->on_focus_change(true);
+                best_focus_widget->has_focus = true;
+                last_focus_index = best_focus_widget->focus_index;
+                needs_redraw |= best_focus_widget->needs_redraw;
+                focus_widget = best_focus_widget;
+            }
+        } break;
+        default:
+            if (focus_widget) {
+                focus_widget->on_keyboard(event);
+            }
+            break;
+        }
+    }
 }
 
 auto PlatformWindow::on_mouse(const EventMouse &event) -> void {

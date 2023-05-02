@@ -12,6 +12,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <spdlog/spdlog.h>
 
 auto Darker(uint32_t color, double percentage) -> uint32_t {
     auto r = GetRed(color);
@@ -79,8 +80,8 @@ auto Bitmap::fill_rect(int x, int y, int w, int h, uint32_t c) -> void {
     }
 }
 
-auto Bitmap::fill_rect_gradient(int x, int y, int w, int h, uint32_t color1, uint32_t color2) -> void
-{
+auto Bitmap::fill_rect_gradient(int x, int y, int w, int h, uint32_t color1, uint32_t color2)
+    -> void {
     auto gradient = Gradient(color1, color2, h);
     for (int row = 0; row < h; row++) {
         for (int col = 0; col < w; col++) {
@@ -89,7 +90,6 @@ auto Bitmap::fill_rect_gradient(int x, int y, int w, int h, uint32_t color1, uin
         gradient.next();
     }
 }
-
 
 auto Bitmap::fill_circle(int x, int y, int r, uint32_t c) -> void {
     for (int dy = -r; dy < r; dy++) {
@@ -164,8 +164,8 @@ auto Bitmap::line_thikness(int x1, int y1, int x2, int y2, int thickness, uint32
 
 auto Bitmap::draw_rectangle(int x, int y, int width, int height, uint32_t color1, uint32_t color2)
     -> void {
-    line(x + 0, y + 0, y + width - 2, y + 0, color1);
-    line(x + 0, y + 0, y + 0, y + height - 2, color1);
+    line(x + 0, y + 0, x + width - 2, y + 0, color1);
+    line(x + 0, y + 0, x + 0, y + height - 2, color1);
     line(x + width - 1, y + 0, x + width - 1, y + height - 1, color2);
     line(x + 0, y + height - 1, x + width - 1, y + height - 1, color2);
 }
@@ -362,4 +362,11 @@ auto Bitmap::write_fixed_char(Position position, char c, const uint32_t color) -
             }
         }
     }
+}
+
+auto Bitmap::text_size(const std::string &str) -> Size {
+    auto size = Size();
+    size.height = 16;
+    size.width = str.length() * 8;
+    return size;
 }

@@ -148,7 +148,7 @@ auto convert_x11_key_event(const XEvent &ev, Display *dpy) -> EventKeyboard {
     for (auto i = 0; i < 124; i += 2) {
         /* Map XKB KeySym to our custom key code value */
         if (X11_KEYCODES[i] == k) {
-            event.key = X11_KEYCODES[i + 1];
+            event.key = (KeyCodes)X11_KEYCODES[i + 1];
             break;
         }
     }
@@ -216,8 +216,11 @@ auto PlatformX11::init() -> void {
         return;
     }
 
+#if 0
     default_theme = std::make_shared<ThemePlasma>();
-    // default_theme = std::make_shared<ThemeRedmond>();
+#else
+    default_theme = std::make_shared<ThemeRedmond>();
+#endif
     spdlog::info("PlatformX11 initialized");
 }
 

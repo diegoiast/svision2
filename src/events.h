@@ -7,11 +7,18 @@ enum class MouseEvents {
     MouseMove,
 };
 
+enum class KeyCodes {
+    Escape = 0x01,
+    Tab = 0x09,
+    Enter = 0x0a,
+    Space = ' ',
+};
+
 struct Event {};
 
 struct EventKeyboard : Event {
     int modifiers;
-    int key;
+    KeyCodes key;
     bool keydown;
 };
 
