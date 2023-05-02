@@ -54,21 +54,21 @@ TEST_CASE("Button states", "[button]") {
         button.on_button_click = [&clicked]() {
           clicked = true;
         };
-        REQUIRE(button.state == Button::States::Normal);
+        REQUIRE(button.state == ButtonStates::Normal);
 
         button.on_mouse_enter();
-        REQUIRE(button.state == Button::States::Hovered);
+        REQUIRE(button.state == ButtonStates::Hovered);
         button.on_mouse_leave();
-        REQUIRE(button.state == Button::States::Normal);
+        REQUIRE(button.state == ButtonStates::Normal);
 
         button.on_mouse_enter();
         button.on_mouse_enter();
         button.on_mouse_enter();
         button.on_mouse_enter();
-        REQUIRE(button.state == Button::States::Hovered);
+        REQUIRE(button.state == ButtonStates::Hovered);
 
         button.on_mouse_leave();
-        REQUIRE(button.state == Button::States::Normal);
+        REQUIRE(button.state == ButtonStates::Normal);
     }
 
     SECTION("Normal click inside") {
@@ -77,22 +77,22 @@ TEST_CASE("Button states", "[button]") {
         button.on_button_click = [&clicked]() {
           clicked = true;
         };
-        REQUIRE(button.state == Button::States::Normal);
+        REQUIRE(button.state == ButtonStates::Normal);
 
         button.on_mouse_enter();
-        REQUIRE(button.state == Button::States::Hovered);
+        REQUIRE(button.state == ButtonStates::Hovered);
         REQUIRE(clicked == false);
 
         button.on_mouse_click(event_click);
-        REQUIRE(button.state == Button::States::ClickedInside);
+        REQUIRE(button.state == ButtonStates::ClickedInside);
         REQUIRE(clicked == false);
 
         button.on_mouse_click(event_release_inside);
-        REQUIRE(button.state == Button::States::Hovered);
+        REQUIRE(button.state == ButtonStates::Hovered);
         REQUIRE(clicked == true);
 
         button.on_mouse_leave();
-        REQUIRE(button.state == Button::States::Normal);
+        REQUIRE(button.state == ButtonStates::Normal);
     }
 
     SECTION("Normal click abort") {
@@ -101,21 +101,21 @@ TEST_CASE("Button states", "[button]") {
         button.on_button_click = [&clicked]() {
           clicked = true;
         };
-        REQUIRE(button.state == Button::States::Normal);
+        REQUIRE(button.state == ButtonStates::Normal);
 
         button.on_mouse_enter();
-        REQUIRE(button.state == Button::States::Hovered);
+        REQUIRE(button.state == ButtonStates::Hovered);
         REQUIRE(clicked == false);
 
         button.on_mouse_click(event_click);
-        REQUIRE(button.state == Button::States::ClickedInside);
+        REQUIRE(button.state == ButtonStates::ClickedInside);
         REQUIRE(clicked == false);
 
         button.on_mouse_leave();
-        REQUIRE(button.state == Button::States::ClickedOutside);
+        REQUIRE(button.state == ButtonStates::ClickedOutside);
 
         button.on_mouse_click(event_release_outside);
-        REQUIRE(button.state == Button::States::Normal);
+        REQUIRE(button.state == ButtonStates::Normal);
         REQUIRE(clicked == false);
 
     }

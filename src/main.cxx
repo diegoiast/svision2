@@ -29,7 +29,6 @@ int main() {
         spdlog::info("Mouse clicked!");
         platform.exit_loop = true;
     }));
-    w1->background_color = 0x0000FF;
     platform.show_window(w1);
 
     auto w2 = platform.open_window(300, 300, 640, 480, "test 2");

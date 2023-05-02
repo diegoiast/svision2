@@ -9,14 +9,16 @@
 
 #include <bitmap.h>
 #include <events.h>
+#include <theme.h>
+
 #include <list>
 #include <memory>
 #include <string>
 
 struct Widget {
-    uint32_t background_color;
     Bitmap content;
     Position position;
+    std::shared_ptr<Theme> theme;
     bool mouse_over = false;
     bool needs_redraw = true;
 
@@ -39,6 +41,8 @@ struct PlatformWindow {
     uint32_t background_color = 0;
     std::list<std::shared_ptr<Widget>> widgets;
     std::shared_ptr<Widget> last_overed_widget;
+    std::shared_ptr<Theme> theme;
+
     bool needs_redraw = false;
 
     virtual ~PlatformWindow() {}
@@ -57,5 +61,8 @@ struct PlatformWindow {
 
     virtual auto can_close() -> bool { return true; }
 
-    auto add(std::shared_ptr<Widget> w) { widgets.push_back(w); }
+    auto add(std::shared_ptr<Widget> w) {
+        widgets.push_back(w);
+        w->theme = theme;
+    }
 };

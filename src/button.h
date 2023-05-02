@@ -11,14 +11,7 @@
 #include <widget.h>
 
 struct Button : Widget {
-    enum class States {
-        Normal,
-        Hovered,
-        ClickedInside,
-        ClickedOutside,
-    };
-
-    States state = States::Normal;
+    ButtonStates state = ButtonStates::Normal;
     std::string text;
     std::function<void()> on_button_click;
 

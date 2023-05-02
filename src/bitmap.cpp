@@ -11,7 +11,7 @@
 #include "fontdos.h"
 
 #include <algorithm>
-#include <cstdlib>
+#include <cmath>
 
 auto Darker(uint32_t color, double percentage) -> uint32_t {
     auto r = GetRed(color);
@@ -56,7 +56,6 @@ auto Bitmap::resize(int width, int height) -> void {
 
     // todo - instead of filling the whole buffer we could clean
     // the right, and bottom dirty parts.
-
     std::fill_n(new_buffer, width * height, background_color);
     if (yy > 0 && xx > 0) {
         for (auto y = 0; y < yy; y++) {
@@ -80,6 +79,18 @@ auto Bitmap::fill_rect(int x, int y, int w, int h, uint32_t c) -> void {
     }
 }
 
+auto Bitmap::fill_rect_gradient(int x, int y, int w, int h, uint32_t color1, uint32_t color2) -> void
+{
+    auto gradient = Gradient(color1, color2, h);
+    for (int row = 0; row < h; row++) {
+        for (int col = 0; col < w; col++) {
+            put_pixel(x + col, y + row, gradient.get_color());
+        }
+        gradient.next();
+    }
+}
+
+
 auto Bitmap::fill_circle(int x, int y, int r, uint32_t c) -> void {
     for (int dy = -r; dy < r; dy++) {
         for (int dx = -r; dx < r; dx++) {
@@ -89,25 +100,218 @@ auto Bitmap::fill_circle(int x, int y, int r, uint32_t c) -> void {
     }
 }
 
-auto Bitmap::line(int x0, int y0, int x1, int y1, uint32_t c) -> void {
-    int dx = abs(x1 - x0), sx = x0 < x1 ? 1 : -1;
-    int dy = abs(y1 - y0), sy = y0 < y1 ? 1 : -1;
-    int err = (dx > dy ? dx : -dy) / 2, e2;
-    for (;;) {
-        put_pixel(x0, y0, c);
-        if (x0 == x1 && y0 == y1) {
-            break;
+auto Bitmap::fill_elipse(int x, int y, int width, int height, uint32_t color) -> void {
+    for (int yy = -height; yy <= height; yy++) {
+        for (int xx = -width; xx <= width; xx++) {
+            if (xx * xx * height * height + yy * yy * width * width <=
+                height * height * width * width)
+                put_pixel(xx + x, yy + y, color);
         }
-        e2 = err;
-        if (e2 > -dx) {
-            err -= dy;
+    }
+}
+
+auto Bitmap::line(int x0, int y0, int x1, int y1, uint32_t color) -> void {
+    int dx = abs(x1 - x0);
+    int sx = x0 < x1 ? 1 : -1;
+    int dy = -abs(y1 - y0);
+    int sy = y0 < y1 ? 1 : -1;
+    int err = dx + dy;
+    int e2; /* error value e_xy */
+
+    for (;;) { /* loop */
+        put_pixel(x0, y0, color);
+        if (x0 == x1 && y0 == y1)
+            break;
+        e2 = 2 * err;
+
+        /* e_xy+e_x > 0 */
+        if (e2 >= dy) {
+            err += dy;
             x0 += sx;
         }
-        if (e2 < dy) {
+
+        /* e_xy+e_y < 0 */
+        if (e2 <= dx) {
             err += dx;
             y0 += sy;
         }
     }
+}
+
+auto Bitmap::line_thikness(int x1, int y1, int x2, int y2, int thickness, uint32_t color) -> void {
+    float dx = x2 - x1;
+    float dy = y2 - y1;
+    float length = sqrtf(dx * dx + dy * dy);
+    float nx = dx / length;
+    float ny = dy / length;
+
+    float half_thickness = thickness / 2.0f;
+    float x_min = fminf(x1 - half_thickness, x2 - half_thickness);
+    float y_min = fminf(y1 - half_thickness, y2 - half_thickness);
+    float x_max = fmaxf(x1 + half_thickness, x2 + half_thickness);
+    float y_max = fmaxf(y1 + half_thickness, y2 + half_thickness);
+
+    for (int x = roundf(x_min); x <= roundf(x_max); x++) {
+        for (int y = roundf(y_min); y <= roundf(y_max); y++) {
+            float d = fabsf((x - x1) * ny - (y - y1) * nx);
+            // TODO - alpha blend the colors, using `d`
+            if (d <= half_thickness) {
+                put_pixel(x, y, color);
+            }
+        }
+    }
+}
+
+auto Bitmap::draw_rectangle(int x, int y, int width, int height, uint32_t color1, uint32_t color2)
+    -> void {
+    line(x + 0, y + 0, y + width - 2, y + 0, color1);
+    line(x + 0, y + 0, y + 0, y + height - 2, color1);
+    line(x + width - 1, y + 0, x + width - 1, y + height - 1, color2);
+    line(x + 0, y + height - 1, x + width - 1, y + height - 1, color2);
+}
+
+auto Bitmap::draw_rounded_rectangle(int x, int y, int width, int height, int radius,
+                                    uint32_t color1, uint32_t color2) -> void {
+    // TODO - use rounded corners
+    draw_rectangle(x, y, width, height, color1, color2);
+}
+
+auto Bitmap::draw_circle(int x, int y, int r, uint32_t color) -> void {
+    auto xx = -r;
+    auto yy = 0;
+    auto err = 2 - 2 * r; /* II. Quadrant */
+
+    do {
+        put_pixel(x - xx, y + yy, color); /*   I. Quadrant */
+        put_pixel(x - yy, y - xx, color); /*  II. Quadrant */
+        put_pixel(x + xx, y - yy, color); /* III. Quadrant */
+        put_pixel(x + yy, y + xx, color); /*  IV. Quadrant */
+        r = err;
+        if (r <= yy)
+            err += ++yy * 2 + 1; /* e_xy+e_y < 0 */
+        if (r > xx || err > yy)
+            err += ++xx * 2 + 1; /* e_xy+e_x > 0 or no 2nd y-step */
+    } while (xx < 0);
+}
+
+auto Bitmap::draw_elipse(int x0, int y0, int x1, int y1, uint32_t color) -> void {
+    int a = abs(x1 - x0), b = abs(y1 - y0), b1 = b & 1;       /* values of diameter */
+    long dx = 4 * (1 - a) * b * b, dy = 4 * (b1 + 1) * a * a; /* error increment */
+    long err = dx + dy + b1 * a * a, e2;                      /* error of 1.step */
+
+    /* if called with swapped points */
+    if (x0 > x1) {
+        x0 = x1;
+        x1 += a;
+    }
+    /* .. exchange them */
+    if (y0 > y1)
+        y0 = y1;
+    y0 += (b + 1) / 2;
+    /* starting pixel */
+    y1 = y0 - b1;
+    a *= 8 * a;
+    b1 = 8 * b * b;
+
+    do {
+        put_pixel(x1, y0, color); /*   I. Quadrant */
+        put_pixel(x0, y0, color); /*  II. Quadrant */
+        put_pixel(x0, y1, color); /* III. Quadrant */
+        put_pixel(x1, y1, color); /*  IV. Quadrant */
+        e2 = 2 * err;
+        /* y step */
+        if (e2 <= dy) {
+            y0++;
+            y1--;
+            err += dy += a;
+        }
+        /* x step */
+        if (e2 >= dx || 2 * err > dy) {
+            x0++;
+            x1--;
+            err += dx += b1;
+        }
+    } while (x0 <= x1);
+
+    /* too early stop of flat ellipses a=1 */
+    while (y0 - y1 < b) {
+        /* -> finish tip of ellipse */
+        put_pixel(x0 - 1, y0, color);
+        put_pixel(x1 + 1, y0++, color);
+        put_pixel(x0 - 1, y1, color);
+        put_pixel(x1 + 1, y1--, color);
+    }
+}
+
+auto Bitmap::draw_bezier(int x0, int y0, int x1, int y1, int x2, int y2, uint32_t color) -> void {
+    int sx = x2 - x1, sy = y2 - y1;
+    /* relative values for checks */
+    long xx = x0 - x1, yy = y0 - y1, xy;
+    /* curvature */
+    double dx, dy, err, cur = xx * sy - yy * sx;
+    /* sign of gradient must not change */
+    assert(xx * sx <= 0 && yy * sy <= 0);
+
+    /* begin with longer part */
+    if (sx * (long)sx + sy * (long)sy > xx * xx + yy * yy) {
+        /* swap P0 P2 */
+        x2 = x0;
+        x0 = sx + x1;
+        y2 = y0;
+        y0 = sy + y1;
+        cur = -cur;
+    }
+    /* no straight line */
+    if (cur != 0) {
+        /* x step direction */
+        xx += sx;
+        xx *= sx = x0 < x2 ? 1 : -1;
+        /* y step direction */
+        yy += sy;
+        yy *= sy = y0 < y2 ? 1 : -1;
+        /* differences 2nd degree */
+        xy = 2 * xx * yy;
+        xx *= xx;
+        yy *= yy;
+        /* negated curvature? */
+        if (cur * sx * sy < 0) {
+            xx = -xx;
+            yy = -yy;
+            xy = -xy;
+            cur = -cur;
+        }
+        /* differences 1st degree */
+        dx = 4.0 * sy * cur * (x1 - x0) + xx - xy;
+        dy = 4.0 * sx * cur * (y0 - y1) + yy - xy;
+        /* error 1st step */
+        xx += xx;
+        yy += yy;
+        err = dx + dy + xy;
+        /* plot curve */
+        do {
+            put_pixel(x0, y0, color);
+            /* last pixel -> curve finished */
+            if (x0 == x2 && y0 == y2)
+                return;
+            /* save value for test of y step */
+            y1 = 2 * err < dx;
+            /* x step */
+            if (2 * err > dy) {
+                x0 += sx;
+                dx -= xy;
+                err += dy += yy;
+            }
+            /* y step */
+            if (y1) {
+                y0 += sy;
+                dy -= xy;
+                err += dx += xx;
+            }
+            /* gradient negates -> algorithm fails */
+        } while (dy < dx);
+    }
+    /* plot remaining part to end */
+    line(x0, y0, x2, y2, color);
 }
 
 auto Bitmap::fill(int x, int y, uint32_t old, uint32_t c) -> void {

@@ -207,7 +207,6 @@ struct PlatformWindowX11 : public PlatformWindow {
 
 auto PlatformX11::init() -> void {
     spdlog::set_level(spdlog::level::info);
-    spdlog::info("PlatformX11 initialized");
     dpy = XOpenDisplay(NULL);
     screen = DefaultScreen(dpy);
 
@@ -216,6 +215,10 @@ auto PlatformX11::init() -> void {
         spdlog::error("Could not get redraw atom from WM");
         return;
     }
+
+    default_theme = std::make_shared<ThemePlasma>();
+    // default_theme = std::make_shared<ThemeRedmond>();
+    spdlog::info("PlatformX11 initialized");
 }
 
 auto PlatformX11::done() -> void {
@@ -239,6 +242,7 @@ auto PlatformX11::open_window(int x, int y, int width, int height, const std::st
     XSetWMProtocols(dpy, window->x11_window, &wmDeleteMessage, 1);
 
     window->content.resize(width, height);
+    window->theme = default_theme;
     window->x11_image =
         XCreateImage(dpy, DefaultVisual(dpy, 0), 24, ZPixmap, 0, (char *)window->content.buf,
                      window->content.size.width, window->content.size.height, 32, 0);

@@ -9,6 +9,7 @@
 
 #include <bitmap.h>
 #include <events.h>
+#include <theme.h>
 #include <widget.h>
 
 #include <list>
@@ -18,6 +19,7 @@
 struct Platform {
     bool exit_loop = false;
     bool close_on_last_window = true;
+    std::shared_ptr<Theme> default_theme;
 
     virtual auto init() -> void = 0;
     virtual auto done() -> void = 0;

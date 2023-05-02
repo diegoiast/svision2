@@ -48,6 +48,8 @@ set(SVISION_SOURCES
     src/button.cpp
     src/platform.cpp
     src/platform.h
+    src/theme.cpp
+    src/theme.h
 )
 
 if (LINUX)
