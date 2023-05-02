@@ -32,8 +32,8 @@ struct ThemeOldie : Theme {
 };
 
 struct ThemeRedmond : Theme {
-    const int32_t background_color = 0xc0c0c0;
-    const int32_t background_color_hover = 0xc8c8c8;
+    static const int32_t background_color = 0xc0c0c0;
+    static const int32_t background_color_hover = 0xc8c8c8;
     static const int32_t line_color1 = 0xFFFFFF;
     static const int32_t line_color2 = 0x000000;
 
@@ -47,6 +47,24 @@ struct ThemeRedmond : Theme {
     virtual auto draw_button(Bitmap &content, bool has_focus, bool is_default, ButtonStates state,
                              const std::string &text) -> void override;
     virtual auto needs_frame_for_focus() -> bool override { return true; };
+};
+
+struct ThemeVision : Theme {
+    static const int32_t window_background_color = MakeColor(240, 240, 240);
+    static const int32_t button_background = MakeColor(225, 225, 225);
+    static const int32_t button_border = MakeColor(173, 173, 173);
+    static const int32_t text_color = MakeColor(0, 0, 0);
+    static const int32_t focus_color = MakeColor(80, 80, 80);
+
+    static const int32_t button_border_hover = MakeColor(0, 120, 215);
+    static const int32_t button_background_hover = MakeColor(229, 241, 251);
+    static const int32_t button_background_click= MakeColor(204, 208, 247);
+
+    virtual auto init() -> void override{};
+    virtual auto draw_window_background(Bitmap &content) -> void override;
+    virtual auto draw_button(Bitmap &content, bool has_focus, bool is_default, ButtonStates state,
+                             const std::string &text) -> void override;
+    virtual auto needs_frame_for_focus() -> bool override { return false; };
 };
 
 struct ThemePlasma : Theme {

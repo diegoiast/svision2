@@ -128,6 +128,74 @@ auto ThemeRedmond::draw_button(Bitmap &content, bool has_focus, bool is_default,
     content.write_fixed(text_position, text, 0xffffff);
 }
 
+
+auto ThemeVision::draw_window_background(Bitmap &content) -> void
+{
+    content.fill_rect(0, 0, content.size.width, content.size.height,
+                      ThemeVision::window_background_color);
+}
+
+auto ThemeVision::draw_button(Bitmap &content, bool has_focus, bool is_default, ButtonStates state,
+                              const std::string &text) -> void{
+
+    auto text_padding = 5;
+
+    auto background = ThemeVision::button_background;
+    auto border = ThemeVision::button_border;
+    auto color = ThemeVision::text_color;
+    auto double_border = false;
+
+    switch (state) {
+    case ButtonStates::Normal:
+        border = ThemeVision::button_border;
+        if (has_focus) {
+            background = ThemeVision::button_background_hover;
+        } else {
+            background = ThemeVision::button_background;
+            if (is_default) {
+                border = ThemeVision::button_border_hover;
+            }
+        }
+        break;
+    case ButtonStates::Hovered:
+        background = ThemeVision::button_background_hover;
+        border = ThemeVision::button_border_hover;
+        break;
+    case ButtonStates::ClickedInside:
+        background = ThemeVision::button_background_click;
+        border = ThemeVision::button_border_hover;
+        break;
+    case ButtonStates::ClickedOutside:
+        background = ThemeVision::button_background;
+        border = ThemeVision::button_border_hover;
+        break;
+    default:
+        break;
+    }
+
+    double_border |= is_default;
+    if (has_focus) {
+        double_border = false;
+    }
+
+    content.fill(0xff0000);
+    content.draw_rectangle(0, 0, content.size.width, content.size.height, border, border);
+    content.fill_rect(1, 1, content.size.width - 2, content.size.height - 2, background);
+    if (double_border) {
+        content.draw_rectangle(1, 1, content.size.width-2, content.size.height-2, border, border);
+    }
+    if (has_focus) {
+        auto padding = 3;
+        content.draw_rectangle(padding, padding, content.size.width-padding*2, content.size.height-padding*2, ThemeVision::focus_color, ThemeVision::focus_color);
+    }
+
+    auto text_size = Bitmap::text_size(text) + text_padding;
+    auto text_position = Position{((content.size.width - text_size.width) / 2) + text_padding,
+                                  ((content.size.height - text_size.height) / 2) + text_padding};
+
+    content.write_fixed(text_position, text, color);
+}
+
 auto ThemePlasma::draw_window_background(Bitmap &content) -> void {
     content.fill_rect(0, 0, content.size.width, content.size.height,
                       ThemePlasma::window_background_color);

@@ -92,12 +92,12 @@ auto constexpr inline get_bit(unsigned char number, char n) -> bool { return (nu
 
 auto constexpr inline set_bit(unsigned char number, char n, bool on) -> int {
     if (on) {
-        return number |= 1 << n;
+        return number | 1 << n;
     }
-    return number &= ~(1 << n);
+    return number & ~(1 << n);
 }
 
-auto constexpr inline toggle_bit(unsigned char number, char n) -> int { return number ^= 1 << n; }
+auto constexpr inline toggle_bit(unsigned char number, char n) -> int { return number ^ 1 << n; }
 
 struct Gradient {
     double r_step;
