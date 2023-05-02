@@ -51,20 +51,26 @@ auto convert_win32_mouse_event(UINT msg, WPARAM wParam, LPARAM lParam) -> EventM
         break;
 
     case WM_LBUTTONUP:
+        event.type = MouseEvents::Release;
+        event.button = 1;
+        event.y = HIWORD(lParam);
+        event.x = LOWORD(lParam);
+        break;
     case WM_RBUTTONUP:
+        event.type = MouseEvents::Release;
+        event.button = 2;
+        event.y = HIWORD(lParam);
+        event.x = LOWORD(lParam);
+        break;
     case WM_MBUTTONUP:
+        event.type = MouseEvents::Release;
+        event.button = 3;
+        event.y = HIWORD(lParam);
+        event.x = LOWORD(lParam);
+        break;
     case WM_XBUTTONUP:
         event.type = MouseEvents::Release;
-        event.pressed = false;
-        if (wParam & MK_LBUTTON) {
-            event.button = 1;
-        }
-        if (wParam & MK_RBUTTON) {
-            event.button = 2;
-        }
-        if (wParam & MK_MBUTTON) {
-            event.button = 3;
-        }
+        event.button = 4;
         event.y = HIWORD(lParam);
         event.x = LOWORD(lParam);
         break;
@@ -95,7 +101,7 @@ auto convert_win32_keyboard_event(UINT msg, WPARAM wParam, LPARAM lParam) -> Eve
                       ((GetKeyState(VK_SHIFT) & 0x8000) >> 14) |
                       ((GetKeyState(VK_MENU) & 0x8000) >> 13) |
                       (((GetKeyState(VK_LWIN) | GetKeyState(VK_RWIN)) & 0x8000) >> 12);
-    event.key = WIN32_KEYCODES[HIWORD(lParam) & 0x1ff];
+    event.key = (KeyCodes) WIN32_KEYCODES[HIWORD(lParam) & 0x1ff];
     event.keydown = !((lParam >> 31) & 1);
     return event;
 }
