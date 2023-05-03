@@ -9,6 +9,7 @@
 
 #include <string>
 #include <widget.h>
+#include <theme.h>
 
 struct Label : public Widget {
     std::string text;

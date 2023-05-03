@@ -6,6 +6,7 @@
  */
 
 #include <button.h>
+#include <theme.h>
 #include <spdlog/spdlog.h>
 
 Button::Button(Position pp, Size size, std::string text, bool is_default,

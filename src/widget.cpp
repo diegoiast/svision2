@@ -6,6 +6,8 @@
  */
 
 #include "widget.h"
+#include "theme.h"
+
 #include <spdlog/spdlog.h>
 
 static auto point_in_rect(Position p, Size s, int x, int y) -> bool {
@@ -24,6 +26,10 @@ Widget::Widget(Position position, Size size, uint32_t color) {
     this->position = position;
     this->content.background_color = color;
     this->content.resize(size);
+}
+
+Widget::~Widget()
+{
 }
 
 auto Widget::draw() -> void {
@@ -90,11 +96,16 @@ auto Widget::on_mouse_click(const EventMouse &event) -> void {
     needs_redraw = true;
 }
 
+PlatformWindow::~PlatformWindow() {
+    spdlog::info("Window done");
+}
+
 auto PlatformWindow::draw() -> void {
     if (background_color != 0)
         content.fill_rect(0, 0, content.size.width, content.size.height, background_color);
     else
         theme->draw_window_background(content);
+
     for (auto w : widgets) {
         if (w->needs_redraw) {
             w->draw();
@@ -119,6 +130,7 @@ auto PlatformWindow::on_keyboard(const EventKeyboard &event) -> void {
         switch (event.key) {
         /*
         TODO - find button with defaults, and send it this event
+        TODO - handle shortcuts on buttons
         case KeyCodes::Enter:
             break;
         case KeyCodes::Escape:
@@ -251,4 +263,26 @@ auto PlatformWindow::on_mouse(const EventMouse &event) -> void {
         last_overed_widget->on_mouse_leave();
         last_overed_widget.reset();
     }
+}
+
+auto PlatformWindow::add(std::shared_ptr<Widget> widget) -> std::shared_ptr<Widget>
+{
+    widgets.push_back(widget);
+    widget->theme = theme;
+    if (widget->focus_index < 0) {
+        widget->focus_index = max_focus_index;
+        max_focus_index++;
+    }
+    spdlog::info("New widget {}", fmt::ptr(widget.get()));
+    return widget;
+}
+
+auto PlatformWindow::on_close() -> void
+{
+    for (auto w : widgets) {
+        if (w) {
+            w->on_remove();
+        }
+    }
+    widgets.clear();
 }

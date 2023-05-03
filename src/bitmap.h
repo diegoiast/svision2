@@ -9,74 +9,9 @@
 
 #include <cassert>
 #include <cmath>
-#include <cstdint>
 #include <string>
 
-struct Size {
-    int width = 0;
-    int height = 0;
-
-    auto inline operator==(const Size &other) const -> bool {
-        return width == other.width && height == other.height;
-    }
-    auto inline operator!=(const Size &other) const -> bool {
-        return width != other.width || height != other.height;
-    }
-    auto inline operator-(const Size &other) const -> Size {
-        auto s = *this;
-        s.width -= other.width;
-        s.height -= other.height;
-        return s;
-    }
-    auto inline operator+(const Size &other) const -> Size {
-        auto s = *this;
-        s.width -= other.width;
-        s.height -= other.height;
-        return s;
-    }
-    auto inline operator+(const int delta) const -> Size {
-        auto s = *this;
-        s.width += delta;
-        s.height += delta;
-        return s;
-    }
-    auto inline operator-(const int delta) const -> Size {
-        auto s = *this;
-        s.width -= delta;
-        s.height -= delta;
-        return s;
-    }
-    auto inline operator/(const int ratio) const -> Size {
-        auto s = *this;
-        s.width /= ratio;
-        s.height /= ratio;
-        return s;
-    }
-    auto inline operator*(const int ratio) const -> Size {
-        auto s = *this;
-        s.width *= ratio;
-        s.height *= ratio;
-        return s;
-    }
-};
-
-struct Position {
-    int x;
-    int y;
-
-    auto inline operator+(const int delta) const -> Position {
-        auto p = *this;
-        p.x += delta;
-        p.y += delta;
-        return p;
-    }
-    auto inline operator-(const int delta) const -> Position {
-        auto p = *this;
-        p.x -= delta;
-        p.y -= delta;
-        return p;
-    }
-};
+#include <sizepoint.h>
 
 auto constexpr inline MakeColor(uint8_t r, uint8_t g, uint8_t b) -> uint32_t {
     return r << 16 | g << 8 | b;

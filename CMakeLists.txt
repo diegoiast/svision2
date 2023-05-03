@@ -50,6 +50,10 @@ set(SVISION_SOURCES
     src/platform.h
     src/theme.cpp
     src/theme.h
+    src/timer.cpp
+    src/timer.h
+    src/textfield.cpp
+    src/textfield.h
     src/widget.h
     src/widget.cpp
 )

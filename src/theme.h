@@ -8,13 +8,7 @@
 #pragma once
 
 #include <bitmap.h>
-
-enum class ButtonStates {
-    Normal,
-    Hovered,
-    ClickedInside,
-    ClickedOutside,
-};
+#include <buttonstates.h>
 
 struct Theme {
     virtual auto init() -> void = 0;
@@ -54,7 +48,7 @@ struct ThemeRedmond : Theme {
     static const int32_t text_color = 0x000000;
 
     virtual auto init() -> void override{};
-    virtual auto draw_widget_background(Bitmap &content) -> void {
+    virtual auto draw_widget_background(Bitmap &content) -> void override {
         content.fill(background_color);
     };
     virtual auto draw_window_background(Bitmap &content) -> void override;

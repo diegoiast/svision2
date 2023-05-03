@@ -17,7 +17,10 @@ struct Timer {
     bool is_running = false;
 
     Timer(int64_t millies, bool repeating, std::function<void()> callback);
+    Timer() {};
     ~Timer();
+
+    auto initialize() -> void;
     auto start() -> void;
     auto stop() -> void;
 

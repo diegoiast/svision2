@@ -8,6 +8,8 @@
 #pragma once
 
 #include <functional>
+
+#include <buttonstates.h>
 #include <widget.h>
 
 struct Button : Widget {

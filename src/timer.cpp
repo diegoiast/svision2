@@ -14,7 +14,15 @@ Timer::Timer(int64_t millies, bool repeating, std::function<void()> callback) {
     this->millies = millies;
     this->repeating = repeating;
     this->callback = callback;
+    initialize();
+}
 
+Timer::~Timer() {
+    stop();
+    timer_delete(timerid);
+}
+
+auto Timer::initialize() -> void {
     struct sigevent sev;
     memset(&sev, 0, sizeof sev);
     sev.sigev_notify = SIGEV_THREAD;
@@ -25,11 +33,6 @@ Timer::Timer(int64_t millies, bool repeating, std::function<void()> callback) {
         ret = errno;
         exit(1);
     }
-}
-
-Timer::~Timer() {
-    stop();
-    timer_delete(timerid);
 }
 
 auto Timer::start() -> void {
@@ -51,6 +54,9 @@ auto Timer::start() -> void {
         exit(1);
     }
     is_running = true;
+
+    // TODO - single shot timers are broken, as the `is_running` flag does not
+    // get cleared. I am unsure what this means on Posix timers.
 }
 
 auto Timer::stop() -> void {

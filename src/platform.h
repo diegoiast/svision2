@@ -7,13 +7,12 @@
 
 #pragma once
 
-#include <bitmap.h>
-#include <theme.h>
-#include <widget.h>
-
 #include <list>
 #include <memory>
 #include <string>
+
+struct Theme;
+struct PlatformWindow;
 
 struct Platform {
     bool exit_loop = false;
@@ -25,5 +24,8 @@ struct Platform {
     virtual auto open_window(int x, int y, int width, int height, const std::string title)
         -> std::shared_ptr<PlatformWindow> = 0;
     virtual auto show_window(std::shared_ptr<PlatformWindow> window) -> void = 0;
+
+    // TODO: I would like to pass the shared pointer, to keep API consistant
+    virtual auto invalidate(PlatformWindow &window) -> void = 0;
     virtual auto main_loop() -> void = 0;
 };

@@ -9,16 +9,21 @@
 
 #include <bitmap.h>
 #include <events.h>
-#include <theme.h>
+//#include <platform.h>
 
 #include <list>
 #include <memory>
 #include <string>
 
+struct Theme;
+struct PlatformWindow;
+struct Platform;
+
 struct Widget {
     Bitmap content;
     Position position;
     std::shared_ptr<Theme> theme;
+
     bool mouse_over = false;
     bool needs_redraw = true;
     bool has_focus = false;
@@ -31,6 +36,7 @@ struct Widget {
     bool unclick_inside;
 
     Widget(Position pp, Size size, uint32_t color);
+    virtual ~Widget() ;
     virtual auto draw() -> void;
     virtual auto on_hover(const EventMouse &event) -> void;
     virtual auto on_mouse_enter() -> void;
@@ -38,6 +44,8 @@ struct Widget {
     virtual auto on_mouse_click(const EventMouse &event) -> void;
     virtual auto on_focus_change(bool new_state) -> void{};
     virtual auto on_keyboard(const EventKeyboard &) -> void{};
+
+    virtual auto on_remove() -> void{};
 };
 
 struct PlatformWindow {
@@ -52,26 +60,17 @@ struct PlatformWindow {
 
     bool needs_redraw = false;
 
-    virtual ~PlatformWindow() {}
-
+    virtual ~PlatformWindow();
     virtual auto draw() -> void;
-
     virtual auto on_keyboard(const EventKeyboard &) -> void;
     virtual auto on_mouse(const EventMouse &) -> void;
-
-    virtual auto on_resize(const EventResize &) -> void {
-        // by default, do nothing
-    }
-
+    virtual auto on_resize(const EventResize &) -> void {}
     virtual auto can_close() -> bool { return true; }
+    virtual auto invalidate() -> void {
+        // TODO
+    };
 
-    auto add(std::shared_ptr<Widget> w) -> std::shared_ptr<Widget> {
-        widgets.push_back(w);
-        w->theme = theme;
-        if (w->focus_index < 0) {
-            w->focus_index = max_focus_index;
-            max_focus_index++;
-        }
-        return w;
-    }
+    virtual auto on_close() -> void;
+
+    auto add(std::shared_ptr<Widget> widget) -> std::shared_ptr<Widget>;
 };

@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include <sizepoint.h>
+
 enum class MouseEvents {
     Unknown,
     Press,

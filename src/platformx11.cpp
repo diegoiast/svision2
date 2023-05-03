@@ -11,9 +11,13 @@
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/keysym.h>
+#include <spdlog/spdlog.h>
 
 #include "platformx11.h"
-#include "spdlog/spdlog.h"
+#include "events.h"
+#include "widget.h"
+#include "theme.h"
+
 
 // lookup table to convert X11 keyboard events to "Psuedo ASCII"
 // TODO - make constants for our own keyboard events
@@ -225,7 +229,9 @@ auto PlatformX11::init() -> void {
 }
 
 auto PlatformX11::done() -> void {
-    // TODO close all windows
+    for (auto w: windows) {
+        XDestroyWindow(dpy, w.second->x11_window);
+    }
     XCloseDisplay(dpy);
 }
 
@@ -260,12 +266,23 @@ auto PlatformX11::show_window(std::shared_ptr<PlatformWindow> w) -> void {
     XSync(dpy, window->x11_window);
 }
 
+auto PlatformX11::invalidate(PlatformWindow& window) -> void
+{
+    auto windowX11 = static_cast<PlatformWindowX11*>(&window);
+
+    XEvent exppp;
+    exppp.type = Expose;
+    exppp.xexpose.window = windowX11->x11_window;
+    XSendEvent(dpy,windowX11->x11_window,False,ExposureMask,&exppp);
+    XFlush(dpy);
+}
+
 auto PlatformX11::main_loop() -> void {
     XEvent ev;
     int pending;
     Position last_mouse_position;
 
-    while (pending = XPending(dpy) || !this->exit_loop) {
+    while ((pending = XPending(dpy) || !this->exit_loop)) {
         auto k = XNextEvent(dpy, &ev);
         std::shared_ptr<PlatformWindowX11> target_window;
 
@@ -294,6 +311,7 @@ auto PlatformX11::main_loop() -> void {
         case UnmapNotify:
             break;
         case DestroyNotify:
+            target_window->on_close();
             windows.extract(ev.xany.window);
             break;
 
