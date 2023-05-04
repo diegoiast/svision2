@@ -1,21 +1,18 @@
 #include "textfield.h"
 #include <spdlog/spdlog.h>
-
-#include <spdlog/spdlog.h>
+#include <theme.h>
 
 TextField::TextField(Position position, Size size) :
     Widget(position, size, 0)
 {
-    timer.millies = 1000;
+    timer.millies = 750;
     timer.repeating = true;
     timer.callback = [this]() {
         this->cursor_on = !this->cursor_on;
         this->needs_redraw = true;
-//      TODO:
         if (this->window) {
             this->window->invalidate();
         }
-        spdlog::info("Cursor is {}", this->cursor_on);
     };
     timer.initialize();
     this->can_focus = true;
@@ -28,21 +25,31 @@ TextField::~TextField()
 
 auto TextField::draw() -> void
 {
-    if (cursor_on) {
-        content.fill(0x80c080);
-    } else {
-        content.fill(0xc0c0a0);
+    content.fill_rect(0,0, content.size.width, content.size.height, 0xffffff);
+    theme->draw_widget_frame(content, this->has_focus, true);
+
+    if (this->cursor_on && this->has_focus) {
+        auto padding = 5;
+        content.draw_rectangle(
+            padding, padding,
+            1, content.size.height-padding*2,
+            0, 0
+        );
     }
 }
 
 auto TextField::on_focus_change(bool new_state) -> void
 {
     if (new_state) {
-        spdlog::info("Starting cursor timer");
         timer.start();
+        this->cursor_on = true;
     } else {
-        spdlog::info("Stopping cursor timer");
         timer.stop();
+    }
+
+    this->needs_redraw = true;
+    if (this->window) {
+        this->window->invalidate();
     }
 }
 
