@@ -9,6 +9,9 @@
 #include <windows.h>
 
 #include "platformwin32.h"
+#include "events.h"
+#include "theme.h"
+#include "widget.h"
 #include "spdlog/spdlog.h"
 
 static const uint8_t WIN32_KEYCODES[] = {
@@ -273,6 +276,11 @@ auto PlatformWin32::init() -> void {
 
 auto PlatformWin32::done() -> void {}
 
+auto PlatformWin32::invalidate(PlatformWindow &w) -> void {
+    auto window = static_cast<PlatformWindowWin32*>(&w);
+    InvalidateRect(window->hwnd, 0, 1);
+}
+
 auto PlatformWin32::main_loop() -> void {
     MSG msg;
     while (GetMessage(&msg, NULL, 0, 0) && !this->exit_loop) {
@@ -307,6 +315,7 @@ auto PlatformWin32::open_window(int x, int y, int width, int height, const std::
 
     SetWindowLongPtr(window->hwnd, GWLP_USERDATA, (LONG_PTR)window.get());
     window->theme = default_theme;
+    window->platform = this;
     return window;
 }
 

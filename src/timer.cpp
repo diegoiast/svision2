@@ -10,19 +10,20 @@
 #include <errno.h>
 #include <time.h>
 
-Timer::Timer(int64_t millies, bool repeating, std::function<void()> callback) {
+#if defined(POSIX) || defined(__linux__)
+PosixTimer::PosixTimer(int64_t millies, bool repeating, std::function<void()> callback) {
     this->millies = millies;
     this->repeating = repeating;
     this->callback = callback;
     initialize();
 }
 
-Timer::~Timer() {
+PosixTimer::~PosixTimer() {
     stop();
     timer_delete(timerid);
 }
 
-auto Timer::initialize() -> void {
+auto PosixTimer::initialize() -> void {
     struct sigevent sev;
     memset(&sev, 0, sizeof sev);
     sev.sigev_notify = SIGEV_THREAD;
@@ -35,7 +36,7 @@ auto Timer::initialize() -> void {
     }
 }
 
-auto Timer::start() -> void {
+auto PosixTimer::start() -> void {
     if (is_running) {
         stop();
     }
@@ -59,7 +60,7 @@ auto Timer::start() -> void {
     // get cleared. I am unsure what this means on Posix timers.
 }
 
-auto Timer::stop() -> void {
+auto PosixTimer::stop() -> void {
     if (!is_running) {
         return;
     }
@@ -78,7 +79,55 @@ auto Timer::stop() -> void {
     is_running = false;
 }
 
-auto Timer::handler(sigval sival_int) -> void {
-    Timer *timer = static_cast<Timer *>(sival_int.sival_ptr);
+auto PosixTimer::handler(sigval sival_int) -> void {
+    PosixTimer *timer = static_cast<PosixTimer *>(sival_int.sival_ptr);
     timer->callback();
 }
+#endif
+
+#if defined(_win32) || defined(WIN32)
+
+std::map<UINT_PTR , Win32Timer*> Win32Timer::available_timers;
+
+Win32Timer::Win32Timer(int64_t millies, bool repeating, std::function<void()> callback)
+{
+
+}
+Win32Timer::~Win32Timer()
+{
+    stop();
+}
+
+auto Win32Timer::initialize() -> void
+{
+
+}
+
+auto Win32Timer::start() -> void
+{
+    if (timer_id != 0) {
+        stop();
+    }
+
+    timer_id = SetTimer(NULL, 1, millies, Win32Timer::TimerProc);
+    Win32Timer::available_timers[timer_id] = this;
+}
+
+auto Win32Timer::stop() -> void
+{
+    if (timer_id == 0) {
+        return;
+    }
+    KillTimer(NULL, timer_id);
+    Win32Timer::available_timers.erase(timer_id);
+    timer_id = 0;
+}
+
+auto Win32Timer::TimerProc(HWND hwnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime) -> void {
+    auto instance = Win32Timer::available_timers[idEvent];
+    instance->callback();
+    if (!instance->repeating) {
+        instance->stop();
+    }
+}
+#endif
