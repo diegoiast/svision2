@@ -12,7 +12,9 @@ TextField::TextField(Position position, Size size) :
         this->cursor_on = !this->cursor_on;
         this->needs_redraw = true;
 //      TODO:
-//        this->window->invalidate();
+        if (this->window) {
+            this->window->invalidate();
+        }
         spdlog::info("Cursor is {}", this->cursor_on);
     };
     timer.initialize();

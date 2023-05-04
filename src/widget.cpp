@@ -6,6 +6,7 @@
  */
 
 #include "widget.h"
+#include "platform.h"
 #include "theme.h"
 
 #include <spdlog/spdlog.h>
@@ -100,6 +101,80 @@ PlatformWindow::~PlatformWindow() {
     spdlog::info("Window done");
 }
 
+auto PlatformWindow::select_next_widget() -> void {
+    auto last_focus_index = -1;
+
+    if (focus_widget)
+        last_focus_index = focus_widget->focus_index;
+
+    std::shared_ptr<Widget> best_focus_widget;
+    std::shared_ptr<Widget> least_focus_widget;
+    for (auto w : this->widgets) {
+        if (!w->can_focus) {
+            continue;
+        }
+
+        if (!least_focus_widget) {
+            spdlog::info("Widget {} is now first (*)", w->focus_index);
+            least_focus_widget = w;
+        } else {
+            if (w->focus_index < least_focus_widget->focus_index) {
+                least_focus_widget = w;
+                spdlog::info("Widget {} is now first", w->focus_index);
+            }
+        }
+
+        if (w->focus_index <= last_focus_index) {
+            continue;
+        }
+        if (!best_focus_widget) {
+            best_focus_widget = w;
+        } else {
+            if (w->focus_index < best_focus_widget->focus_index) {
+                best_focus_widget = w;
+            }
+        }
+    }
+
+    if (!best_focus_widget) {
+        best_focus_widget = least_focus_widget;
+        if (focus_widget) {
+            spdlog::info("No best focus, keeping {}", focus_widget->focus_index);
+        } else
+            spdlog::info("No widget in focus");
+    }
+
+    select_widget(best_focus_widget);
+}
+
+auto PlatformWindow::select_widget(std::shared_ptr<Widget> widget) -> void
+{
+    if (widget == focus_widget) {
+        return;
+    }
+
+    if (!widget->can_focus) {
+        spdlog::info("Not focusing widget, has it has a no focus policy");
+        return;
+    }
+
+    if (this->focus_widget) {
+        spdlog::info("widget {} lost focus", focus_widget->focus_index);
+        this->focus_widget->on_focus_change(false);
+        this->focus_widget->has_focus = false;
+//        last_focus_index = this->focus_widget->focus_index;
+        this->needs_redraw |= this->focus_widget->needs_redraw;
+        this->focus_widget.reset();
+    }
+
+    spdlog::info("widget {} got focus", widget->focus_index);
+    widget->on_focus_change(true);
+    widget->has_focus = true;
+//    last_focus_index = widget->focus_index;
+    needs_redraw |= widget->needs_redraw;
+    focus_widget = widget;
+}
+
 auto PlatformWindow::draw() -> void {
     if (background_color != 0)
         content.fill_rect(0, 0, content.size.width, content.size.height, background_color);
@@ -136,66 +211,9 @@ auto PlatformWindow::on_keyboard(const EventKeyboard &event) -> void {
         case KeyCodes::Escape:
             break;
         */
-        case KeyCodes::Tab: {
-            auto last_focus_index = -1;
-
-            if (focus_widget)
-                last_focus_index = focus_widget->focus_index;
-
-            std::shared_ptr<Widget> best_focus_widget;
-            std::shared_ptr<Widget> least_focus_widget;
-            for (auto w : this->widgets) {
-                if (!w->can_focus) {
-                    continue;
-                }
-
-                if (!least_focus_widget) {
-                    spdlog::info("Widget {} is now first (*)", w->focus_index);
-                    least_focus_widget = w;
-                } else {
-                    if (w->focus_index < least_focus_widget->focus_index) {
-                        least_focus_widget = w;
-                        spdlog::info("Widget {} is now first", w->focus_index);
-                    }
-                }
-
-                if (w->focus_index <= last_focus_index) {
-                    continue;
-                }
-                if (!best_focus_widget) {
-                    best_focus_widget = w;
-                } else {
-                    if (w->focus_index < best_focus_widget->focus_index) {
-                        best_focus_widget = w;
-                    }
-                }
-            }
-
-            if (!best_focus_widget) {
-                best_focus_widget = least_focus_widget;
-                if (focus_widget) {
-                    spdlog::info("No best focus, keeping {}", focus_widget->focus_index);
-                } else
-                    spdlog::info("No widget in focus");
-            }
-            if (best_focus_widget != focus_widget) {
-                if (focus_widget) {
-                    spdlog::info("widget {} lost focus", focus_widget->focus_index);
-                    focus_widget->on_focus_change(false);
-                    focus_widget->has_focus = false;
-                    last_focus_index = focus_widget->focus_index;
-                    needs_redraw |= focus_widget->needs_redraw;
-                    focus_widget.reset();
-                }
-
-                spdlog::info("widget {} got focus", best_focus_widget->focus_index);
-                best_focus_widget->on_focus_change(true);
-                best_focus_widget->has_focus = true;
-                last_focus_index = best_focus_widget->focus_index;
-                needs_redraw |= best_focus_widget->needs_redraw;
-                focus_widget = best_focus_widget;
-            }
-        } break;
+        case KeyCodes::Tab:
+            select_next_widget();
+        break;
         default:
             if (focus_widget) {
                 focus_widget->on_keyboard(event);
@@ -228,10 +246,10 @@ auto PlatformWindow::on_mouse(const EventMouse &event) -> void {
         case MouseEvents::Press:
         case MouseEvents::MouseMove:
             if (point_in_rect(w->position, w->content.size, event.x, event.y)) {
-                auto local = event;
-                local.is_local = true;
-                local.x = event.x - w->position.x;
-                local.y = event.y - w->position.y;
+                auto move_press_event = event;
+                move_press_event.is_local = true;
+                move_press_event.x = event.x - w->position.x;
+                move_press_event.y = event.y - w->position.y;
                 if (last_overed_widget && last_overed_widget != w) {
                     spdlog::info("Mouse focus changed from {} to {}",
                                  fmt::ptr(last_overed_widget.get()), fmt::ptr(w.get()));
@@ -243,12 +261,16 @@ auto PlatformWindow::on_mouse(const EventMouse &event) -> void {
                 }
 
                 if (event.type == MouseEvents::MouseMove) {
-                    w->on_hover(local);
+                    w->on_hover(move_press_event);
                 } else {
-                    w->on_mouse_click(local);
+                    w->on_mouse_click(move_press_event);
                 }
                 last_overed_widget = w;
                 found_widget = true;
+
+                if (move_press_event.is_local && event.type == MouseEvents::Press) {
+                    select_widget(w);
+                }
             }
             break;
 
@@ -269,6 +291,7 @@ auto PlatformWindow::add(std::shared_ptr<Widget> widget) -> std::shared_ptr<Widg
 {
     widgets.push_back(widget);
     widget->theme = theme;
+    widget->window = this;
     if (widget->focus_index < 0) {
         widget->focus_index = max_focus_index;
         max_focus_index++;
@@ -276,6 +299,11 @@ auto PlatformWindow::add(std::shared_ptr<Widget> widget) -> std::shared_ptr<Widg
     spdlog::info("New widget {}", fmt::ptr(widget.get()));
     return widget;
 }
+
+auto PlatformWindow::invalidate() -> void {
+    assert(platform);
+    platform->invalidate(*this);
+};
 
 auto PlatformWindow::on_close() -> void
 {

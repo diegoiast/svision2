@@ -231,6 +231,7 @@ auto PlatformX11::init() -> void {
 auto PlatformX11::done() -> void {
     for (auto w: windows) {
         XDestroyWindow(dpy, w.second->x11_window);
+        XFreeGC(dpy, w.second->gc);
     }
     XCloseDisplay(dpy);
 }
@@ -252,6 +253,7 @@ auto PlatformX11::open_window(int x, int y, int width, int height, const std::st
 
     window->content.resize(width, height);
     window->theme = default_theme;
+    window->platform = this;
     window->x11_image =
         XCreateImage(dpy, DefaultVisual(dpy, 0), 24, ZPixmap, 0, (char *)window->content.buf,
                      window->content.size.width, window->content.size.height, 32, 0);
