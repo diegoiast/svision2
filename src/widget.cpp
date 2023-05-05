@@ -217,6 +217,7 @@ auto PlatformWindow::on_keyboard(const EventKeyboard &event) -> void {
         default:
             if (focus_widget) {
                 focus_widget->on_keyboard(event);
+                needs_redraw |= focus_widget->needs_redraw;
             }
             break;
         }

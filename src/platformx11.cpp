@@ -146,7 +146,7 @@ static int X11_KEYCODES[124] = {XK_BackSpace,
                                 XK_9,
                                 57};
 
-auto convert_x11_key_event(const XEvent &ev, Display *dpy) -> EventKeyboard {
+auto convert_x11_key_event(XEvent &ev, Display *dpy) -> EventKeyboard {
     auto event = EventKeyboard();
     auto k = XkbKeycodeToKeysym(dpy, ev.xkey.keycode, 0, 0);
     for (auto i = 0; i < 124; i += 2) {
@@ -157,6 +157,16 @@ auto convert_x11_key_event(const XEvent &ev, Display *dpy) -> EventKeyboard {
         }
     }
     int m = ev.xkey.state;
+    if (event.key == KeyCodes::Unknown) {
+        char buffer[32] = {0};
+        KeySym keySym;
+        XLookupString(&ev.xkey, buffer, sizeof(buffer), &keySym, NULL);
+        int a = buffer[0];
+        int b =  buffer[1] << 8;
+        int c = a + b;
+        event.key = (KeyCodes)(c);
+        spdlog::info("X11 key event: {} -> {}", buffer, (int)event.key);
+    }
 
     event.keydown = ev.type == KeyPress;
     event.modifiers = (!!(m & ControlMask)) | (!!(m & ShiftMask) << 1) | (!!(m & Mod1Mask) << 2) |

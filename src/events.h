@@ -17,6 +17,7 @@ enum class MouseEvents {
 };
 
 enum class KeyCodes {
+    Unknown = 0x00,
     Escape = 0x01,
     Tab = 0x09,
     Enter = 0x0a,
