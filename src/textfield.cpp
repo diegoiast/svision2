@@ -27,7 +27,10 @@ auto TextField::draw() -> void {
 
     if (this->cursor_on && this->has_focus) {
         auto padding = 5;
-        content.draw_rectangle(padding, padding, 1, content.size.height - padding * 2, 0, 0);
+        auto position_x = padding + cursor_position * 8;
+        content.draw_rectangle(
+            position_x, padding,
+            1, content.size.height - padding * 2, 0, 0);
     }
 }
 
@@ -36,17 +39,63 @@ auto TextField::on_keyboard(const EventKeyboard &event) -> void {
     case KeyCodes::Enter:
         spdlog::info("Pressed enter");
         break;
+    case KeyCodes::ArrowLeft:
+        if (cursor_position > 0) {
+            cursor_position --;
+            needs_redraw = true;
+            cursor_on = true;
+        }
+        break;
+    case KeyCodes::ArrowRight:
+        if (cursor_position < text.length()) {
+            cursor_position ++;
+            needs_redraw = true;
+            cursor_on = true;
+        }
+        break;
+    case KeyCodes::Home:
+        if (cursor_position != 0) {
+            cursor_position = 0;
+            needs_redraw = true;
+            cursor_on = true;
+        }
+        break;
+    case KeyCodes::End:
+        cursor_position = text.length();
+        needs_redraw = true;
+        cursor_on = true;
+        break;
+    case KeyCodes::Delete:
+        text.erase(cursor_position,1);
+        needs_redraw = true;
+        cursor_on = true;
+        break;
+    case KeyCodes::Backspace:
+        if (cursor_position > 0) {
+            text.erase(cursor_position-1,1);
+            cursor_position --;
+            needs_redraw = true;
+            cursor_on = true;
+        }
+        break;
 
     default:
         // TODO handle non ascii input
-        if ((int)event.key > ' ' && (int)event.key < 128) {
+        if ((int)event.key >= ' ' && (int)event.key <= 128) {
             char ascii = (char)event.key;
             spdlog::info("new ascii char: {}", ascii);
-            text += (char)event.key;
+
+            if (cursor_position >= text.length()) {
+                text += (char)event.key;
+            } {
+                text.insert(cursor_position, 1, ascii);
+            }
+            cursor_position += 1;
+            needs_redraw = true;
+            cursor_on = true;
         } else {
             spdlog::info("KeyCode = {:x}", (int)event.key);
         }
-        needs_redraw = true;
         break;
     }
 }

@@ -22,6 +22,12 @@ enum class KeyCodes {
     Tab = 0x09,
     Return = 0x0a,
     Enter = 0x0d,
+    ArrowLeft = 0x18,
+    ArrowRight = 0x13,
+    Home = 0x02,
+    End = 0x05,
+    Delete = 0x007F,
+    Backspace = 0x0008,
     Space = ' ',
 };
 

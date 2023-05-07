@@ -27,10 +27,10 @@ https://github.com/fltk/fltk/blob/5438954d8c6213f1b0cc9d23b70ffaae388e1d60/src/x
 
 */
 
-
 // lookup table to convert X11 keyboard events to "Psuedo ASCII" ("borrowed" from WxWidgets)
 // TODO - make constants for our own keyboard events
 static int X11_KEYCODES[] = {
+    /* clang-format off */
     0x0020, 0x0020,    // space
     0x0021, 0x0021,    // exclam
     0x0022, 0x0022,    // quotedbl
@@ -1715,4 +1715,5 @@ static int X11_KEYCODES[] = {
     0xfe61, 0x0309,    // dead_hook
     0xfe62, 0x031b,    // dead_horn
     0, 0,
+    /* clang-format on */
 };
