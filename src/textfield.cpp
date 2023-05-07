@@ -56,7 +56,7 @@ auto TextField::on_keyboard(const EventKeyboard &event) -> void
             spdlog::info("new ascii char: {}", ascii);
             text += (char)event.key;
         } else {
-            spdlog::info("KeyCode = {}", (int) event.key);
+            spdlog::info("KeyCode = {:x}", (int) event.key);
         }
         needs_redraw = true;
         break;
