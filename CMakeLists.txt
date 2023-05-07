@@ -62,8 +62,10 @@ if (LINUX)
     list(APPEND SVISION_SOURCES
         src/platformx11.cpp
         src/platformx11.h
+        src/platform-xcb.cpp
+        src/platform-xcb.h
     )
-    set(SVISION_PLATFORM_LIBS X11)
+    set(SVISION_PLATFORM_LIBS X11 xcb xcb-image)
 elseif(WIN32)
     list(APPEND SVISION_SOURCES
         src/platformwin32.cpp
@@ -80,6 +82,10 @@ target_include_directories(svision2 PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src")
 # Development demo
 add_executable (demo src/main.cxx )
 target_link_libraries(demo svision2)
+
+
+add_executable (test1 src/test1.cpp )
+target_link_libraries(test1 xcb xcb-image)
 
 # Unit tests
 include(CTest)

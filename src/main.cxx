@@ -8,7 +8,8 @@
 // https://zserge.com/posts/fenster/
 
 #if defined(__linux__)
-#include "platformx11.h"
+//#include "platformx11.h"
+#include "platform-xcb.h"
 #elif defined(_win32) || defined(WIN32)
 #include "platformwin32.h"
 #endif
@@ -33,9 +34,9 @@ int main() {
 //        spdlog::info("timer");
     });
 
-    auto w2 = platform.open_window(300, 300, 640, 480, "test 2");
-    w2->background_color = 0x00FF00;
-    platform.show_window(w2);
+//    auto w2 = platform.open_window(300, 300, 640, 480, "test 2");
+//    w2->background_color = 0x00FF00;
+//    platform.show_window(w2);
 
     auto w1 = platform.open_window(100, 100, 640, 480, "test 1");
     w1->add(std::make_shared<Widget>(Position{350, 10}, Size{200, 40}, 0x22dd37));
