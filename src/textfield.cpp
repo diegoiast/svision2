@@ -85,7 +85,7 @@ auto TextField::on_keyboard(const EventKeyboard &event) -> void {
             char ascii = (char)event.key;
             spdlog::info("new ascii char: {}", ascii);
 
-            if (cursor_position >= text.length()) {
+            if (cursor_position > text.length()) {
                 text += (char)event.key;
             } {
                 text.insert(cursor_position, 1, ascii);
