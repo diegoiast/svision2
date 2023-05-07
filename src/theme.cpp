@@ -61,8 +61,7 @@ auto ThemeOldie::draw_button(Bitmap &content, bool has_focus, bool is_default, B
 }
 #endif
 
-
-auto ThemeRedmond::draw_widget_frame(Bitmap &content, bool selected, bool active) -> void{
+auto ThemeRedmond::draw_widget_frame(Bitmap &content, bool selected, bool active) -> void {
     auto line1 = ThemeRedmond::line_color2;
     auto line2 = ThemeRedmond::line_color1;
     auto line3 = ThemeRedmond::line_color4;
@@ -70,12 +69,11 @@ auto ThemeRedmond::draw_widget_frame(Bitmap &content, bool selected, bool active
     if (selected) {
         content.draw_rectangle(0, 0, content.size.width, content.size.height, line1, line2);
         content.draw_rectangle(1, 1, content.size.width - 2, content.size.height - 2, line3, line4);
-        content.fill_rect(2,2,content.size.width-4, content.size.height-4, 0xffffff);
+        content.fill_rect(2, 2, content.size.width - 4, content.size.height - 4, 0xffffff);
     } else {
         content.draw_rectangle(0, 0, content.size.width, content.size.height, line1, line2);
-        content.fill_rect(1,1,content.size.width-2, content.size.height-2, 0xf0f0f0);
+        content.fill_rect(1, 1, content.size.width - 2, content.size.height - 2, 0xf0f0f0);
     }
-
 }
 
 auto ThemeRedmond::draw_window_background(Bitmap &content) -> void {
@@ -154,8 +152,7 @@ auto ThemeRedmond::draw_button(Bitmap &content, bool has_focus, bool is_default,
     content.write_fixed(text_position, text, 0xffffff);
 }
 
-
-auto ThemeVision::draw_widget_frame(Bitmap &content, bool selected, bool active) -> void{
+auto ThemeVision::draw_widget_frame(Bitmap &content, bool selected, bool active) -> void {
     auto color = ThemeVision::button_border;
     if (selected) {
         color = ThemeVision::button_border_hover;
@@ -163,14 +160,13 @@ auto ThemeVision::draw_widget_frame(Bitmap &content, bool selected, bool active)
     content.draw_rounded_rectangle(0, 0, content.size.width, content.size.height, 5, color, color);
 }
 
-auto ThemeVision::draw_window_background(Bitmap &content) -> void
-{
+auto ThemeVision::draw_window_background(Bitmap &content) -> void {
     content.fill_rect(0, 0, content.size.width, content.size.height,
                       ThemeVision::window_background_color);
 }
 
 auto ThemeVision::draw_button(Bitmap &content, bool has_focus, bool is_default, ButtonStates state,
-                              const std::string &text) -> void{
+                              const std::string &text) -> void {
 
     auto text_padding = 5;
 
@@ -216,11 +212,14 @@ auto ThemeVision::draw_button(Bitmap &content, bool has_focus, bool is_default, 
     content.draw_rectangle(0, 0, content.size.width, content.size.height, border, border);
     content.fill_rect(1, 1, content.size.width - 2, content.size.height - 2, background);
     if (double_border) {
-        content.draw_rectangle(1, 1, content.size.width-2, content.size.height-2, border, border);
+        content.draw_rectangle(1, 1, content.size.width - 2, content.size.height - 2, border,
+                               border);
     }
     if (has_focus) {
         auto padding = 3;
-        content.draw_rectangle(padding, padding, content.size.width-padding*2, content.size.height-padding*2, ThemeVision::focus_color, ThemeVision::focus_color);
+        content.draw_rectangle(padding, padding, content.size.width - padding * 2,
+                               content.size.height - padding * 2, ThemeVision::focus_color,
+                               ThemeVision::focus_color);
     }
 
     auto text_size = Bitmap::text_size(text) + text_padding;
@@ -230,7 +229,7 @@ auto ThemeVision::draw_button(Bitmap &content, bool has_focus, bool is_default, 
     content.write_fixed(text_position, text, color);
 }
 
-auto ThemePlasma::draw_widget_frame(Bitmap &content, bool selected, bool active) -> void{
+auto ThemePlasma::draw_widget_frame(Bitmap &content, bool selected, bool active) -> void {
     auto color = ThemePlasma::button_border;
     if (selected) {
         color = ThemePlasma::button_selected_border;

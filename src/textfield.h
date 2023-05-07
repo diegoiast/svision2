@@ -1,7 +1,7 @@
 #pragma once
 
-#include <widget.h>
 #include <timer.h>
+#include <widget.h>
 
 struct TextField : Widget {
     TextField(Position position, Size size);

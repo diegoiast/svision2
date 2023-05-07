@@ -6,8 +6,8 @@
  */
 
 #include <button.h>
-#include <theme.h>
 #include <spdlog/spdlog.h>
+#include <theme.h>
 
 Button::Button(Position pp, Size size, std::string text, bool is_default,
                std::function<void()> on_button_click)
@@ -111,7 +111,8 @@ auto Button::on_focus_change(bool new_state) -> void { needs_redraw = true; }
 
 auto Button::on_keyboard(const EventKeyboard &event) -> void {
     if (event.keydown) {
-        if (event.key == KeyCodes::Enter || event.key == KeyCodes::Return || event.key == KeyCodes::Space) {
+        if (event.key == KeyCodes::Enter || event.key == KeyCodes::Return ||
+            event.key == KeyCodes::Space) {
             // TODO - animate the button click
             if (on_button_click) {
                 on_button_click();

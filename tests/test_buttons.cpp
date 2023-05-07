@@ -47,13 +47,10 @@ TEST_CASE("Button states", "[button]") {
     event_release_outside.x = 1000;
     event_release_outside.y = 1000;
 
-
     SECTION("Testing hover in and out") {
         bool clicked = false;
         Button button(Position{0, 0}, Size{20, 20}, "dummy");
-        button.on_button_click = [&clicked]() {
-          clicked = true;
-        };
+        button.on_button_click = [&clicked]() { clicked = true; };
         REQUIRE(button.state == ButtonStates::Normal);
 
         button.on_mouse_enter();
@@ -74,9 +71,7 @@ TEST_CASE("Button states", "[button]") {
     SECTION("Normal click inside") {
         bool clicked = false;
         Button button(Position{0, 0}, Size{20, 20}, "dummy");
-        button.on_button_click = [&clicked]() {
-          clicked = true;
-        };
+        button.on_button_click = [&clicked]() { clicked = true; };
         REQUIRE(button.state == ButtonStates::Normal);
 
         button.on_mouse_enter();
@@ -98,9 +93,7 @@ TEST_CASE("Button states", "[button]") {
     SECTION("Normal click abort") {
         bool clicked = false;
         Button button(Position{0, 0}, Size{20, 20}, "dummy");
-        button.on_button_click = [&clicked]() {
-          clicked = true;
-        };
+        button.on_button_click = [&clicked]() { clicked = true; };
         REQUIRE(button.state == ButtonStates::Normal);
 
         button.on_mouse_enter();
@@ -117,6 +110,5 @@ TEST_CASE("Button states", "[button]") {
         button.on_mouse_click(event_release_outside);
         REQUIRE(button.state == ButtonStates::Normal);
         REQUIRE(clicked == false);
-
     }
 }

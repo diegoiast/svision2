@@ -13,10 +13,10 @@
 #include <X11/keysym.h>
 #include <spdlog/spdlog.h>
 
-#include "platformx11.h"
 #include "events.h"
-#include "widget.h"
+#include "platformx11.h"
 #include "theme.h"
+#include "widget.h"
 
 #include "platformx11-keycodes.h"
 
@@ -25,7 +25,7 @@ auto convert_x11_key_event(XEvent &ev, Display *dpy) -> EventKeyboard {
     auto k = XkbKeycodeToKeysym(dpy, ev.xkey.keycode, 0, 0);
     char buf[20];
     KeySym keySym;
-    (void) XLookupString ((XKeyEvent *) &ev, buf, 20, &keySym, nullptr);
+    (void)XLookupString((XKeyEvent *)&ev, buf, 20, &keySym, nullptr);
 
     // TODO binary search could be nice.
     for (auto i = 0; X11_KEYCODES[i] != 0; i += 2) {
@@ -102,14 +102,14 @@ auto PlatformX11::init() -> void {
 #if 0
     default_theme = std::make_shared<ThemePlasma>();
 #else
-//    default_theme = std::make_shared<ThemeRedmond>();
+    //    default_theme = std::make_shared<ThemeRedmond>();
     default_theme = std::make_shared<ThemeVision>();
 #endif
     spdlog::info("PlatformX11 initialized");
 }
 
 auto PlatformX11::done() -> void {
-    for (auto w: windows) {
+    for (auto w : windows) {
         XDestroyWindow(dpy, w.second->x11_window);
         XFreeGC(dpy, w.second->gc);
     }
@@ -148,14 +148,13 @@ auto PlatformX11::show_window(std::shared_ptr<PlatformWindow> w) -> void {
     XSync(dpy, window->x11_window);
 }
 
-auto PlatformX11::invalidate(PlatformWindow& window) -> void
-{
-    auto windowX11 = static_cast<PlatformWindowX11*>(&window);
+auto PlatformX11::invalidate(PlatformWindow &window) -> void {
+    auto windowX11 = static_cast<PlatformWindowX11 *>(&window);
 
     XEvent exppp;
     exppp.type = Expose;
     exppp.xexpose.window = windowX11->x11_window;
-    XSendEvent(dpy,windowX11->x11_window,False,ExposureMask,&exppp);
+    XSendEvent(dpy, windowX11->x11_window, False, ExposureMask, &exppp);
     XFlush(dpy);
 }
 

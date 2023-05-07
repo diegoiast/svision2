@@ -8,8 +8,8 @@
 #pragma once
 
 #include <string>
-#include <widget.h>
 #include <theme.h>
+#include <widget.h>
 
 struct Label : public Widget {
     std::string text;

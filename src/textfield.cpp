@@ -4,9 +4,7 @@
 
 #include <spdlog/spdlog.h>
 
-TextField::TextField(Position position, Size size) :
-    Widget(position, size, 0)
-{
+TextField::TextField(Position position, Size size) : Widget(position, size, 0) {
     timer.millies = 750;
     timer.repeating = true;
     timer.callback = [this]() {
@@ -20,31 +18,21 @@ TextField::TextField(Position position, Size size) :
     this->can_focus = true;
 }
 
-TextField::~TextField()
-{
-    timer.stop();
-}
+TextField::~TextField() { timer.stop(); }
 
-auto TextField::draw() -> void
-{
-    content.fill_rect(0,0, content.size.width, content.size.height, 0xffffff);
+auto TextField::draw() -> void {
+    content.fill_rect(0, 0, content.size.width, content.size.height, 0xffffff);
     theme->draw_widget_frame(content, this->has_focus, true);
-    content.write_fixed( Position{5, 5}, this->text, 0);
+    content.write_fixed(Position{5, 5}, this->text, 0);
 
     if (this->cursor_on && this->has_focus) {
         auto padding = 5;
-        content.draw_rectangle(
-            padding, padding,
-            1, content.size.height-padding*2,
-            0, 0
-        );
+        content.draw_rectangle(padding, padding, 1, content.size.height - padding * 2, 0, 0);
     }
 }
 
-auto TextField::on_keyboard(const EventKeyboard &event) -> void
-{
-    switch (event.key)
-    {
+auto TextField::on_keyboard(const EventKeyboard &event) -> void {
+    switch (event.key) {
     case KeyCodes::Enter:
         spdlog::info("Pressed enter");
         break;
@@ -56,16 +44,14 @@ auto TextField::on_keyboard(const EventKeyboard &event) -> void
             spdlog::info("new ascii char: {}", ascii);
             text += (char)event.key;
         } else {
-            spdlog::info("KeyCode = {:x}", (int) event.key);
+            spdlog::info("KeyCode = {:x}", (int)event.key);
         }
         needs_redraw = true;
         break;
     }
 }
 
-
-auto TextField::on_focus_change(bool new_state) -> void
-{
+auto TextField::on_focus_change(bool new_state) -> void {
     if (new_state) {
         timer.start();
         this->cursor_on = true;
@@ -79,6 +65,4 @@ auto TextField::on_focus_change(bool new_state) -> void
     }
 }
 
-auto TextField::on_remove() -> void {
-    timer.stop();
-}
+auto TextField::on_remove() -> void { timer.stop(); }

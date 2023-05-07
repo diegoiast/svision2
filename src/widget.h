@@ -39,7 +39,7 @@ struct Widget {
     bool unclick_inside;
 
     Widget(Position pp, Size size, uint32_t color);
-    virtual ~Widget() ;
+    virtual ~Widget();
     virtual auto draw() -> void;
     virtual auto on_hover(const EventMouse &event) -> void;
     virtual auto on_mouse_enter() -> void;

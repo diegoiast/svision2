@@ -17,8 +17,8 @@
 #include <label.h>
 #include <textfield.h>
 
-#include <timer.h>
 #include <spdlog/spdlog.h>
+#include <timer.h>
 
 auto handle_event(std::shared_ptr<PlatformWindow> w, const Event &ev);
 auto handle_event(int window_id, int widget_id, const Event &ev);
@@ -30,7 +30,7 @@ int main() {
 
     Timer t1(500, true, [&timer_count]() {
         timer_count++;
-//        spdlog::info("timer");
+        //        spdlog::info("timer");
     });
 
     auto w2 = platform.open_window(300, 300, 640, 480, "test 2");

@@ -29,9 +29,7 @@ Widget::Widget(Position position, Size size, uint32_t color) {
     this->content.resize(size);
 }
 
-Widget::~Widget()
-{
-}
+Widget::~Widget() {}
 
 auto Widget::draw() -> void {
     auto color = content.background_color;
@@ -97,9 +95,7 @@ auto Widget::on_mouse_click(const EventMouse &event) -> void {
     needs_redraw = true;
 }
 
-PlatformWindow::~PlatformWindow() {
-    spdlog::info("Window done");
-}
+PlatformWindow::~PlatformWindow() { spdlog::info("Window done"); }
 
 auto PlatformWindow::select_next_widget() -> void {
     auto last_focus_index = -1;
@@ -147,8 +143,7 @@ auto PlatformWindow::select_next_widget() -> void {
     select_widget(best_focus_widget);
 }
 
-auto PlatformWindow::select_widget(std::shared_ptr<Widget> widget) -> void
-{
+auto PlatformWindow::select_widget(std::shared_ptr<Widget> widget) -> void {
     if (widget == focus_widget) {
         return;
     }
@@ -162,7 +157,7 @@ auto PlatformWindow::select_widget(std::shared_ptr<Widget> widget) -> void
         spdlog::info("widget {} lost focus", focus_widget->focus_index);
         this->focus_widget->on_focus_change(false);
         this->focus_widget->has_focus = false;
-//        last_focus_index = this->focus_widget->focus_index;
+        //        last_focus_index = this->focus_widget->focus_index;
         this->needs_redraw |= this->focus_widget->needs_redraw;
         this->focus_widget.reset();
     }
@@ -170,7 +165,7 @@ auto PlatformWindow::select_widget(std::shared_ptr<Widget> widget) -> void
     spdlog::info("widget {} got focus", widget->focus_index);
     widget->on_focus_change(true);
     widget->has_focus = true;
-//    last_focus_index = widget->focus_index;
+    //    last_focus_index = widget->focus_index;
     needs_redraw |= widget->needs_redraw;
     focus_widget = widget;
 }
@@ -213,7 +208,7 @@ auto PlatformWindow::on_keyboard(const EventKeyboard &event) -> void {
         */
         case KeyCodes::Tab:
             select_next_widget();
-        break;
+            break;
         default:
             if (focus_widget) {
                 focus_widget->on_keyboard(event);
@@ -288,8 +283,7 @@ auto PlatformWindow::on_mouse(const EventMouse &event) -> void {
     }
 }
 
-auto PlatformWindow::add(std::shared_ptr<Widget> widget) -> std::shared_ptr<Widget>
-{
+auto PlatformWindow::add(std::shared_ptr<Widget> widget) -> std::shared_ptr<Widget> {
     widgets.push_back(widget);
     widget->theme = theme;
     widget->window = this;
@@ -306,8 +300,7 @@ auto PlatformWindow::invalidate() -> void {
     platform->invalidate(*this);
 };
 
-auto PlatformWindow::on_close() -> void
-{
+auto PlatformWindow::on_close() -> void {
     for (auto w : widgets) {
         if (w) {
             w->on_remove();

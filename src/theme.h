@@ -72,7 +72,7 @@ struct ThemeVision : Theme {
 
     static const int32_t button_border_hover = MakeColor(0, 120, 215);
     static const int32_t button_background_hover = MakeColor(229, 241, 251);
-    static const int32_t button_background_click= MakeColor(204, 208, 247);
+    static const int32_t button_background_click = MakeColor(204, 208, 247);
 
     virtual auto init() -> void override{};
     virtual auto draw_widget_frame(Bitmap &content, bool selected, bool active) -> void override;

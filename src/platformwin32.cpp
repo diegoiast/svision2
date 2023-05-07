@@ -8,11 +8,11 @@
 #include <iostream>
 #include <windows.h>
 
-#include "platformwin32.h"
 #include "events.h"
+#include "platformwin32.h"
+#include "spdlog/spdlog.h"
 #include "theme.h"
 #include "widget.h"
-#include "spdlog/spdlog.h"
 
 static const uint8_t WIN32_KEYCODES[] = {
     0,  27, 49, 50, 51, 52, 53, 54, 55, 56, 57, 48, 45, 61, 8,  9,  81, 87, 69, 82, 84, 89, 85,
@@ -104,7 +104,7 @@ auto convert_win32_keyboard_event(UINT msg, WPARAM wParam, LPARAM lParam) -> Eve
                       ((GetKeyState(VK_SHIFT) & 0x8000) >> 14) |
                       ((GetKeyState(VK_MENU) & 0x8000) >> 13) |
                       (((GetKeyState(VK_LWIN) | GetKeyState(VK_RWIN)) & 0x8000) >> 12);
-    event.key = (KeyCodes) WIN32_KEYCODES[HIWORD(lParam) & 0x1ff];
+    event.key = (KeyCodes)WIN32_KEYCODES[HIWORD(lParam) & 0x1ff];
     event.keydown = !((lParam >> 31) & 1);
     return event;
 }
@@ -268,7 +268,7 @@ auto PlatformWin32::init() -> void {
 #if 0
     default_theme = std::make_shared<ThemePlasma>();
 #else
-//    default_theme = std::make_shared<ThemeRedmond>();
+    //    default_theme = std::make_shared<ThemeRedmond>();
     default_theme = std::make_shared<ThemeVision>();
 #endif
     spdlog::info("PlatformWin32 initialized");
@@ -277,7 +277,7 @@ auto PlatformWin32::init() -> void {
 auto PlatformWin32::done() -> void {}
 
 auto PlatformWin32::invalidate(PlatformWindow &w) -> void {
-    auto window = static_cast<PlatformWindowWin32*>(&w);
+    auto window = static_cast<PlatformWindowWin32 *>(&w);
     InvalidateRect(window->hwnd, 0, 1);
 }
 
