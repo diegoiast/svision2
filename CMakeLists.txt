@@ -68,6 +68,7 @@ elseif(WIN32)
     list(APPEND SVISION_SOURCES
         src/platformwin32.cpp
         src/platformwin32.h
+        src/platformwin32-keycodes.h
     )
 endif()
 add_library(svision2 ${SVISION_SOURCES})

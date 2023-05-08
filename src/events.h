@@ -24,10 +24,13 @@ enum class KeyCodes {
     Enter = 0x0d,
     ArrowLeft = 0x18,
     ArrowRight = 0x13,
+    ArrowUp = 0x00,
+    ArrowDown = 0x00,
     Home = 0x02,
     End = 0x05,
     Delete = 0x007F,
     Backspace = 0x0008,
+    Insert = 0x007E,
     Space = ' ',
 };
 

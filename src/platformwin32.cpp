@@ -14,23 +14,6 @@
 #include "theme.h"
 #include "widget.h"
 
-static const uint8_t WIN32_KEYCODES[] = {
-    0,  27, 49, 50, 51, 52, 53, 54, 55, 56, 57, 48, 45, 61, 8,  9,  81, 87, 69, 82, 84, 89, 85,
-    73, 79, 80, 91, 93, 10, 0,  65, 83, 68, 70, 71, 72, 74, 75, 76, 59, 39, 96, 0,  92, 90, 88,
-    67, 86, 66, 78, 77, 44, 46, 47, 0,  0,  0,  32, 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-    0,  0,  0,  0,  0,  2,  17, 3,  0,  20, 0,  19, 0,  5,  18, 4,  26, 127};
-
 auto convert_win32_mouse_event(UINT msg, WPARAM wParam, LPARAM lParam) -> EventMouse {
     auto event = EventMouse();
     switch (msg) {
@@ -98,14 +81,25 @@ auto convert_win32_mouse_event(UINT msg, WPARAM wParam, LPARAM lParam) -> EventM
     return event;
 }
 
+#include <platformwin32-keycodes.h>
+
 auto convert_win32_keyboard_event(UINT msg, WPARAM wParam, LPARAM lParam) -> EventKeyboard {
     auto event = EventKeyboard();
     event.modifiers = ((GetKeyState(VK_CONTROL) & 0x8000) >> 15) |
                       ((GetKeyState(VK_SHIFT) & 0x8000) >> 14) |
                       ((GetKeyState(VK_MENU) & 0x8000) >> 13) |
                       (((GetKeyState(VK_LWIN) | GetKeyState(VK_RWIN)) & 0x8000) >> 12);
-    event.key = (KeyCodes)WIN32_KEYCODES[HIWORD(lParam) & 0x1ff];
     event.keydown = !((lParam >> 31) & 1);
+
+    // TODO binary search could be nice.
+    event.key = KeyCodes::Unknown;
+    for (auto i = 0; WIN32_KEYCODES[i] != 0; i += 2) {
+        /* Map XKB KeySym to our custom key code value */
+        if (WIN32_KEYCODES[i] == wParam) {
+            event.key = (KeyCodes)WIN32_KEYCODES[i + 1];
+            break;
+        }
+    }
     return event;
 }
 
@@ -240,16 +234,27 @@ static LRESULT CALLBACK svision_wndproc(HWND hwnd, UINT msg, WPARAM wParam, LPAR
     case WM_KEYUP:
         window->on_keyboard(convert_win32_keyboard_event(msg, wParam, lParam));
         break;
+
+    case WM_CHAR:
+    {
+        auto event = EventKeyboard();
+        event.keydown = true;
+        event.key = static_cast<KeyCodes>(wParam);
+        window->on_keyboard(event);
+    } break;
+
+
     default:
         return DefWindowProc(hwnd, msg, wParam, lParam);
     }
+
 
     if (window->needs_redraw) {
         InvalidateRect(window->hwnd, 0, 1);
     }
     return 0;
 }
-static constexpr auto WINDOW_CLASS_NAME = "svision2";
+static constexpr auto WINDOW_CLASS_NAME = L"svision2";
 
 PlatformWin32::PlatformWin32() {}
 
@@ -257,13 +262,13 @@ auto PlatformWin32::init() -> void {
     spdlog::set_level(spdlog::level::info);
 
     HINSTANCE hInstance = GetModuleHandle(NULL);
-    WNDCLASSEX wc = {};
+    WNDCLASSEXW wc = {};
     wc.cbSize = sizeof(WNDCLASSEX);
     wc.style = CS_VREDRAW | CS_HREDRAW;
     wc.lpfnWndProc = svision_wndproc;
     wc.hInstance = hInstance;
     wc.lpszClassName = WINDOW_CLASS_NAME;
-    RegisterClassEx(&wc);
+    RegisterClassExW(&wc);
 
 #if 0
     default_theme = std::make_shared<ThemePlasma>();
@@ -305,7 +310,8 @@ auto PlatformWin32::open_window(int x, int y, int width, int height, const std::
 
     auto window = std::make_shared<PlatformWindowWin32>();
     window->title = title;
-    window->hwnd = CreateWindowEx(WS_EX_CLIENTEDGE, WINDOW_CLASS_NAME, window->title.c_str(),
+    // TODO - window title is so wrong, this almost hurts
+    window->hwnd = CreateWindowExW(WS_EX_CLIENTEDGE, WINDOW_CLASS_NAME, (LPWSTR) window->title.c_str(),
                                   WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, width, height,
                                   NULL, NULL, hInstance, NULL);
 
