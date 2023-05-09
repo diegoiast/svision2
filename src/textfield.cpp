@@ -21,13 +21,14 @@ TextField::TextField(Position position, Size size) : Widget(position, size, 0) {
 TextField::~TextField() { timer.stop(); }
 
 auto TextField::draw() -> void {
+    auto display_text = this->text.substr(display_from);
     content.fill_rect(0, 0, content.size.width, content.size.height, 0xffffff);
     theme->draw_widget_frame(content, this->has_focus, true);
-    content.write_fixed(Position{5, 5}, this->text, 0);
+    content.write_fixed(Position{5, 5}, display_text, 0);
 
     if (this->cursor_on && this->has_focus) {
         auto padding = 5;
-        auto position_x = padding + cursor_position * 8;
+        auto position_x = padding + (cursor_position - display_from) * 8;
         content.draw_rectangle(
             position_x, padding,
             1, content.size.height - padding * 2, 0, 0);
@@ -44,6 +45,7 @@ auto TextField::on_keyboard(const EventKeyboard &event) -> void {
             cursor_position --;
             needs_redraw = true;
             cursor_on = true;
+            ensure_cursor_visible();
         }
         break;
     case KeyCodes::ArrowRight:
@@ -51,24 +53,29 @@ auto TextField::on_keyboard(const EventKeyboard &event) -> void {
             cursor_position ++;
             needs_redraw = true;
             cursor_on = true;
+            ensure_cursor_visible();
         }
         break;
     case KeyCodes::Home:
         if (cursor_position != 0) {
+            display_from = 0;
             cursor_position = 0;
             needs_redraw = true;
             cursor_on = true;
+
         }
         break;
     case KeyCodes::End:
         cursor_position = text.length();
         needs_redraw = true;
         cursor_on = true;
+        ensure_cursor_visible();
         break;
     case KeyCodes::Delete:
         text.erase(cursor_position,1);
         needs_redraw = true;
         cursor_on = true;
+        ensure_cursor_visible();
         break;
     case KeyCodes::Backspace:
         if (cursor_position > 0) {
@@ -76,9 +83,9 @@ auto TextField::on_keyboard(const EventKeyboard &event) -> void {
             cursor_position --;
             needs_redraw = true;
             cursor_on = true;
+            ensure_cursor_visible();
         }
         break;
-
     default:
         // TODO handle non ascii input
         if ((int)event.key >= ' ' && (int)event.key <= 128) {
@@ -93,6 +100,7 @@ auto TextField::on_keyboard(const EventKeyboard &event) -> void {
             cursor_position += 1;
             needs_redraw = true;
             cursor_on = true;
+            ensure_cursor_visible();
         } else {
             spdlog::info("KeyCode = {:x}", (int)event.key);
         }
@@ -115,3 +123,27 @@ auto TextField::on_focus_change(bool new_state) -> void {
 }
 
 auto TextField::on_remove() -> void { timer.stop(); }
+
+auto TextField::ensure_cursor_visible() -> void
+{
+    auto padding = 5;
+    auto max_x_position = content.size.width - padding*2;
+    auto cursor_visual_position = (cursor_position - display_from) * 8 + padding;
+//    auto visible_text = text.substr(display_from);
+//    spdlog::info("Cursor position = {}/{}", cursor_visual_position, max_x_position);
+
+    while (cursor_visual_position > max_x_position) {
+        display_from ++;
+        cursor_visual_position = (cursor_position - display_from) * 8 + padding;
+//        visible_text = text.substr(display_from);
+        spdlog::info("Cursor position = {}/{}", cursor_visual_position, max_x_position);
+    }
+
+    while (display_from > cursor_position) {
+        display_from =
+            cursor_position-1;
+    }
+    if (display_from < 0) {
+        display_from = 0;
+    }
+}

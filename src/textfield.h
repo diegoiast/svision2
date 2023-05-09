@@ -12,6 +12,8 @@ struct TextField : Widget {
     virtual auto on_remove() -> void override;
 
   private:
+    auto ensure_cursor_visible() -> void;
+
     bool cursor_on = false;
     std::string text = "";
     Timer timer;

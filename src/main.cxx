@@ -46,7 +46,7 @@ int main() {
     w1->add(std::make_shared<Button>(Position{220, 100}, Size{200, 40}, "Cancel", false,
                                      [&platform]() { spdlog::info("Cancel clicke1d!"); }));
     w1->add(std::make_shared<Label>(Position{10, 10}, Size{100, 20}, "Hello world!"));
-    w1->add(std::make_shared<TextField>(Position{10, 35}, Size{250, 30}));
+    w1->add(std::make_shared<TextField>(Position{10, 35}, Size{65, 30}));
     platform.show_window(w1);
 
     t1.start();
