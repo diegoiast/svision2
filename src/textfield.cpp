@@ -21,13 +21,15 @@ TextField::TextField(Position position, Size size) : Widget(position, size, 0) {
 TextField::~TextField() { timer.stop(); }
 
 auto TextField::draw() -> void {
-    auto display_text = this->text.substr(display_from);
+    auto padding = 5;
+    auto display_text_logical = (content.size.width - padding * 2) / 8;
+    auto display_text = this->text.substr(display_from, display_from + display_text_logical);
+    auto center_y = (content.size.height - 16) / 2;
     content.fill_rect(0, 0, content.size.width, content.size.height, 0xffffff);
     theme->draw_widget_frame(content, this->has_focus, true);
-    content.write_fixed(Position{5, 5}, display_text, 0);
+    content.write_fixed(Position{padding, center_y}, display_text, 0);
 
     if (this->cursor_on && this->has_focus) {
-        auto padding = 5;
         auto position_x = padding + (cursor_position - display_from) * 8;
         content.draw_rectangle(
             position_x, padding,
