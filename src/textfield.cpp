@@ -27,7 +27,13 @@ auto TextField::draw() -> void {
     auto center_y = (content.size.height - 16) / 2;
     content.fill_rect(0, 0, content.size.width, content.size.height, 0xffffff);
     theme->draw_widget_frame(content, this->has_focus, true);
+
+    auto selection_width = (selection.end - selection.start) - display_from;
+    selection_width *= 8;
+    content.fill_rect(padding-1, padding-1, selection_width+1, content.size.height-padding-2, ThemePlasma::button_selected_background);
+    // TODO handle partial selection
     content.write_fixed(Position{padding, center_y}, display_text, 0);
+
 
     if (this->cursor_on && this->has_focus) {
         auto position_x = padding + (cursor_position - display_from) * 8;
@@ -44,48 +50,71 @@ auto TextField::on_keyboard(const EventKeyboard &event) -> void {
         break;
     case KeyCodes::ArrowLeft:
         if (cursor_position > 0) {
+            // TODO - move to next word
+            // TODO - change selection
             cursor_position --;
             needs_redraw = true;
             cursor_on = true;
+            select_none();
             ensure_cursor_visible();
         }
         break;
     case KeyCodes::ArrowRight:
         if (cursor_position < text.length()) {
+            // TODO - move to next word
+            // TODO - change selection
             cursor_position ++;
             needs_redraw = true;
             cursor_on = true;
+            select_none();
             ensure_cursor_visible();
         }
         break;
     case KeyCodes::Home:
+        // TODO - change selection
         if (cursor_position != 0) {
             display_from = 0;
             cursor_position = 0;
             needs_redraw = true;
             cursor_on = true;
-
+            select_none();
         }
         break;
     case KeyCodes::End:
+        // TODO - change selection
         cursor_position = text.length();
         needs_redraw = true;
         cursor_on = true;
         ensure_cursor_visible();
+        select_none();
         break;
     case KeyCodes::Delete:
-        text.erase(cursor_position,1);
+        if (has_selection()) {
+            text.erase(selection.start, selection.end);
+        } else {
+            text.erase(cursor_position,1);
+        }
         needs_redraw = true;
         cursor_on = true;
         ensure_cursor_visible();
+        select_none();
         break;
     case KeyCodes::Backspace:
-        if (cursor_position > 0) {
-            text.erase(cursor_position-1,1);
-            cursor_position --;
+        if (has_selection()) {
+            text.erase(selection.start, selection.end);
             needs_redraw = true;
             cursor_on = true;
             ensure_cursor_visible();
+            select_none();
+        } else {
+            if (cursor_position > 0) {
+                text.erase(cursor_position-1,1);
+                cursor_position --;
+                needs_redraw = true;
+                cursor_on = true;
+                ensure_cursor_visible();
+                select_none();
+            }
         }
         break;
     default:
@@ -94,17 +123,20 @@ auto TextField::on_keyboard(const EventKeyboard &event) -> void {
         auto is_a_pressed = event.key == (KeyCodes)'A' || event.key == (KeyCodes)'a';
         if (is_a_pressed && is_control_pressed) {
             spdlog::info("Selecting all");
+            select_all();
             break;
         }
         if ((int)event.key >= ' ' && (int)event.key <= 128) {
             char ascii = (char)event.key;
             spdlog::info("new ascii char: {}", ascii);
 
+            // TODO replace selection
             if (cursor_position > text.length()) {
                 text += (char)event.key;
             } {
                 text.insert(cursor_position, 1, ascii);
             }
+            select_none();
             cursor_position += 1;
             needs_redraw = true;
             cursor_on = true;
@@ -112,6 +144,7 @@ auto TextField::on_keyboard(const EventKeyboard &event) -> void {
         } else {
             spdlog::info("KeyCode = {:x}", (int)event.key);
         }
+
         break;
     }
 }
@@ -126,7 +159,7 @@ auto TextField::on_mouse_click(const EventMouse &event) -> void {
     cursor_position = display_from + pos;
     cursor_position = std::min((size_t)cursor_position, text.length());
     needs_redraw = true;
-    cursor_on = true;
+    cursor_on   = true;
 }
 
 auto TextField::on_focus_change(bool new_state) -> void {
@@ -145,26 +178,50 @@ auto TextField::on_focus_change(bool new_state) -> void {
 
 auto TextField::on_remove() -> void { timer.stop(); }
 
+
+auto TextField::select_all() -> void
+{
+    selection.start = 0;
+    selection.end = text.length();
+    if (selection.end < selection.start) {
+        selection.end = selection.start;
+    }
+    needs_redraw = true;
+    cursor_on = true;
+}
+
+auto TextField::select_none() -> void
+{
+    selection.start = 0;
+    selection.end = 0;
+}
+
+auto TextField::get_selected_text() -> const std::string
+{
+    return this->text.substr(selection.start, selection.end);
+}
+
 auto TextField::ensure_cursor_visible() -> void
 {
     auto padding = 5;
     auto max_x_position = content.size.width - padding*2;
     auto cursor_visual_position = (cursor_position - display_from) * 8 + padding;
-//    auto visible_text = text.substr(display_from);
-//    spdlog::info("Cursor position = {}/{}", cursor_visual_position, max_x_position);
 
     while (cursor_visual_position > max_x_position) {
         display_from ++;
         cursor_visual_position = (cursor_position - display_from) * 8 + padding;
-//        visible_text = text.substr(display_from);
-        spdlog::info("Cursor position = {}/{}", cursor_visual_position, max_x_position);
     }
-
     while (display_from > cursor_position) {
         display_from =
             cursor_position-1;
     }
+    if (cursor_position > text.length()) {
+        cursor_position = text.length();
+    }
     if (display_from < 0) {
         display_from = 0;
+    }
+    if (selection.end < selection.start) {
+        selection.end = selection.start;
     }
 }
