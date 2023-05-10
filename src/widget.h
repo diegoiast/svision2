@@ -67,6 +67,7 @@ struct PlatformWindow {
     virtual ~PlatformWindow();
 
     auto select_next_widget() -> void;
+    auto select_previous_widget() -> void;
     auto select_widget(std::shared_ptr<Widget> widget) -> void;
 
     virtual auto draw() -> void;

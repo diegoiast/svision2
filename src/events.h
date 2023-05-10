@@ -41,13 +41,13 @@ struct EventKeyboard : Event {
     KeyCodes key;
     bool keydown;
 
-    bool is_control_pressed() const {
+    auto is_control_pressed() const -> bool{
         return modifiers & 0x1;
     }
-    auto is_shift_pressed() -> const bool {
+    auto is_shift_pressed() const ->  bool {
         return modifiers & 0x2;
     }
-    auto is_mod_pressed() -> const bool  {
+    auto is_mod_pressed() const ->  bool  {
         return modifiers & 0x4;
     }
 };

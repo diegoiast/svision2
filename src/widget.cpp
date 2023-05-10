@@ -143,6 +143,54 @@ auto PlatformWindow::select_next_widget() -> void {
     select_widget(best_focus_widget);
 }
 
+auto PlatformWindow::select_previous_widget() -> void
+{
+    auto last_focus_index = -1;
+
+    if (focus_widget)
+        last_focus_index = focus_widget->focus_index;
+
+    std::shared_ptr<Widget> best_focus_widget;
+    std::shared_ptr<Widget> least_focus_widget;
+    for (auto w : this->widgets) {
+        if (!w->can_focus) {
+            continue;
+        }
+
+        if (!least_focus_widget) {
+            spdlog::info("Widget {} is now last (*)", w->focus_index);
+            least_focus_widget = w;
+        } else {
+            if (w->focus_index >= least_focus_widget->focus_index) {
+                least_focus_widget = w;
+                spdlog::info("Widget {} is now last", w->focus_index);
+            }
+        }
+
+        if (w->focus_index >= last_focus_index) {
+            continue;
+        }
+        if (!best_focus_widget) {
+            best_focus_widget = w;
+        } else {
+            if (w->focus_index > best_focus_widget->focus_index) {
+                best_focus_widget = w;
+            }
+        }
+    }
+
+    if (!best_focus_widget) {
+        best_focus_widget = least_focus_widget;
+        if (focus_widget) {
+            spdlog::info("No best focus, keeping {}", focus_widget->focus_index);
+        } else
+            spdlog::info("No widget in focus");
+    }
+
+    select_widget(best_focus_widget);
+
+}
+
 auto PlatformWindow::select_widget(std::shared_ptr<Widget> widget) -> void {
     if (widget == focus_widget) {
         return;
@@ -207,7 +255,10 @@ auto PlatformWindow::on_keyboard(const EventKeyboard &event) -> void {
             break;
         */
         case KeyCodes::Tab:
-            select_next_widget();
+            if (event.is_shift_pressed())
+                select_previous_widget();
+            else
+                select_next_widget();
             break;
         default:
             if (focus_widget) {

@@ -1067,7 +1067,7 @@ static int X11_KEYCODES[] = {
     0xfe0d, 0x0000,    // ISO_First_Group_Lock
     0xfe0e, 0x0000,    // ISO_Last_Group
     0xfe0f, 0x0000,    // ISO_Last_Group_Lock
-    0xfe20, 0x0000,    // ISO_Left_Tab
+    0xfe20, 0x0009,    // ISO_Left_Tab
     0xfe21, 0x0000,    // ISO_Move_Line_Up
     0xfe22, 0x0000,    // ISO_Move_Line_Down
     0xfe23, 0x0000,    // ISO_Partial_Line_Up
