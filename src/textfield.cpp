@@ -90,6 +90,12 @@ auto TextField::on_keyboard(const EventKeyboard &event) -> void {
         break;
     default:
         // TODO handle non ascii input
+        auto is_control_pressed = event.is_control_pressed();
+        auto is_a_pressed = event.key == (KeyCodes)'A' || event.key == (KeyCodes)'a';
+        if (is_a_pressed && is_control_pressed) {
+            spdlog::info("Selecting all");
+            break;
+        }
         if ((int)event.key >= ' ' && (int)event.key <= 128) {
             char ascii = (char)event.key;
             spdlog::info("new ascii char: {}", ascii);
@@ -108,6 +114,19 @@ auto TextField::on_keyboard(const EventKeyboard &event) -> void {
         }
         break;
     }
+}
+
+auto TextField::on_mouse_click(const EventMouse &event) -> void {
+    if (!event.pressed || event.button != 1 || !event.is_local) {
+        return;
+    }
+
+    auto padding = 5;
+    auto pos = (event.x - padding) / 8;
+    cursor_position = display_from + pos;
+    cursor_position = std::min((size_t)cursor_position, text.length());
+    needs_redraw = true;
+    cursor_on = true;
 }
 
 auto TextField::on_focus_change(bool new_state) -> void {
