@@ -9,10 +9,7 @@ TextField::TextField(Position position, Size size) : Widget(position, size, 0) {
     timer.repeating = true;
     timer.callback = [this]() {
         this->cursor_on = !this->cursor_on;
-        this->needs_redraw = true;
-        if (this->window) {
-            this->window->invalidate();
-        }
+        invalidate();
     };
     timer.initialize();
     this->can_focus = true;
@@ -53,10 +50,10 @@ auto TextField::on_keyboard(const EventKeyboard &event) -> void {
             // TODO - move to next word
             // TODO - change selection
             cursor_position --;
-            needs_redraw = true;
             cursor_on = true;
             select_none();
             ensure_cursor_visible();
+            invalidate();
         }
         break;
     case KeyCodes::ArrowRight:
@@ -64,10 +61,10 @@ auto TextField::on_keyboard(const EventKeyboard &event) -> void {
             // TODO - move to next word
             // TODO - change selection
             cursor_position ++;
-            needs_redraw = true;
             cursor_on = true;
             select_none();
             ensure_cursor_visible();
+            invalidate();
         }
         break;
     case KeyCodes::Home:
@@ -75,18 +72,18 @@ auto TextField::on_keyboard(const EventKeyboard &event) -> void {
         if (cursor_position != 0) {
             display_from = 0;
             cursor_position = 0;
-            needs_redraw = true;
             cursor_on = true;
             select_none();
+            invalidate();
         }
         break;
     case KeyCodes::End:
         // TODO - change selection
         cursor_position = text.length();
-        needs_redraw = true;
         cursor_on = true;
         ensure_cursor_visible();
         select_none();
+        invalidate();
         break;
     case KeyCodes::Delete:
         if (has_selection()) {
@@ -94,26 +91,26 @@ auto TextField::on_keyboard(const EventKeyboard &event) -> void {
         } else {
             text.erase(cursor_position,1);
         }
-        needs_redraw = true;
         cursor_on = true;
         ensure_cursor_visible();
         select_none();
+        invalidate();
         break;
     case KeyCodes::Backspace:
         if (has_selection()) {
             text.erase(selection.start, selection.end);
-            needs_redraw = true;
             cursor_on = true;
             ensure_cursor_visible();
             select_none();
+            invalidate();
         } else {
             if (cursor_position > 0) {
                 text.erase(cursor_position-1,1);
                 cursor_position --;
-                needs_redraw = true;
                 cursor_on = true;
                 ensure_cursor_visible();
                 select_none();
+                invalidate();
             }
         }
         break;
@@ -136,15 +133,14 @@ auto TextField::on_keyboard(const EventKeyboard &event) -> void {
             } {
                 text.insert(cursor_position, 1, ascii);
             }
-            select_none();
             cursor_position += 1;
-            needs_redraw = true;
             cursor_on = true;
+            select_none();
             ensure_cursor_visible();
+            invalidate();
         } else {
             spdlog::info("KeyCode = {:x}", (int)event.key);
         }
-
         break;
     }
 }
@@ -158,8 +154,8 @@ auto TextField::on_mouse_click(const EventMouse &event) -> void {
     auto pos = (event.x - padding) / 8;
     cursor_position = display_from + pos;
     cursor_position = std::min((size_t)cursor_position, text.length());
-    needs_redraw = true;
     cursor_on   = true;
+    invalidate();
 }
 
 auto TextField::on_focus_change(bool new_state) -> void {
@@ -170,10 +166,7 @@ auto TextField::on_focus_change(bool new_state) -> void {
         timer.stop();
     }
 
-    this->needs_redraw = true;
-    if (this->window) {
-        this->window->invalidate();
-    }
+    invalidate();
 }
 
 auto TextField::on_remove() -> void { timer.stop(); }
@@ -186,8 +179,8 @@ auto TextField::select_all() -> void
     if (selection.end < selection.start) {
         selection.end = selection.start;
     }
-    needs_redraw = true;
     cursor_on = true;
+    invalidate();
 }
 
 auto TextField::select_none() -> void

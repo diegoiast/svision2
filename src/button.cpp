@@ -30,17 +30,17 @@ auto Button::on_mouse_enter() -> void {
     switch (state) {
     case ButtonStates::ClickedInside:
         state = ButtonStates::ClickedOutside;
-        needs_redraw = true;
+        invalidate();
         break;
     case ButtonStates::ClickedOutside:
         state = ButtonStates::ClickedInside;
-        needs_redraw = true;
+        invalidate();
         break;
     case ButtonStates::Hovered:
         break;
     case ButtonStates::Normal:
         state = ButtonStates::Hovered;
-        needs_redraw = true;
+        invalidate();
         break;
     }
 }
@@ -51,15 +51,15 @@ auto Button::on_mouse_leave() -> void {
     switch (state) {
     case ButtonStates::ClickedInside:
         state = ButtonStates::ClickedOutside;
-        needs_redraw = true;
+        invalidate();
         break;
     case ButtonStates::ClickedOutside:
         state = ButtonStates::ClickedInside;
-        needs_redraw = true;
+        invalidate();
         break;
     case ButtonStates::Hovered:
         state = ButtonStates::Normal;
-        needs_redraw = true;
+        invalidate();
         break;
     case ButtonStates::Normal:
         break;
@@ -78,36 +78,38 @@ auto Button::on_mouse_click(const EventMouse &event) -> void {
             } else {
                 state = ButtonStates::Normal;
             }
-            needs_redraw = true;
+            invalidate();
         }
 
         break;
     case ButtonStates::ClickedOutside:
         if (event.pressed) {
             state = ButtonStates::ClickedInside;
-            needs_redraw = true;
+            invalidate();
         } else {
             state = ButtonStates::Normal;
-            needs_redraw = true;
+            invalidate();
             spdlog::debug("Button click aborted");
         }
         break;
     case ButtonStates::Hovered:
         if (event.pressed) {
             state = ButtonStates::ClickedInside;
-            needs_redraw = true;
+            invalidate();
         }
         break;
     case ButtonStates::Normal:
         if (event.pressed) {
             state = ButtonStates::ClickedInside;
-            needs_redraw = true;
+            invalidate();
         }
         break;
     }
 }
 
-auto Button::on_focus_change(bool new_state) -> void { needs_redraw = true; }
+auto Button::on_focus_change(bool new_state) -> void {
+    invalidate();
+}
 
 auto Button::on_keyboard(const EventKeyboard &event) -> void {
     if (event.keydown) {

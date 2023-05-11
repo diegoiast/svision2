@@ -31,7 +31,27 @@ Widget::Widget(Position position, Size size, uint32_t color) {
 
 Widget::~Widget() {}
 
+
+auto Widget::invalidate() -> void
+{
+    this->needs_redraw = true;
+    if (this->window) {
+        window->invalidate();
+    }
+    if (this->parent) {
+        parent->invalidate();
+    }
+}
+
 auto Widget::draw() -> void {
+    for (auto w : widgets) {
+        if (w->needs_redraw) {
+            w->draw();
+            w->needs_redraw = false;
+        }
+        content.draw(w->position, w->content);
+    }
+
     auto color = content.background_color;
 
     if (mouse_over) {
@@ -93,6 +113,21 @@ auto Widget::on_mouse_click(const EventMouse &event) -> void {
         unclick_inside = event.is_local;
     }
     needs_redraw = true;
+}
+
+auto Widget::add(std::shared_ptr<Widget> widget) -> std::shared_ptr<Widget>
+{
+    widgets.push_back(widget);
+    widget->theme = theme;
+    widget->window = this->window;
+    widget->parent = this;
+    if (widget->focus_index < 0) {
+        // TODO - this seems wierd, should I be manipulating window's internals...?
+        widget->focus_index = window->max_focus_index;
+        window->max_focus_index++;
+    }
+    spdlog::info("New sub widget {}", fmt::ptr(widget.get()));
+    return widget;
 }
 
 PlatformWindow::~PlatformWindow() { spdlog::info("Window done"); }

@@ -23,12 +23,13 @@ struct Widget {
     Bitmap content;
     Position position;
     std::shared_ptr<Theme> theme;
+    std::list<std::shared_ptr<Widget>> widgets;
 
     // TODO this should be a shared pointer
     PlatformWindow *window = nullptr;
+    Widget *parent = nullptr;
 
     bool mouse_over = false;
-    bool needs_redraw = true;
     bool has_focus = false;
     bool can_focus = false;
     int focus_index = -1;
@@ -40,6 +41,8 @@ struct Widget {
 
     Widget(Position pp, Size size, uint32_t color);
     virtual ~Widget();
+
+    auto invalidate() -> void;
     virtual auto draw() -> void;
     virtual auto on_hover(const EventMouse &event) -> void;
     virtual auto on_mouse_enter() -> void;
@@ -47,9 +50,15 @@ struct Widget {
     virtual auto on_mouse_click(const EventMouse &event) -> void;
     virtual auto on_focus_change(bool new_state) -> void{};
     virtual auto on_keyboard(const EventKeyboard &) -> void{};
-
     virtual auto on_remove() -> void{};
+
+    auto add(std::shared_ptr<Widget> widget) -> std::shared_ptr<Widget>;
+
+    friend class PlatformWindow;
+private:
+    bool needs_redraw = true;
 };
+
 
 struct PlatformWindow {
     std::string title;
