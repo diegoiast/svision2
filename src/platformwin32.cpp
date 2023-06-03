@@ -235,19 +235,16 @@ static LRESULT CALLBACK svision_wndproc(HWND hwnd, UINT msg, WPARAM wParam, LPAR
         window->on_keyboard(convert_win32_keyboard_event(msg, wParam, lParam));
         break;
 
-    case WM_CHAR:
-    {
+    case WM_CHAR: {
         auto event = EventKeyboard();
         event.keydown = true;
         event.key = static_cast<KeyCodes>(wParam);
         window->on_keyboard(event);
     } break;
 
-
     default:
         return DefWindowProc(hwnd, msg, wParam, lParam);
     }
-
 
     if (window->needs_redraw) {
         InvalidateRect(window->hwnd, 0, 1);
@@ -311,9 +308,9 @@ auto PlatformWin32::open_window(int x, int y, int width, int height, const std::
     auto window = std::make_shared<PlatformWindowWin32>();
     window->title = title;
     // TODO - window title is so wrong, this almost hurts
-    window->hwnd = CreateWindowExW(WS_EX_CLIENTEDGE, WINDOW_CLASS_NAME, (LPWSTR) window->title.c_str(),
-                                  WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, width, height,
-                                  NULL, NULL, hInstance, NULL);
+    window->hwnd = CreateWindowExW(
+        WS_EX_CLIENTEDGE, WINDOW_CLASS_NAME, (LPWSTR)window->title.c_str(), WS_OVERLAPPEDWINDOW,
+        CW_USEDEFAULT, CW_USEDEFAULT, width, height, NULL, NULL, hInstance, NULL);
 
     if (window->hwnd == NULL) {
         return nullptr;

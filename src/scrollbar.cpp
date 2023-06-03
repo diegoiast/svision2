@@ -1,9 +1,7 @@
 #include "scrollbar.h"
 #include <button.h>
 
-ScrollBar::ScrollBar(Position position, int length, bool horizontal)
-    : Widget(position, {}, 0)
-{
+ScrollBar::ScrollBar(Position position, int length, bool horizontal) : Widget(position, {}, 0) {
     this->is_horizontal = horizontal;
     auto button_size = Size{32, 32};
     if (horizontal) {

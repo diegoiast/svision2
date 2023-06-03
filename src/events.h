@@ -41,17 +41,10 @@ struct EventKeyboard : Event {
     KeyCodes key;
     bool keydown;
 
-    auto is_control_pressed() const -> bool{
-        return modifiers & 0x1;
-    }
-    auto is_shift_pressed() const ->  bool {
-        return modifiers & 0x2;
-    }
-    auto is_mod_pressed() const ->  bool  {
-        return modifiers & 0x4;
-    }
+    auto is_control_pressed() const -> bool { return modifiers & 0x1; }
+    auto is_shift_pressed() const -> bool { return modifiers & 0x2; }
+    auto is_mod_pressed() const -> bool { return modifiers & 0x4; }
 };
-
 
 struct EventMouse : Event {
     MouseEvents type = MouseEvents::Unknown;

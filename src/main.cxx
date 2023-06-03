@@ -15,8 +15,8 @@
 
 #include <button.h>
 #include <label.h>
-#include <textfield.h>
 #include <scrollbar.h>
+#include <textfield.h>
 
 #include <spdlog/spdlog.h>
 #include <timer.h>
@@ -24,14 +24,12 @@
 auto handle_event(std::shared_ptr<PlatformWindow> w, const Event &ev);
 auto handle_event(int window_id, int widget_id, const Event &ev);
 
-struct DebugWidget: public Widget {
+struct DebugWidget : public Widget {
     bool state_pressed = false;
-    Position pos = {0,0};
+    Position pos = {0, 0};
     bool unclick_inside = false;
 
-    DebugWidget(Position position, Size size, uint32_t color) : Widget(position, size, color) {
-
-    }
+    DebugWidget(Position position, Size size, uint32_t color) : Widget(position, size, color) {}
 
     auto on_hover(const EventMouse &event) -> void {
         // spdlog::info("Widget: Mouse over: {}x{}", event.x, event.y);
@@ -90,14 +88,13 @@ struct DebugWidget: public Widget {
         content.line(10, 25, 30, 25, 0);
         content.line(10, 26, 30, 26, 0xffffff);
 
-    //     content.line(0, 0, content.size.width-1, 0, 0);
+        //     content.line(0, 0, content.size.width-1, 0, 0);
 
         content.line(10, 23, 70, 27, 0xff3388);
         content.draw_bezier(20, 2, 40, 36, 160, 37, 0x2f2af8);
         content.line_thikness(5, 23, 175, 37, 5, 0x9933fe);
         content.draw_rounded_rectangle(10, 5, 150, 30, 10, 0xffaaaa, 0xffaaaa);
     }
-
 };
 
 int main() {
@@ -124,7 +121,7 @@ int main() {
                                      [&platform]() { spdlog::info("Cancel clicke1d!"); }));
     w1->add(std::make_shared<Label>(Position{10, 10}, Size{100, 20}, "Hello world!"));
     w1->add(std::make_shared<TextField>(Position{10, 35}, Size{165, 40}));
-    w1->add(std::make_shared<ScrollBar>(Position{10,155}, 400, true));
+    w1->add(std::make_shared<ScrollBar>(Position{10, 155}, 400, true));
     platform.show_window(w1);
 
     t1.start();

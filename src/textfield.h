@@ -20,15 +20,13 @@ struct TextField : Widget {
     auto select_all() -> void;
     auto select_none() -> void;
     auto get_selected_text() -> const std::string;
-    auto has_selection() -> bool {
-        return selection.end - selection.start > 0;
-    }
+    auto has_selection() -> bool { return selection.end - selection.start > 0; }
 
   private:
     auto ensure_cursor_visible() -> void;
 
     std::string text = "";
-    SelectionRange selection = {0,0};
+    SelectionRange selection = {0, 0};
 
     Timer timer;
     bool cursor_on = false;

@@ -50,10 +50,10 @@ struct Widget {
     auto add(std::shared_ptr<Widget> widget) -> std::shared_ptr<Widget>;
 
     friend class PlatformWindow;
-private:
+
+  private:
     bool needs_redraw = true;
 };
-
 
 struct PlatformWindow {
     std::string title;

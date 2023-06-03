@@ -27,16 +27,14 @@ auto TextField::draw() -> void {
 
     auto selection_width = (selection.end - selection.start) - display_from;
     selection_width *= 8;
-    content.fill_rect(padding-1, padding-1, selection_width+1, content.size.height-padding-2, ThemePlasma::button_selected_background);
+    content.fill_rect(padding - 1, padding - 1, selection_width + 1,
+                      content.size.height - padding - 2, ThemePlasma::button_selected_background);
     // TODO handle partial selection
     content.write_fixed(Position{padding, center_y}, display_text, 0);
 
-
     if (this->cursor_on && this->has_focus) {
         auto position_x = padding + (cursor_position - display_from) * 8;
-        content.draw_rectangle(
-            position_x, padding,
-            1, content.size.height - padding * 2, 0, 0);
+        content.draw_rectangle(position_x, padding, 1, content.size.height - padding * 2, 0, 0);
     }
 }
 
@@ -49,7 +47,7 @@ auto TextField::on_keyboard(const EventKeyboard &event) -> void {
         if (cursor_position > 0) {
             // TODO - move to next word
             // TODO - change selection
-            cursor_position --;
+            cursor_position--;
             cursor_on = true;
             select_none();
             ensure_cursor_visible();
@@ -60,7 +58,7 @@ auto TextField::on_keyboard(const EventKeyboard &event) -> void {
         if (cursor_position < text.length()) {
             // TODO - move to next word
             // TODO - change selection
-            cursor_position ++;
+            cursor_position++;
             cursor_on = true;
             select_none();
             ensure_cursor_visible();
@@ -89,7 +87,7 @@ auto TextField::on_keyboard(const EventKeyboard &event) -> void {
         if (has_selection()) {
             text.erase(selection.start, selection.end);
         } else {
-            text.erase(cursor_position,1);
+            text.erase(cursor_position, 1);
         }
         cursor_on = true;
         ensure_cursor_visible();
@@ -105,8 +103,8 @@ auto TextField::on_keyboard(const EventKeyboard &event) -> void {
             invalidate();
         } else {
             if (cursor_position > 0) {
-                text.erase(cursor_position-1,1);
-                cursor_position --;
+                text.erase(cursor_position - 1, 1);
+                cursor_position--;
                 cursor_on = true;
                 ensure_cursor_visible();
                 select_none();
@@ -130,9 +128,8 @@ auto TextField::on_keyboard(const EventKeyboard &event) -> void {
             // TODO replace selection
             if (cursor_position > text.length()) {
                 text += (char)event.key;
-            } {
-                text.insert(cursor_position, 1, ascii);
             }
+            { text.insert(cursor_position, 1, ascii); }
             cursor_position += 1;
             cursor_on = true;
             select_none();
@@ -154,7 +151,7 @@ auto TextField::on_mouse_click(const EventMouse &event) -> void {
     auto pos = (event.x - padding) / 8;
     cursor_position = display_from + pos;
     cursor_position = std::min((size_t)cursor_position, text.length());
-    cursor_on   = true;
+    cursor_on = true;
     invalidate();
 }
 
@@ -171,9 +168,7 @@ auto TextField::on_focus_change(bool new_state) -> void {
 
 auto TextField::on_remove() -> void { timer.stop(); }
 
-
-auto TextField::select_all() -> void
-{
+auto TextField::select_all() -> void {
     selection.start = 0;
     selection.end = text.length();
     if (selection.end < selection.start) {
@@ -183,30 +178,26 @@ auto TextField::select_all() -> void
     invalidate();
 }
 
-auto TextField::select_none() -> void
-{
+auto TextField::select_none() -> void {
     selection.start = 0;
     selection.end = 0;
 }
 
-auto TextField::get_selected_text() -> const std::string
-{
+auto TextField::get_selected_text() -> const std::string {
     return this->text.substr(selection.start, selection.end);
 }
 
-auto TextField::ensure_cursor_visible() -> void
-{
+auto TextField::ensure_cursor_visible() -> void {
     auto padding = 5;
-    auto max_x_position = content.size.width - padding*2;
+    auto max_x_position = content.size.width - padding * 2;
     auto cursor_visual_position = (cursor_position - display_from) * 8 + padding;
 
     while (cursor_visual_position > max_x_position) {
-        display_from ++;
+        display_from++;
         cursor_visual_position = (cursor_position - display_from) * 8 + padding;
     }
     while (display_from > cursor_position) {
-        display_from =
-            cursor_position-1;
+        display_from = cursor_position - 1;
     }
     if (cursor_position > text.length()) {
         cursor_position = text.length();

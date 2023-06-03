@@ -107,9 +107,7 @@ auto Button::on_mouse_click(const EventMouse &event) -> void {
     }
 }
 
-auto Button::on_focus_change(bool new_state) -> void {
-    invalidate();
-}
+auto Button::on_focus_change(bool new_state) -> void { invalidate(); }
 
 auto Button::on_keyboard(const EventKeyboard &event) -> void {
     if (event.keydown) {

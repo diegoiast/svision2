@@ -37,7 +37,8 @@ auto convert_x11_key_event(XEvent &ev, Display *dpy) -> EventKeyboard {
     }
 
     if (event.key == KeyCodes::Unknown) {
-        spdlog::critical("Keycode 0x{0:x} is not detected, will send 0x{1:x}", keySym, (int)event.key);
+        spdlog::critical("Keycode 0x{0:x} is not detected, will send 0x{1:x}", keySym,
+                         (int)event.key);
     }
     auto m = ev.xkey.state;
     event.keydown = ev.type == KeyPress;

@@ -31,9 +31,7 @@ Widget::Widget(Position position, Size size, uint32_t color) {
 
 Widget::~Widget() {}
 
-
-auto Widget::invalidate() -> void
-{
+auto Widget::invalidate() -> void {
     this->needs_redraw = true;
     if (this->window) {
         window->invalidate();
@@ -53,20 +51,15 @@ auto Widget::draw() -> void {
     }
 }
 
-auto Widget::on_hover(const EventMouse &event) -> void {
-}
+auto Widget::on_hover(const EventMouse &event) -> void {}
 
-auto Widget::on_mouse_enter() -> void {
-}
+auto Widget::on_mouse_enter() -> void {}
 
-auto Widget::on_mouse_leave() -> void {
-}
+auto Widget::on_mouse_leave() -> void {}
 
-auto Widget::on_mouse_click(const EventMouse &event) -> void {
-}
+auto Widget::on_mouse_click(const EventMouse &event) -> void {}
 
-auto Widget::add(std::shared_ptr<Widget> widget) -> std::shared_ptr<Widget>
-{
+auto Widget::add(std::shared_ptr<Widget> widget) -> std::shared_ptr<Widget> {
     widgets.push_back(widget);
     widget->theme = theme;
     widget->window = this->window;
@@ -77,7 +70,7 @@ auto Widget::add(std::shared_ptr<Widget> widget) -> std::shared_ptr<Widget>
             widget->focus_index = window->max_focus_index;
             window->max_focus_index++;
         } else {
-            widget->focus_index = focus_index+1;
+            widget->focus_index = focus_index + 1;
         }
     }
     spdlog::info("New sub widget {}", fmt::ptr(widget.get()));
@@ -132,8 +125,7 @@ auto PlatformWindow::select_next_widget() -> void {
     select_widget(best_focus_widget);
 }
 
-auto PlatformWindow::select_previous_widget() -> void
-{
+auto PlatformWindow::select_previous_widget() -> void {
     auto last_focus_index = -1;
 
     if (focus_widget)
@@ -177,7 +169,6 @@ auto PlatformWindow::select_previous_widget() -> void
     }
 
     select_widget(best_focus_widget);
-
 }
 
 auto PlatformWindow::select_widget(std::shared_ptr<Widget> widget) -> void {

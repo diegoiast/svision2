@@ -10,13 +10,12 @@
 
 class Button;
 
-
-struct ScrollBar : Widget
-{
+struct ScrollBar : Widget {
     ScrollBar(Position position, int length, bool horizontal);
 
     bool is_horizontal = false;
-private:
+
+  private:
     std::shared_ptr<Button> up_button = {};
     std::shared_ptr<Button> down_button = {};
 };
