@@ -32,6 +32,8 @@ enum class KeyCodes {
     Backspace = 0x0008,
     Insert = 0x007E,
     Space = ' ',
+    ControlLeft = 0xffe3,
+    ControlRight = 0xffe4,
 };
 
 struct Event {};

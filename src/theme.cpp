@@ -289,7 +289,7 @@ auto ThemePlasma::draw_button(Bitmap &content, bool has_focus, bool is_default, 
     content.line(2, content.size.height - 1, content.size.width - 2, content.size.height - 1,
                  button_shadow);
 
-    // TODO - widet should be filled with real content from parent
+    // TODO - widget should be filled with real content from parent
     content.put_pixel(0, content.size.height - 1, ThemePlasma::window_background_color);
     content.put_pixel(1, content.size.height - 1, ThemePlasma::window_background_color);
     content.put_pixel(content.size.width - 1, content.size.height - 1,
