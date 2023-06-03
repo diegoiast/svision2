@@ -1,8 +1,6 @@
-
 cmake_minimum_required (VERSION 3.24.2)
 
 project (svision2)
-
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
 list(APPEND CMAKE_PREFIX_PATH ${CMAKE_BINARY_DIR})
@@ -40,22 +38,24 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 # Main library
 set(SVISION_SOURCES
-    src/bitmap.h
     src/bitmap.cpp
-    src/button.h
+    src/bitmap.h
     src/button.cpp
+    src/button.h
     src/label.cpp
     src/label.h
     src/platform.cpp
     src/platform.h
+    src/scrollbar.cpp
+    src/scrollbar.h
     src/theme.cpp
     src/theme.h
     src/timer.cpp
     src/timer.h
     src/textfield.cpp
     src/textfield.h
-    src/widget.h
     src/widget.cpp
+    src/widget.h
 )
 
 if (LINUX)

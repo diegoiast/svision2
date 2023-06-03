@@ -51,68 +51,18 @@ auto Widget::draw() -> void {
         }
         content.draw(w->position, w->content);
     }
-
-    auto color = content.background_color;
-
-    if (mouse_over) {
-        color = Lighter(content.background_color, 0.1);
-    }
-
-    content.fill(color);
-
-    if (mouse_over) {
-        auto str = fmt::format("{} Position = {}x{} ", state_pressed ? "*" : " ", pos.x, pos.y);
-        content.write_fixed(Position{4, 4}, str, MakeColor(0xf, 0xf, 0));
-    } else {
-        if (state_pressed)
-            content.write_fixed_char(Position{4, 4}, '*', MakeColor(0x0, 0x0, 0));
-    }
-
-    content.line(10, 23, 30, 23, 0);
-    content.line(10, 24, 30, 24, 0xffffff);
-    content.line(10, 25, 30, 25, 0);
-    content.line(10, 26, 30, 26, 0xffffff);
-
-    // content.line(0, 0, content.size.width-1, 0, 0);
-
-    content.line(10, 23, 70, 27, 0xff3388);
-    content.draw_bezier(20, 2, 40, 36, 160, 37, 0x2f2af8);
-    content.line_thikness(5, 23, 175, 37, 5, 0x9933fe);
-    content.draw_rounded_rectangle(10, 5, 150, 30, 10, 0xffaaaa, 0xffaaaa);
 }
 
 auto Widget::on_hover(const EventMouse &event) -> void {
-    // spdlog::info("Widget: Mouse over: {}x{}", event.x, event.y);
-    pos.x = event.x;
-    pos.y = event.y;
-    this->needs_redraw = true;
 }
 
 auto Widget::on_mouse_enter() -> void {
-    mouse_over = true;
-    spdlog::info("Widget: mouse entered!");
-    needs_redraw = true;
 }
 
 auto Widget::on_mouse_leave() -> void {
-    mouse_over = false;
-    spdlog::info("Widget: mouse leave!");
-    needs_redraw = true;
 }
 
 auto Widget::on_mouse_click(const EventMouse &event) -> void {
-    if (event.type == MouseEvents::Press) {
-        spdlog::info("Click inside widget, {}", fmt::ptr(this));
-        state_pressed = true;
-    } else if (event.type == MouseEvents::Release) {
-        if (event.is_local)
-            spdlog::info("Click release inside widget, {}", fmt::ptr(this));
-        else if (state_pressed)
-            spdlog::info("Click release outside widget, {}", fmt::ptr(this));
-        state_pressed = false;
-        unclick_inside = event.is_local;
-    }
-    needs_redraw = true;
 }
 
 auto Widget::add(std::shared_ptr<Widget> widget) -> std::shared_ptr<Widget>
@@ -122,9 +72,13 @@ auto Widget::add(std::shared_ptr<Widget> widget) -> std::shared_ptr<Widget>
     widget->window = this->window;
     widget->parent = this;
     if (widget->focus_index < 0) {
-        // TODO - this seems wierd, should I be manipulating window's internals...?
-        widget->focus_index = window->max_focus_index;
-        window->max_focus_index++;
+        if (window) {
+            // TODO - this seems wierd, should I be manipulating window's internals...?
+            widget->focus_index = window->max_focus_index;
+            window->max_focus_index++;
+        } else {
+            widget->focus_index = focus_index+1;
+        }
     }
     spdlog::info("New sub widget {}", fmt::ptr(widget.get()));
     return widget;
@@ -377,6 +331,16 @@ auto PlatformWindow::add(std::shared_ptr<Widget> widget) -> std::shared_ptr<Widg
         widget->focus_index = max_focus_index;
         max_focus_index++;
     }
+
+    for (auto w : widget->widgets) {
+        if (w->focus_index < 0) {
+            w->focus_index = max_focus_index;
+            max_focus_index++;
+        }
+        w->theme = theme;
+        w->window = this;
+    }
+
     spdlog::info("New widget {}", fmt::ptr(widget.get()));
     return widget;
 }

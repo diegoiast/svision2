@@ -55,6 +55,7 @@ auto Bitmap::resize(int width, int height) -> void {
     auto xx = std::min(width, size.width);
     auto yy = std::min(height, size.height);
 
+#if 0
     // todo - instead of filling the whole buffer we could clean
     // the right, and bottom dirty parts.
     std::fill_n(new_buffer, width * height, background_color);
@@ -65,7 +66,7 @@ auto Bitmap::resize(int width, int height) -> void {
             }
         }
     }
-
+#endif
     delete[] buf;
     buf = new_buffer;
     size.width = width;

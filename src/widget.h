@@ -34,11 +34,6 @@ struct Widget {
     bool can_focus = false;
     int focus_index = -1;
 
-    // used for debug. will get removed soon
-    bool state_pressed = false;
-    Position pos;
-    bool unclick_inside;
-
     Widget(Position pp, Size size, uint32_t color);
     virtual ~Widget();
 
