@@ -1,5 +1,6 @@
 #include "scrollbar.h"
 #include <button.h>
+#include <spdlog/spdlog.h>
 
 ScrollBar::ScrollBar(Position position, int length, bool horizontal) : Widget(position, {}, 0) {
     this->is_horizontal = horizontal;
@@ -18,4 +19,7 @@ ScrollBar::ScrollBar(Position position, int length, bool horizontal) : Widget(po
     } else {
         this->content.resize({32, length});
     }
+
+    this->up_button->on_button_click = []() { spdlog::info("value++"); };
+    this->down_button->on_button_click = []() { spdlog::info("value--"); };
 }

@@ -16,14 +16,32 @@
 #include <string>
 
 struct Theme;
-struct PlatformWindow;
 struct Platform;
+struct PlatformWindow;
+struct Widget;
+
+struct WidgetCollection {
+    std::list<std::shared_ptr<Widget>> widgets;
+    std::shared_ptr<Widget> last_overed_widget;
+    std::shared_ptr<Widget> focused_widget;
+    int max_focus_index = 1;
+
+    auto add(std::shared_ptr<Widget> widget, PlatformWindow *window) -> std::shared_ptr<Widget>;
+
+    auto on_mouse(const EventMouse &event) -> void;
+    auto on_mouse_release(const EventMouse &event, std::shared_ptr<Widget> w) -> void;
+    auto on_mouse_press(const EventMouse &event, std::shared_ptr<Widget> w) -> void;
+
+    auto focus_next_widget() -> void;
+    auto focus_previous_widget() -> void;
+    auto focus_widget(std::shared_ptr<Widget> widget) -> void;
+};
 
 struct Widget {
     Bitmap content;
     Position position;
+    WidgetCollection widgets;
     std::shared_ptr<Theme> theme;
-    std::list<std::shared_ptr<Widget>> widgets;
 
     // TODO this should be a shared pointer
     PlatformWindow *window = nullptr;
@@ -39,6 +57,7 @@ struct Widget {
 
     auto invalidate() -> void;
     virtual auto draw() -> void;
+    virtual auto on_mouse(const EventMouse &event) -> void;
     virtual auto on_hover(const EventMouse &event) -> void;
     virtual auto on_mouse_enter() -> void;
     virtual auto on_mouse_leave() -> void;
@@ -47,9 +66,16 @@ struct Widget {
     virtual auto on_keyboard(const EventKeyboard &) -> void{};
     virtual auto on_remove() -> void{};
 
-    auto add(std::shared_ptr<Widget> widget) -> std::shared_ptr<Widget>;
+    auto add(std::shared_ptr<Widget> widget) -> std::shared_ptr<Widget> {
+        widgets.add(widget, window);
+        widget->parent = this;
+        return widget;
+    }
+
+    auto get_theme() -> std::shared_ptr<Theme>;
 
     friend class PlatformWindow;
+    friend class WidgetCollection;
 
   private:
     bool needs_redraw = true;
@@ -58,21 +84,17 @@ struct Widget {
 struct PlatformWindow {
     std::string title;
     Bitmap content;
-    uint32_t background_color = 0;
-    std::list<std::shared_ptr<Widget>> widgets;
-    std::shared_ptr<Widget> last_overed_widget;
-    std::shared_ptr<Widget> focus_widget;
+    WidgetCollection widgets;
     std::shared_ptr<Theme> theme;
-    int max_focus_index = 1;
 
     bool needs_redraw = false;
     Platform *platform = nullptr;
 
     virtual ~PlatformWindow();
 
-    auto select_next_widget() -> void;
-    auto select_previous_widget() -> void;
-    auto select_widget(std::shared_ptr<Widget> widget) -> void;
+    auto focus_next_widget() -> void { widgets.focus_next_widget(); }
+    auto focus_previous_widget() -> void { widgets.focus_previous_widget(); }
+    auto focus_widget(std::shared_ptr<Widget> widget) -> void { widgets.focus_widget(widget); }
 
     virtual auto draw() -> void;
     virtual auto on_keyboard(const EventKeyboard &) -> void;
@@ -82,5 +104,10 @@ struct PlatformWindow {
     virtual auto invalidate() -> void;
     virtual auto on_close() -> void;
 
-    auto add(std::shared_ptr<Widget> widget) -> std::shared_ptr<Widget>;
+    auto add(std::shared_ptr<Widget> widget) -> std::shared_ptr<Widget> {
+        widgets.add(widget, this);
+        widget->window = this;
+        widget->theme = theme;
+        return widget;
+    }
 };

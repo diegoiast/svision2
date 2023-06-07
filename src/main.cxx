@@ -108,7 +108,7 @@ int main() {
     });
 
     auto w2 = platform.open_window(300, 300, 640, 480, "test 2");
-    w2->background_color = 0x00FF00;
+    w2->content.background_color = 0x00FF00;
     platform.show_window(w2);
 
     auto w1 = platform.open_window(100, 100, 640, 480, "test 1");

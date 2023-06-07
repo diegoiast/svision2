@@ -18,7 +18,9 @@ Button::Button(Position pp, Size size, std::string text, bool is_default,
     this->can_focus = true;
 }
 
-auto Button::draw() -> void { theme->draw_button(content, has_focus, is_default, state, text); }
+auto Button::draw() -> void {
+    get_theme()->draw_button(content, has_focus, is_default, state, text);
+}
 
 auto Button::on_hover(const EventMouse &event) -> void {
     // default implementation demands redraw, we
