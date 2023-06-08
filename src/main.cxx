@@ -122,6 +122,7 @@ int main() {
     w1->add(std::make_shared<Label>(Position{10, 10}, Size{100, 20}, "Hello world!"));
     w1->add(std::make_shared<TextField>(Position{10, 35}, Size{165, 40}));
     w1->add(std::make_shared<ScrollBar>(Position{10, 155}, 400, true));
+    w1->add(std::make_shared<ScrollBar>(Position{450, 75}, 400, false));
     platform.show_window(w1);
 
     t1.start();

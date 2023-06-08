@@ -11,9 +11,17 @@
 class Button;
 
 struct ScrollBar : Widget {
-    ScrollBar(Position position, int length, bool horizontal);
+    ScrollBar(Position position, int length, bool horizontal, int max=100);
 
     bool is_horizontal = false;
+    int minimun = 0;
+    int maximum = 100;
+    int value = maximum;
+    int step = (maximum - minimun) / 10;
+
+    auto set_value(int minimum, int maximum, int step=0 ) -> void;
+    auto step_up() -> void;
+    auto step_down() -> void;
 
   private:
     std::shared_ptr<Button> up_button = {};
