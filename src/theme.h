@@ -19,6 +19,7 @@ struct Theme {
     virtual auto draw_window_background(Bitmap &content) -> void = 0;
     virtual auto draw_button(Bitmap &content, bool has_focus, bool is_default, ButtonStates state,
                              const std::string &text) -> void = 0;
+    virtual auto draw_input_background(Bitmap &content, const bool has_focus) -> void = 0;
     virtual auto needs_frame_for_focus() -> bool = 0;
 };
 
@@ -60,6 +61,7 @@ struct ThemeRedmond : Theme {
     virtual auto draw_window_background(Bitmap &content) -> void override;
     virtual auto draw_button(Bitmap &content, bool has_focus, bool is_default, ButtonStates state,
                              const std::string &text) -> void override;
+    virtual auto draw_input_background(Bitmap &content, const bool has_focus) -> void override;
     virtual auto needs_frame_for_focus() -> bool override { return true; };
 };
 
@@ -82,6 +84,7 @@ struct ThemeVision : Theme {
     virtual auto draw_window_background(Bitmap &content) -> void override;
     virtual auto draw_button(Bitmap &content, bool has_focus, bool is_default, ButtonStates state,
                              const std::string &text) -> void override;
+    virtual auto draw_input_background(Bitmap &content, const bool has_focus) -> void override;
     virtual auto needs_frame_for_focus() -> bool override { return false; };
 };
 
@@ -107,5 +110,6 @@ struct ThemePlasma : Theme {
     virtual auto draw_window_background(Bitmap &content) -> void override;
     virtual auto draw_button(Bitmap &content, bool has_focus, bool is_default, ButtonStates state,
                              const std::string &text) -> void override;
+    virtual auto draw_input_background(Bitmap &content, const bool has_focus) -> void override;
     virtual auto needs_frame_for_focus() -> bool override { return false; };
 };

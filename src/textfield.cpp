@@ -18,13 +18,12 @@ TextField::TextField(Position position, Size size) : Widget(position, size, 0) {
 TextField::~TextField() { timer.stop(); }
 
 auto TextField::draw() -> void {
+    theme->draw_input_background(content, has_focus);
+
     auto padding = 5;
     auto display_text_logical = (content.size.width - padding * 2) / 8;
     auto display_text = this->text.substr(display_from, display_from + display_text_logical);
     auto center_y = (content.size.height - 16) / 2;
-    content.fill_rect(0, 0, content.size.width, content.size.height, 0xffffff);
-    theme->draw_widget_frame(content, this->has_focus, true);
-
     auto selection_width = (selection.end - selection.start) - display_from;
     selection_width *= 8;
     content.fill_rect(padding - 1, padding - 1, selection_width + 1,

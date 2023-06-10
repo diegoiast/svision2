@@ -152,6 +152,19 @@ auto ThemeRedmond::draw_button(Bitmap &content, bool has_focus, bool is_default,
     content.write_fixed(text_position, text, 0xffffff);
 }
 
+auto ThemeRedmond::draw_input_background(Bitmap &content, const bool has_focus) -> void
+{
+    auto line1 = ThemeRedmond::line_color2;
+    auto line2 = ThemeRedmond::line_color1;
+    auto line3 = ThemeRedmond::line_color4;
+    auto line4 = ThemeRedmond::line_color3;
+    auto background = has_focus ? 0x00FFFFFF : ThemeRedmond::background_color;
+    content.draw_rectangle(0, 0, content.size.width, content.size.height, line1, line2);
+    content.draw_rectangle(1, 1, content.size.width - 2, content.size.height - 2, line3, line4);
+    content.fill_rect(1, 1, content.size.width - 2, content.size.height - 2, background);
+}
+
+
 auto ThemeVision::draw_widget_frame(Bitmap &content, bool selected, bool active) -> void {
     auto color = ThemeVision::button_border;
     if (selected) {
@@ -227,6 +240,18 @@ auto ThemeVision::draw_button(Bitmap &content, bool has_focus, bool is_default, 
                                   ((content.size.height - text_size.height) / 2) + text_padding};
 
     content.write_fixed(text_position, text, color);
+}
+
+auto ThemeVision::draw_input_background(Bitmap &content, const bool has_focus) -> void
+{
+    auto line1 = ThemeVision::button_border_hover;
+    auto line2 = ThemeVision::button_border_hover;
+    auto line3 = ThemeVision::button_border_hover;
+    auto line4 = ThemeVision::button_border_hover;
+    auto background = has_focus ? 0x00FFFFFF : ThemeVision::window_background_color;;
+    content.draw_rectangle(0, 0, content.size.width, content.size.height, line1, line2);
+    content.draw_rectangle(1, 1, content.size.width - 2, content.size.height - 2, line3, line4);
+    content.fill_rect(1, 1, content.size.width - 2, content.size.height - 2, background);
 }
 
 auto ThemePlasma::draw_widget_frame(Bitmap &content, bool selected, bool active) -> void {
@@ -307,4 +332,16 @@ auto ThemePlasma::draw_button(Bitmap &content, bool has_focus, bool is_default, 
                                   ((content.size.height - text_size.height) / 2) + text_padding};
 
     content.write_fixed(text_position, text, color);
+}
+
+auto ThemePlasma::draw_input_background(Bitmap &content, const bool has_focus) -> void
+{
+    auto line1 = has_focus ? button_selected_border : ThemePlasma::button_border;
+    auto line2 = has_focus ? button_selected_border : ThemePlasma::button_border;
+    auto line3 = has_focus ? button_selected_border : ThemePlasma::button_border;
+    auto line4 = has_focus ? button_selected_border : ThemePlasma::button_border;
+    auto background = 0x00FFFFFF;
+    content.draw_rectangle(0, 0, content.size.width, content.size.height, line1, line2);
+    content.draw_rectangle(1, 1, content.size.width - 2, content.size.height - 2, line3, line4);
+    content.fill_rect(1, 1, content.size.width - 2, content.size.height - 2, background);
 }

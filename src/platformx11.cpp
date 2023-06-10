@@ -106,8 +106,8 @@ auto PlatformX11::init() -> void {
 #if 0
     default_theme = std::make_shared<ThemePlasma>();
 #else
-    //    default_theme = std::make_shared<ThemeRedmond>();
-    default_theme = std::make_shared<ThemeVision>();
+    default_theme = std::make_shared<ThemeRedmond>();
+//    default_theme = std::make_shared<ThemeVision>();
 #endif
     spdlog::info("PlatformX11 initialized");
 }
