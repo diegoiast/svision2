@@ -61,20 +61,6 @@ auto ThemeOldie::draw_button(Bitmap &content, bool has_focus, bool is_default, B
 }
 #endif
 
-auto ThemeRedmond::draw_widget_frame(Bitmap &content, bool selected, bool active) -> void {
-    auto line1 = ThemeRedmond::line_color2;
-    auto line2 = ThemeRedmond::line_color1;
-    auto line3 = ThemeRedmond::line_color4;
-    auto line4 = ThemeRedmond::line_color3;
-    if (selected) {
-        content.draw_rectangle(0, 0, content.size.width, content.size.height, line1, line2);
-        content.draw_rectangle(1, 1, content.size.width - 2, content.size.height - 2, line3, line4);
-        content.fill_rect(2, 2, content.size.width - 4, content.size.height - 4, 0xffffff);
-    } else {
-        content.draw_rectangle(0, 0, content.size.width, content.size.height, line1, line2);
-        content.fill_rect(1, 1, content.size.width - 2, content.size.height - 2, 0xf0f0f0);
-    }
-}
 
 auto ThemeRedmond::draw_window_background(Bitmap &content) -> void {
     content.fill(background_color);
@@ -86,41 +72,25 @@ auto ThemeRedmond::draw_button(Bitmap &content, bool has_focus, bool is_default,
     auto shadow_padding = text_padding + 1;
 
     auto background_color = 0;
-    auto line1 = ThemeRedmond::line_color1;
-    auto line2 = ThemeRedmond::line_color1;
-    auto line3 = ThemeRedmond::line_color1;
-    auto line4 = ThemeRedmond::line_color1;
     auto shadow_offset = 0;
     auto text_offset = 0;
 
     switch (state) {
     case ButtonStates::Normal:
-        line1 = ThemeRedmond::line_color1;
-        line2 = ThemeRedmond::line_color2;
-        line3 = ThemeRedmond::line_color3;
-        line4 = ThemeRedmond::line_color4;
+        draw_frame(content, {0,0}, content.size, true);
         background_color = ThemeRedmond::background_color;
         break;
     case ButtonStates::Hovered:
-        line1 = ThemeRedmond::line_color1;
-        line2 = ThemeRedmond::line_color2;
-        line3 = ThemeRedmond::line_color3;
-        line4 = ThemeRedmond::line_color4;
+        draw_frame(content, {0,0}, content.size, true);
         background_color = ThemeRedmond::background_color_hover;
         break;
     case ButtonStates::ClickedInside:
-        line1 = ThemeRedmond::line_color2;
-        line2 = ThemeRedmond::line_color1;
-        line3 = ThemeRedmond::line_color4;
-        line4 = ThemeRedmond::line_color3;
+        draw_frame(content, {0,0}, content.size, false);
         background_color = ThemeRedmond::background_color_hover;
         shadow_offset = is_default ? 2 : 1;
         break;
     case ButtonStates::ClickedOutside:
-        line1 = ThemeRedmond::line_color1;
-        line2 = ThemeRedmond::line_color2;
-        line3 = ThemeRedmond::line_color3;
-        line4 = ThemeRedmond::line_color4;
+        draw_frame(content, {0,0}, content.size, true);
         background_color = ThemeRedmond::background_color;
         shadow_offset = 0;
         break;
@@ -129,15 +99,10 @@ auto ThemeRedmond::draw_button(Bitmap &content, bool has_focus, bool is_default,
         break;
     }
 
-    content.fill_rect(0, 0, content.size.width, content.size.height, 0xffaabb);
     if (!is_default) {
-        content.draw_rectangle(0, 0, content.size.width, content.size.height, line1, line2);
-        content.draw_rectangle(1, 1, content.size.width - 2, content.size.height - 2, line3, line4);
         content.fill_rect(2, 2, content.size.width - 4, content.size.height - 4, background_color);
     } else {
-        content.draw_rectangle(0, 0, content.size.width, content.size.height, line2, line2);
-        content.draw_rectangle(1, 1, content.size.width - 2, content.size.height - 2, line1, line2);
-        content.draw_rectangle(2, 2, content.size.width - 4, content.size.height - 4, line3, line4);
+        content.draw_rectangle(2, 2, content.size.width - 4, content.size.height - 4, line_color4, line_color4);
         content.fill_rect(3, 3, content.size.width - 6, content.size.height - 6, background_color);
     }
 
@@ -154,24 +119,27 @@ auto ThemeRedmond::draw_button(Bitmap &content, bool has_focus, bool is_default,
 
 auto ThemeRedmond::draw_input_background(Bitmap &content, const bool has_focus) -> void
 {
-    auto line1 = ThemeRedmond::line_color2;
-    auto line2 = ThemeRedmond::line_color1;
-    auto line3 = ThemeRedmond::line_color4;
-    auto line4 = ThemeRedmond::line_color3;
+    draw_frame(content, {0,0}, content.size, false);
     auto background = has_focus ? 0x00FFFFFF : ThemeRedmond::background_color;
-    content.draw_rectangle(0, 0, content.size.width, content.size.height, line1, line2);
-    content.draw_rectangle(1, 1, content.size.width - 2, content.size.height - 2, line3, line4);
+    background = 0x00ffffff;
     content.fill_rect(1, 1, content.size.width - 2, content.size.height - 2, background);
 }
 
-
-auto ThemeVision::draw_widget_frame(Bitmap &content, bool selected, bool active) -> void {
-    auto color = ThemeVision::button_border;
-    if (selected) {
-        color = ThemeVision::button_border_hover;
+auto ThemeRedmond::draw_frame(Bitmap &content, Position position, Size size, bool elevated) -> void
+{
+    if (elevated) {
+        content.draw_rectangle(0, 0, content.size.width, content.size.height,
+            ThemeRedmond::line_color1, ThemeRedmond::line_color2);
+        content.draw_rectangle(1, 1, content.size.width - 2, content.size.height - 2,
+            ThemeRedmond::line_color3, ThemeRedmond::line_color4);
+    } else {
+        content.draw_rectangle(0, 0, content.size.width, content.size.height,
+            ThemeRedmond::line_color2, ThemeRedmond::line_color1);
+        content.draw_rectangle(1, 1, content.size.width - 2, content.size.height - 2,
+            ThemeRedmond::line_color4, ThemeRedmond::line_color3);
     }
-    content.draw_rounded_rectangle(0, 0, content.size.width, content.size.height, 5, color, color);
 }
+
 
 auto ThemeVision::draw_window_background(Bitmap &content) -> void {
     content.fill_rect(0, 0, content.size.width, content.size.height,
@@ -252,14 +220,6 @@ auto ThemeVision::draw_input_background(Bitmap &content, const bool has_focus) -
     content.draw_rectangle(0, 0, content.size.width, content.size.height, line1, line2);
     content.draw_rectangle(1, 1, content.size.width - 2, content.size.height - 2, line3, line4);
     content.fill_rect(1, 1, content.size.width - 2, content.size.height - 2, background);
-}
-
-auto ThemePlasma::draw_widget_frame(Bitmap &content, bool selected, bool active) -> void {
-    auto color = ThemePlasma::button_border;
-    if (selected) {
-        color = ThemePlasma::button_selected_border;
-    }
-    content.draw_rounded_rectangle(0, 0, content.size.width, content.size.height, 5, color, color);
 }
 
 auto ThemePlasma::draw_window_background(Bitmap &content) -> void {
