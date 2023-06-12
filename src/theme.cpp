@@ -7,63 +7,22 @@
 
 #include "theme.h"
 
-#if defined(SVISION_OLDIE_ENABLED)
-auto ThemeOldie::draw_window_background(Bitmap &content) -> void { content.fill(background_color); }
-
-auto ThemeOldie::draw_button(Bitmap &content, bool has_focus, bool is_default, ButtonStates state,
-                             const std::string &text) -> void {
-    auto text_padding = 5;
-    auto shadow_padding = text_padding + 1;
-
-    auto background_color = background_color_normal;
-    auto line1 = line_color1;
-    auto line2 = line_color2;
-    auto shadow_offset = 0;
-    auto text_offset = 0;
-
-    switch (state) {
-    case ButtonStates::Normal:
-        line1 = line_color1;
-        line2 = line_color2;
-        break;
-    case ButtonStates::Hovered:
-        line1 = MakeColor(0x00, 0xff, 0x00);
-        line2 = MakeColor(0x00, 0xff, 0x00);
-        background_color = background_color_hover;
-        break;
-    case ButtonStates::ClickedInside:
-        line1 = line_color2;
-        line2 = line_color1;
-        background_color = background_color_hover;
-        shadow_offset = 1;
-        break;
-    case ButtonStates::ClickedOutside:
-        line1 = line_color1;
-        line2 = line_color2;
-        background_color = background_color_hover;
-        shadow_offset = 0;
-        break;
-
-    default:
-        break;
-    }
-
-    content.line(0, 0, 0, content.size.height - 1, line1);
-    content.line(0, 0, content.size.width - 1, 0, line1);
-    content.line(content.size.width - 1, 0, content.size.width - 1, content.size.height - 1, line2);
-    content.line(0, content.size.height - 1, content.size.width - 1, content.size.height - 1,
-                 line2);
-    content.fill_rect(1, 1, content.size.width - 2, content.size.height - 2, background_color);
-    content.write_fixed(Position{shadow_padding + shadow_offset, shadow_padding + shadow_offset},
-                        text, 0);
-    content.write_fixed(Position{text_padding + text_offset, text_padding + text_offset}, text,
-                        0xffffff);
-}
-#endif
-
-
 auto ThemeRedmond::draw_window_background(Bitmap &content) -> void {
     content.fill(background_color);
+}
+
+auto ThemeRedmond::draw_scrollbar_background(Bitmap &content) -> void {
+    auto on_color = ThemeRedmond::line_color1;
+    auto off_color = ThemeRedmond::background_color_hover;
+    for (auto y=1; y<content.size.height-1; y++) {
+        for (auto x=1; x<content.size.width-1; x++) {
+            auto on = (x + y) % 2 == 0;
+            if (on) {
+                content.put_pixel(x, y, on ? on_color : off_color);
+            }
+        }
+    }
+    content.draw_rectangle(0, 0, content.size.width, content.size.height, ThemeRedmond::line_color2, ThemeRedmond::line_color2);
 }
 
 auto ThemeRedmond::draw_button(Bitmap &content, bool has_focus, bool is_default, ButtonStates state,
@@ -142,6 +101,12 @@ auto ThemeRedmond::draw_frame(Bitmap &content, Position position, Size size, boo
 
 
 auto ThemeVision::draw_window_background(Bitmap &content) -> void {
+    content.fill_rect(0, 0, content.size.width, content.size.height,
+                      ThemeVision::window_background_color);
+}
+
+auto ThemeVision::draw_scrollbar_background(Bitmap &content) -> void {
+    // TODO - do we need a frame? different color?
     content.fill_rect(0, 0, content.size.width, content.size.height,
                       ThemeVision::window_background_color);
 }
@@ -226,6 +191,13 @@ auto ThemePlasma::draw_window_background(Bitmap &content) -> void {
     content.fill_rect(0, 0, content.size.width, content.size.height,
                       ThemePlasma::window_background_color);
     content.line(0, 0, content.size.width - 1, 0, button_border);
+}
+
+auto ThemePlasma::draw_scrollbar_background(Bitmap &content) -> void {
+    content.fill_rect(0, 0, content.size.width, content.size.height,
+                      ThemePlasma::window_background_color);
+    content.draw_rectangle(0,0,content.size.width, content.size.height-1, ThemePlasma::button_border,ThemePlasma::button_border);
+    content.line(0, content.size.height - 1, content.size.width, content.size.height - 1,ThemePlasma::button_shadow);
 }
 
 auto ThemePlasma::draw_button(Bitmap &content, bool has_focus, bool is_default, ButtonStates state,

@@ -19,6 +19,7 @@ struct ScrollBar : Widget {
     int value = maximum;
     int step = (maximum - minimun) / 10;
 
+    auto draw() -> void override;
     auto set_value(int minimum, int maximum, int step=0 ) -> void;
     auto step_up() -> void;
     auto step_down() -> void;

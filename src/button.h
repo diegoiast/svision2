@@ -18,6 +18,8 @@ struct Button : Widget {
     std::string text;
     std::function<void()> on_button_click;
 
+    // TODO add support for buttons with images
+
     Button(Position pp, Size size, std::string text, bool is_default = false,
            std::function<void()> on_button_click = {});
 

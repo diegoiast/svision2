@@ -16,30 +16,14 @@ struct Theme {
     virtual auto init() -> void = 0;
     virtual auto draw_widget_background(Bitmap &content) -> void = 0;
     virtual auto draw_window_background(Bitmap &content) -> void = 0;
+    virtual auto draw_scrollbar_background(Bitmap &content) -> void = 0;
     virtual auto draw_button(Bitmap &content, bool has_focus, bool is_default, ButtonStates state,
                              const std::string &text) -> void = 0;
     virtual auto draw_input_background(Bitmap &content, const bool has_focus) -> void = 0;
-    virtual auto needs_frame_for_focus() -> bool = 0;
+    virtual auto needs_frame_for_focus() const -> bool = 0;
+    virtual auto scrollbar_size() const -> int = 0;
 };
 
-#if defined(SVISION_OLDIE_ENABLED)
-struct ThemeOldie : Theme {
-    static const int32_t background_color = 0xeff0f1;
-    static const int32_t background_color_normal = MakeColor(0xb0, 0xb0, 0xb0);
-    static const int32_t background_color_hover = MakeColor(0xc3, 0xc3, 0xc3);
-    static const int32_t line_color1 = MakeColor(0xff, 0xff, 0xff);
-    static const int32_t line_color2 = MakeColor(0x64, 0x64, 0x64);
-
-    virtual auto init() -> void override{};
-    virtual auto draw_widget_background(Bitmap &content) -> void override {
-        content.fill(background_color);
-    };
-    virtual auto draw_window_background(Bitmap &content) -> void override;
-    virtual auto draw_button(Bitmap &content, bool has_focus, bool is_default, ButtonStates state,
-                             const std::string &text) -> void override;
-    virtual auto needs_frame_for_focus() -> bool override { return true; };
-};
-#endif
 
 // A windows 9x look and feel based theme
 struct ThemeRedmond : Theme {
@@ -58,11 +42,12 @@ struct ThemeRedmond : Theme {
         content.fill(background_color);
     };
     virtual auto draw_window_background(Bitmap &content) -> void override;
+    virtual auto draw_scrollbar_background(Bitmap &content) -> void override;
     virtual auto draw_button(Bitmap &content, bool has_focus, bool is_default, ButtonStates state,
                              const std::string &text) -> void override;
     virtual auto draw_input_background(Bitmap &content, const bool has_focus) -> void override;
-    virtual auto needs_frame_for_focus() -> bool override { return true; };
-
+    virtual auto needs_frame_for_focus() const -> bool override { return true; };
+    virtual auto scrollbar_size() const -> int override { return 24; };
 protected:
     auto draw_frame(Bitmap &content, Position position, Size size, bool elevated) -> void;
 };
@@ -83,10 +68,12 @@ struct ThemeVision : Theme {
         content.fill(window_background_color);
     };
     virtual auto draw_window_background(Bitmap &content) -> void override;
+    virtual auto draw_scrollbar_background(Bitmap &content) -> void override;
     virtual auto draw_button(Bitmap &content, bool has_focus, bool is_default, ButtonStates state,
                              const std::string &text) -> void override;
     virtual auto draw_input_background(Bitmap &content, const bool has_focus) -> void override;
-    virtual auto needs_frame_for_focus() -> bool override { return false; };
+    virtual auto needs_frame_for_focus() const -> bool override { return false; };
+    virtual auto scrollbar_size() const -> int override { return 16; };
 };
 
 struct ThemePlasma : Theme {
@@ -108,8 +95,10 @@ struct ThemePlasma : Theme {
         content.fill(window_background_color);
     };
     virtual auto draw_window_background(Bitmap &content) -> void override;
+    virtual auto draw_scrollbar_background(Bitmap &content) -> void override;
     virtual auto draw_button(Bitmap &content, bool has_focus, bool is_default, ButtonStates state,
                              const std::string &text) -> void override;
     virtual auto draw_input_background(Bitmap &content, const bool has_focus) -> void override;
-    virtual auto needs_frame_for_focus() -> bool override { return false; };
+    virtual auto needs_frame_for_focus() const -> bool override { return false; };
+    virtual auto scrollbar_size() const -> int override { return 16; };
 };
