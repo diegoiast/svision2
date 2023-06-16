@@ -66,7 +66,8 @@ struct Widget {
     virtual auto on_keyboard(const EventKeyboard &) -> void{};
     virtual auto on_remove() -> void{};
 
-    auto add(std::shared_ptr<Widget> widget) -> std::shared_ptr<Widget> {
+    // TODO - make sure this T derieves from `Widget`
+    template <typename T> auto add(T widget) -> T {
         widgets.add(widget, window);
         widget->parent = this;
         return widget;
@@ -104,7 +105,8 @@ struct PlatformWindow {
     virtual auto invalidate() -> void;
     virtual auto on_close() -> void;
 
-    auto add(std::shared_ptr<Widget> widget) -> std::shared_ptr<Widget> {
+    // TODO - make sure this T derieves from `Widget`
+    template <typename T> auto add(T widget) -> T {
         widgets.add(widget, this);
         widget->window = this;
         widget->theme = theme;

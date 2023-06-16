@@ -82,9 +82,9 @@ struct Bitmap {
 
     auto inline put_pixel(int x, int y, uint32_t color) -> void {
         assert(buf);
-        if (x >= size.width)
+        if (x < 0 || x >= size.width)
             return;
-        if (y >= size.height)
+        if (y < 0 || y >= size.height)
             return;
         buf[(y * size.width) + x] = color;
     }
