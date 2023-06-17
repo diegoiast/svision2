@@ -19,7 +19,7 @@ Button::Button(Position pp, Size size, std::string text, bool is_default,
 }
 
 auto Button::draw() -> void {
-    get_theme()->draw_button(content, has_focus, is_default, state, text);
+    get_theme()->draw_button(content, has_focus, is_default, is_enabled, state, text);
 }
 
 auto Button::on_hover(const EventMouse &event) -> void {
@@ -71,27 +71,33 @@ auto Button::on_mouse_leave() -> void {
 auto Button::on_mouse_click(const EventMouse &event) -> void {
     switch (state) {
     case ButtonStates::ClickedInside:
-        if (!event.pressed && event.button == 1) {
-            if (event.is_local) {
-                state = ButtonStates::Hovered;
-                if (on_button_click) {
-                    on_button_click();
+        if (is_enabled) {
+            if (!event.pressed && event.button == 1) {
+                if (event.is_local) {
+                    state = ButtonStates::Hovered;
+                    if (on_button_click) {
+                        on_button_click();
+                    }
+                } else {
+                    state = ButtonStates::Normal;
                 }
-            } else {
-                state = ButtonStates::Normal;
+                invalidate();
             }
-            invalidate();
         }
 
         break;
     case ButtonStates::ClickedOutside:
-        if (event.pressed) {
-            state = ButtonStates::ClickedInside;
-            invalidate();
+        if (is_enabled) {
+            if (event.pressed) {
+                state = ButtonStates::ClickedInside;
+                invalidate();
+            } else {
+                state = ButtonStates::Normal;
+                invalidate();
+                spdlog::debug("Button click aborted");
+            }
         } else {
-            state = ButtonStates::Normal;
-            invalidate();
-            spdlog::debug("Button click aborted");
+            spdlog::debug("Button igonred - as button disabled");
         }
         break;
     case ButtonStates::Hovered:

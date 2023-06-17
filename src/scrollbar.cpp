@@ -71,7 +71,11 @@ auto ScrollBar::step_up() -> void
 {
     this->value += this->step;
     this->value = std::min(this->maximum, this->value);
-    spdlog::info("value++ -> value = {} (step={}), thumb={}", value, step, thumb_size);
+    this->up_button->is_enabled = this->value < this->maximum;
+    this->down_button->is_enabled = this->value > this->minimun;
+    this->up_button->invalidate();
+    this->down_button->invalidate();
+    spdlog::info("value++ -> value = {} (step={}), thumb={}, up-enabled={}", value, step, thumb_size, up_button->is_enabled);
     invalidate();
 }
 
@@ -79,7 +83,11 @@ auto ScrollBar::step_down() -> void
 {
     this->value -= this->step;
     this->value = std::max(this->minimun, this->value);
-    spdlog::info("value-- -> value = {} (step={})", value, step);
+    this->up_button->is_enabled = this->value < this->maximum;
+    this->down_button->is_enabled = this->value > this->minimun;
+    this->up_button->invalidate();
+    this->down_button->invalidate();
+    spdlog::info("value-- -> value = {} (step={} down-enabled={})", value, step, down_button->is_enabled);
     invalidate();
 }
 

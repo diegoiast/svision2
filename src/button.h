@@ -15,10 +15,12 @@
 struct Button : Widget {
     ButtonStates state = ButtonStates::Normal;
     bool is_default = false;
+    bool is_enabled = true;
     std::string text;
     std::function<void()> on_button_click;
 
     // TODO add support for buttons with images
+    // TODO add support for auto repeat while pressed
 
     Button(Position pp, Size size, std::string text, bool is_default = false,
            std::function<void()> on_button_click = {});
