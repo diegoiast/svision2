@@ -84,7 +84,6 @@ auto Button::on_mouse_click(const EventMouse &event) -> void {
                 invalidate();
             }
         }
-
         break;
     case ButtonStates::ClickedOutside:
         if (is_enabled) {
@@ -96,12 +95,10 @@ auto Button::on_mouse_click(const EventMouse &event) -> void {
                 invalidate();
                 spdlog::debug("Button click aborted");
             }
-        } else {
-            spdlog::debug("Button igonred - as button disabled");
         }
         break;
     case ButtonStates::Hovered:
-        if (event.pressed) {
+        if (event.pressed && is_enabled) {
             state = ButtonStates::ClickedInside;
             invalidate();
         }
