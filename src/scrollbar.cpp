@@ -56,6 +56,12 @@ auto ScrollBar::draw() -> void {
 
 auto ScrollBar::set_value(int minimum, int maximum, int value, int step) -> void
 {
+    if (value < minimum) {
+        value = minimum;
+    }
+    if (value >= maximum) {
+        value = maximum;
+    }
     if (step == 0) {
         step = (maximum - minimum) / 10;
     }
