@@ -126,6 +126,10 @@ int main() {
         ->set_value(100, 200, 200, 5);
     w1->add(std::make_shared<ScrollBar>(Position{10, 255}, 400, true))
         ->set_value(1000, 2000, 200, 50);
+    w1->add(std::make_shared<ScrollBar>(Position{10, 295}, 400, true))
+        ->set_value(1200, 2000, 200, 50);
+    w1->add(std::make_shared<ScrollBar>(Position{10, 330}, 400, true))
+        ->set_value(1800, 2000, 200, 50);
     platform.show_window(w1);
 
     t1.start();
