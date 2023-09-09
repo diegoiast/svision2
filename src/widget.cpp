@@ -51,19 +51,23 @@ auto WidgetCollection::on_mouse(const EventMouse &event) -> void {
             child_event.is_local = true;
             widget_under_mouse = w;
         }
-        w->on_mouse(child_event);
 
-        switch (event.type) {
-        case MouseEvents::Release:
-            on_mouse_release(event, w);
-            break;
-        case MouseEvents::Press:
-        case MouseEvents::MouseMove:
-            on_mouse_press(event, w);
-            break;
-
-        case MouseEvents::Unknown:
-            break;
+        if (child_event.is_local || w->read_external_mouse_events) {
+            w->on_mouse(child_event);
+            switch (event.type) {
+            case MouseEvents::Release:
+                   on_mouse_release(event, w);
+                break;
+            case MouseEvents::Press:
+                on_mouse_press(event, w);
+                break;
+            case MouseEvents::MouseMove:
+                // TODO: is this the correct event?
+                on_mouse_press(event, w);
+                break;
+            case MouseEvents::Unknown:
+                break;
+            }
         }
     }
 
