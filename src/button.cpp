@@ -69,36 +69,38 @@ auto Button::on_mouse_leave() -> void {
 }
 
 auto Button::on_mouse_click(const EventMouse &event) -> void {
+    if (!is_enabled) {
+        Widget::on_mouse_click(event);
+        return;
+    }
+
+    if (!event.is_local) {
+        Widget::on_mouse_click(event);
+        return;
+    }
+
     switch (state) {
     case ButtonStates::ClickedInside:
-        if (is_enabled) {
-            if (!event.pressed && event.button == 1) {
-                if (event.is_local) {
-                    state = ButtonStates::Hovered;
-                    if (on_button_click) {
-                        on_button_click();
-                    }
-                } else {
-                    state = ButtonStates::Normal;
-                }
-                invalidate();
+        if (!event.pressed && event.button == 1) {
+            state = ButtonStates::Hovered;
+            if (on_button_click) {
+                on_button_click();
             }
+            invalidate();
         }
         break;
     case ButtonStates::ClickedOutside:
-        if (is_enabled) {
-            if (event.pressed) {
-                state = ButtonStates::ClickedInside;
-                invalidate();
-            } else {
-                state = ButtonStates::Normal;
-                invalidate();
-                spdlog::debug("Button click aborted");
-            }
+        if (event.pressed) {
+            state = ButtonStates::ClickedInside;
+            invalidate();
+        } else {
+            state = ButtonStates::Normal;
+            invalidate();
+            spdlog::debug("Button click aborted");
         }
         break;
     case ButtonStates::Hovered:
-        if (event.pressed && is_enabled) {
+        if (event.pressed) {
             state = ButtonStates::ClickedInside;
             invalidate();
         }
