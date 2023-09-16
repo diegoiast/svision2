@@ -21,7 +21,11 @@ struct TextField : Widget {
     auto select_none() -> void;
     auto get_selected_text() -> const std::string;
     auto has_selection() -> bool { return selection.end - selection.start > 0; }
+    auto get_text() const -> std::string { return text; }
+    auto set_text(const std::string_view new_text);
 
+    int padding_start = 5;
+    int padding_end = 5;
   private:
     auto ensure_cursor_visible() -> void;
 

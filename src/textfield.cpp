@@ -20,20 +20,22 @@ TextField::~TextField() { timer.stop(); }
 auto TextField::draw() -> void {
     theme->draw_input_background(content, has_focus);
 
-    auto padding = 5;
-    auto display_text_logical = (content.size.width - padding * 2) / 8;
+    auto padding_vertical = 5;
+    auto display_text_logical = (content.size.width - padding_start - padding_end) / 8;
     auto display_text = this->text.substr(display_from, display_from + display_text_logical);
     auto center_y = (content.size.height - 16) / 2;
     auto selection_width = (selection.end - selection.start) - display_from;
     selection_width *= 8;
-    content.fill_rect(padding - 1, padding - 1, selection_width + 1,
-                      content.size.height - padding - 2, ThemePlasma::button_selected_background);
+    content.fill_rect(padding_start - 1,
+                      padding_vertical - 1, selection_width + 1,
+                      content.size.height - padding_vertical - 2,
+                      ThemePlasma::button_selected_background);
     // TODO handle partial selection
-    content.write_fixed(Position{padding, center_y}, display_text, 0);
+    content.write_fixed(Position{padding_start, center_y}, display_text, 0);
 
     if (this->cursor_on && this->has_focus) {
-        auto position_x = padding + (cursor_position - display_from) * 8;
-        content.draw_rectangle(position_x, padding, 1, content.size.height - padding * 2, 0, 0);
+        auto position_x = padding_start + (cursor_position - display_from) * 8;
+        content.draw_rectangle(position_x, padding_vertical, 1, content.size.height - padding_vertical * 2, 0, 0);
     }
 }
 
@@ -207,4 +209,13 @@ auto TextField::ensure_cursor_visible() -> void {
     if (selection.end < selection.start) {
         selection.end = selection.start;
     }
+}
+
+auto TextField::set_text(const std::string_view new_text)
+{
+    this->text = new_text;
+    cursor_position = 0;
+    selection.start = 0;
+    selection.end = 0;
+    invalidate();
 }
