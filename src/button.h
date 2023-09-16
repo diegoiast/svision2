@@ -11,6 +11,15 @@
 
 #include <buttonstates.h>
 #include <widget.h>
+#include <memory>
+#include <timer.h>
+
+enum class RepeatState {
+    Normal,
+    WaitForFirstRepeat,
+    Repeating
+};
+
 
 struct Button : Widget {
     ButtonStates state = ButtonStates::Normal;
@@ -19,8 +28,14 @@ struct Button : Widget {
     std::string text;
     std::function<void()> on_button_click;
 
+    // TODO this part can be extracted into another helper class to be re-used.
+    std::shared_ptr<Timer> click_timer;
+    RepeatState repeat_state = RepeatState::Normal;
+    bool is_autorepeat;
+    int64_t autorepeat_millies = 500;
+    int64_t autorepeat_start = autorepeat_millies;
+
     // TODO add support for buttons with images
-    // TODO add support for auto repeat while pressed
 
     Button(Position pp, Size size, std::string text, bool is_default = false,
            std::function<void()> on_button_click = {});
@@ -32,4 +47,7 @@ struct Button : Widget {
     virtual auto on_mouse_click(const EventMouse &event) -> void override;
     virtual auto on_focus_change(bool new_state) -> void override;
     virtual auto on_keyboard(const EventKeyboard &) -> void override;
+
+    auto set_auto_repeat(int64_t repeat_millies, int64_t repeat_start = 500) -> void;
+    auto disable_auto_repeat() -> void;
 };
