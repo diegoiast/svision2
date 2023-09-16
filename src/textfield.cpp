@@ -37,6 +37,7 @@ auto TextField::draw() -> void {
         auto position_x = padding_start + (cursor_position - display_from) * 8;
         content.draw_rectangle(position_x, padding_vertical, 1, content.size.height - padding_vertical * 2, 0, 0);
     }
+    Widget::draw();
 }
 
 auto TextField::on_keyboard(const EventKeyboard &event) -> void {
