@@ -11,7 +11,7 @@
 class Button;
 
 struct ScrollBar : Widget {
-    ScrollBar(Position position, int length, bool horizontal, int max=100);
+    ScrollBar(Position position, int length, bool horizontal, int max = 100);
 
     bool is_horizontal = false;
     int minimum = 0;
@@ -20,7 +20,7 @@ struct ScrollBar : Widget {
     int step = (maximum - minimum) / 10;
 
     auto draw() -> void override;
-    auto set_value(int minimum, int maximum, int value, int step=0 ) -> void;
+    auto set_value(int minimum, int maximum, int value, int step = 0) -> void;
     auto step_up() -> void;
     auto step_down() -> void;
 

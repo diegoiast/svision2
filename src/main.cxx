@@ -117,12 +117,13 @@ int main() {
         spdlog::info("OK clicked!");
         platform.exit_loop = true;
     }));
-    w1->add(std::make_shared<Button>(Position{220, 100}, Size{200, 40}, "Cancel", false, [&platform]() {
-        static auto clicked_count = 0;
-        clicked_count++;
-        spdlog::info("Cancel clicke1d! count = {}", clicked_count);
-    }))->set_auto_repeat(300, 700);
-
+    w1->add(std::make_shared<Button>(Position{220, 100}, Size{200, 40}, "Cancel", false,
+                                     [&platform]() {
+                                         static auto clicked_count = 0;
+                                         clicked_count++;
+                                         spdlog::info("Cancel clicke1d! count = {}", clicked_count);
+                                     }))
+        ->set_auto_repeat(300, 700);
 
     w1->add(std::make_shared<Label>(Position{10, 10}, Size{100, 20}, "Hello world!"));
     w1->add(std::make_shared<TextField>(Position{10, 35}, Size{165, 40}));

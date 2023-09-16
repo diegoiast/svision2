@@ -10,16 +10,11 @@
 #include <functional>
 
 #include <buttonstates.h>
-#include <widget.h>
 #include <memory>
 #include <timer.h>
+#include <widget.h>
 
-enum class RepeatState {
-    Normal,
-    WaitForFirstRepeat,
-    Repeating
-};
-
+enum class RepeatState { Normal, WaitForFirstRepeat, Repeating };
 
 struct Button : Widget {
     ButtonStates state = ButtonStates::Normal;

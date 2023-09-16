@@ -17,8 +17,8 @@ auto start_repeate_timer(Button *button) -> void {
 
     switch (button->repeat_state) {
     case RepeatState::Normal:
-        button->repeat_state  = RepeatState::WaitForFirstRepeat;
-        button->click_timer = std::make_shared<Timer>(button->autorepeat_start, false, [button](){
+        button->repeat_state = RepeatState::WaitForFirstRepeat;
+        button->click_timer = std::make_shared<Timer>(button->autorepeat_start, false, [button]() {
             if (button->state == ButtonStates::ClickedInside) {
                 button->repeat_state = RepeatState::Repeating;
                 if (button->on_button_click)
@@ -43,7 +43,7 @@ auto start_repeate_timer(Button *button) -> void {
         button->click_timer.reset();
 
         button->repeat_state = RepeatState::Repeating;
-        button->click_timer = std::make_shared<Timer>(button->autorepeat_millies, true, [button](){
+        button->click_timer = std::make_shared<Timer>(button->autorepeat_millies, true, [button]() {
             if (button->repeat_state != RepeatState::WaitForFirstRepeat) {
                 return;
             }
@@ -60,7 +60,6 @@ auto start_repeate_timer(Button *button) -> void {
         break;
     }
 }
-
 
 Button::Button(Position pp, Size size, std::string text, bool is_default,
                std::function<void()> on_button_click)
@@ -204,15 +203,13 @@ auto Button::on_keyboard(const EventKeyboard &event) -> void {
     }
 };
 
-auto Button::set_auto_repeat(int64_t repeat_millies, int64_t repeat_start) -> void
-{
+auto Button::set_auto_repeat(int64_t repeat_millies, int64_t repeat_start) -> void {
     this->is_autorepeat = true;
     this->autorepeat_millies = repeat_millies;
     this->autorepeat_start = repeat_start;
 }
 
-auto Button::disable_auto_repeat() -> void
-{
+auto Button::disable_auto_repeat() -> void {
     this->is_autorepeat = false;
     this->autorepeat_millies = 0;
     this->autorepeat_start = 0;
