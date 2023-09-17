@@ -48,6 +48,8 @@ set(SVISION_SOURCES
     src/platform.h
     src/scrollbar.cpp
     src/scrollbar.h
+    src/spinbox.cpp
+    src/spinbox.h
     src/theme.cpp
     src/theme.h
     src/timer.cpp

@@ -17,6 +17,7 @@
 #include <label.h>
 #include <scrollbar.h>
 #include <textfield.h>
+#include <spinbox.h>
 
 #include <spdlog/spdlog.h>
 #include <timer.h>
@@ -136,6 +137,7 @@ int main() {
         ->set_value(1200, 2000, 200, 50);
     w1->add(std::make_shared<ScrollBar>(Position{10, 330}, 400, true))
         ->set_value(1800, 2000, 200, 50);
+        w1->add(std::make_shared<Spinbox>(Position{10,380},Size{165, 40} )) ;
     platform.show_window(w1);
 
     t1.start();
