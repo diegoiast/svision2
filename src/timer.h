@@ -31,6 +31,8 @@ struct PlatformTimer {
 };
 
 #if defined(POSIX) || defined(__linux__)
+#include <time.h>
+
 struct PosixTimer : PlatformTimer {
     PosixTimer(int64_t millies, bool repeating, std::function<void()> callback);
     PosixTimer(){};
