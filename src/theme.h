@@ -17,13 +17,12 @@ struct Theme {
     virtual auto draw_widget_background(Bitmap &content) -> void = 0;
     virtual auto draw_window_background(Bitmap &content) -> void = 0;
     virtual auto draw_scrollbar_background(Bitmap &content) -> void = 0;
-    virtual auto draw_button(Bitmap &content, bool has_focus, bool is_default, bool is_enabled, ButtonStates state,
-                             const std::string &text) -> void = 0;
+    virtual auto draw_button(Bitmap &content, bool has_focus, bool is_default, bool is_enabled,
+                             ButtonStates state, const std::string &text) -> void = 0;
     virtual auto draw_input_background(Bitmap &content, const bool has_focus) -> void = 0;
     virtual auto needs_frame_for_focus() const -> bool = 0;
     virtual auto scrollbar_size() const -> int = 0;
 };
-
 
 // A windows 9x look and feel based theme
 struct ThemeRedmond : Theme {
@@ -43,12 +42,13 @@ struct ThemeRedmond : Theme {
     };
     virtual auto draw_window_background(Bitmap &content) -> void override;
     virtual auto draw_scrollbar_background(Bitmap &content) -> void override;
-    virtual auto draw_button(Bitmap &content, bool has_focus, bool is_default, bool is_enabled, ButtonStates state,
-                             const std::string &text) -> void override;
+    virtual auto draw_button(Bitmap &content, bool has_focus, bool is_default, bool is_enabled,
+                             ButtonStates state, const std::string &text) -> void override;
     virtual auto draw_input_background(Bitmap &content, const bool has_focus) -> void override;
     virtual auto needs_frame_for_focus() const -> bool override { return true; };
     virtual auto scrollbar_size() const -> int override { return 24; };
-protected:
+
+  protected:
     auto draw_frame(Bitmap &content, Position position, Size size, bool elevated) -> void;
 };
 
@@ -69,8 +69,8 @@ struct ThemeVision : Theme {
     };
     virtual auto draw_window_background(Bitmap &content) -> void override;
     virtual auto draw_scrollbar_background(Bitmap &content) -> void override;
-    virtual auto draw_button(Bitmap &content, bool has_focus, bool is_default, bool is_enabled, ButtonStates state,
-                             const std::string &text) -> void override;
+    virtual auto draw_button(Bitmap &content, bool has_focus, bool is_default, bool is_enabled,
+                             ButtonStates state, const std::string &text) -> void override;
     virtual auto draw_input_background(Bitmap &content, const bool has_focus) -> void override;
     virtual auto needs_frame_for_focus() const -> bool override { return false; };
     virtual auto scrollbar_size() const -> int override { return 16; };
@@ -78,7 +78,7 @@ struct ThemeVision : Theme {
 
 struct ThemePlasma : Theme {
     static constexpr auto window_background_color = 0xeff0f1;
-    static constexpr auto border_active =  0xbbbcbd;
+    static constexpr auto border_active = 0xbbbcbd;
     static constexpr auto border_hover = 0x3daee9;
     static constexpr auto border_disabled = 0xd1d2d3;
     static constexpr auto border_shadow = 0xd1d2d3;
@@ -98,8 +98,8 @@ struct ThemePlasma : Theme {
     };
     virtual auto draw_window_background(Bitmap &content) -> void override;
     virtual auto draw_scrollbar_background(Bitmap &content) -> void override;
-    virtual auto draw_button(Bitmap &content, bool has_focus, bool is_default, bool is_enabled, ButtonStates state,
-                             const std::string &text) -> void override;
+    virtual auto draw_button(Bitmap &content, bool has_focus, bool is_default, bool is_enabled,
+                             ButtonStates state, const std::string &text) -> void override;
     virtual auto draw_input_background(Bitmap &content, const bool has_focus) -> void override;
     virtual auto needs_frame_for_focus() const -> bool override { return false; };
     virtual auto scrollbar_size() const -> int override { return 16; };

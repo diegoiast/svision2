@@ -3,7 +3,8 @@
 #include <button.h>
 #include <spdlog/spdlog.h>
 
-ScrollBar::ScrollBar(Position position, int length, bool horizontal, int maximum) : Widget(position, {}, 0) {
+ScrollBar::ScrollBar(Position position, int length, bool horizontal, int maximum)
+    : Widget(position, {}, 0) {
     // TODO button size is found in the theme. Theme is not set up until the
     // widget is added to window. Which means - all this code should be called
     // inside a callback which gets called when added to a window. No such
@@ -32,13 +33,12 @@ ScrollBar::ScrollBar(Position position, int length, bool horizontal, int maximum
         this->add(this->up_button);
     }
 
-    this->up_button->on_button_click = [this]() {step_up(); };
+    this->up_button->on_button_click = [this]() { step_up(); };
     this->down_button->on_button_click = [this]() { step_down(); };
 
     this->is_horizontal = horizontal;
     this->maximum = maximum;
     this->update_thumb_size();
-
 }
 
 auto ScrollBar::draw() -> void {
@@ -50,13 +50,12 @@ auto ScrollBar::draw() -> void {
         content.fill_rect(offset, 0, thumb_size, content.size.height, 0xa0a020);
     } else {
         auto offset = down_button->content.size.height + thumb_position;
-        content.fill_rect(0,  offset, content.size.width, thumb_size, 0x20a0a0);
+        content.fill_rect(0, offset, content.size.width, thumb_size, 0x20a0a0);
     }
     Widget::draw();
 }
 
-auto ScrollBar::set_value(int minimum, int maximum, int value, int step) -> void
-{
+auto ScrollBar::set_value(int minimum, int maximum, int value, int step) -> void {
     if (value < minimum) {
         value = minimum;
     }
@@ -74,8 +73,7 @@ auto ScrollBar::set_value(int minimum, int maximum, int value, int step) -> void
     invalidate();
 }
 
-auto ScrollBar::step_up() -> void
-{
+auto ScrollBar::step_up() -> void {
     this->value += this->step;
     this->value = std::min(this->maximum, this->value);
     this->up_button->is_enabled = this->value < this->maximum;
@@ -83,13 +81,12 @@ auto ScrollBar::step_up() -> void
     this->up_button->invalidate();
     this->down_button->invalidate();
     update_thumb_size();
-    spdlog::info("value++: value = {}, pos={}, size={} - (step={} up-enabled={}), ",
-                 value, thumb_position, thumb_size, step, up_button->is_enabled );
+    spdlog::info("value++: value = {}, pos={}, size={} - (step={} up-enabled={}), ", value,
+                 thumb_position, thumb_size, step, up_button->is_enabled);
     invalidate();
 }
 
-auto ScrollBar::step_down() -> void
-{
+auto ScrollBar::step_down() -> void {
     this->value -= this->step;
     this->value = std::max(this->minimum, this->value);
     this->up_button->is_enabled = this->value < this->maximum;
@@ -100,17 +97,15 @@ auto ScrollBar::step_down() -> void
     invalidate();
 }
 
-auto ScrollBar::update_thumb_size() -> void
-{
-    auto padding = is_horizontal ?
-            up_button->content.size.width + down_button->content.size.width :
-            up_button->content.size.height + down_button->content.size.height;
-    auto length = is_horizontal ? content.size.width :  content.size.height;
+auto ScrollBar::update_thumb_size() -> void {
+    auto padding = is_horizontal
+                       ? up_button->content.size.width + down_button->content.size.width
+                       : up_button->content.size.height + down_button->content.size.height;
+    auto length = is_horizontal ? content.size.width : content.size.height;
     auto range = maximum - minimum;
 
-    auto draw_area = is_horizontal?
-        content.size.width - down_button->content.size.width * 2:
-        content.size.height - down_button->content.size.height * 2;
+    auto draw_area = is_horizontal ? content.size.width - down_button->content.size.width * 2
+                                   : content.size.height - down_button->content.size.height * 2;
 
     if (draw_area >= range) {
         // If we have enough space thumb size, is relative to widget/value
@@ -122,26 +117,24 @@ auto ScrollBar::update_thumb_size() -> void
     } else {
         // auto generate by chatgpt FTW :)
 
-        auto available_size = is_horizontal ?
-            content.size.width - down_button->content.size.width * 2 :
-            content.size.height - down_button->content.size.height * 2;
-        auto minimum_thumb_size = is_horizontal ?
-            down_button->content.size.width :
-            down_button->content.size.height;
+        auto available_size = is_horizontal
+                                  ? content.size.width - down_button->content.size.width * 2
+                                  : content.size.height - down_button->content.size.height * 2;
+        auto minimum_thumb_size =
+            is_horizontal ? down_button->content.size.width : down_button->content.size.height;
         auto maximum_thumb_size = available_size;
         auto range = maximum - minimum;
         auto visible_range = range / step;
         auto thumb_range = 0;
 
-        thumb_size = range == 0 ?
-            maximum_thumb_size :
-            std::max(minimum_thumb_size, available_size * (visible_range / range));
+        thumb_size = range == 0
+                         ? maximum_thumb_size
+                         : std::max(minimum_thumb_size, available_size * (visible_range / range));
         thumb_range = available_size - thumb_size;
         thumb_position = (value - minimum) * thumb_range / range;
 
         spdlog::info("value={}, range={}, available_size={}, thumb_size={}, thumb_position={}",
-             value, range, available_size, thumb_size, thumb_position
-       );
+                     value, range, available_size, thumb_size, thumb_position);
     }
     // technically - `invalidate()` should be called, but it is called usually
     // right after this function

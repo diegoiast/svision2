@@ -4,6 +4,7 @@
 #include <events.h>
 
 static int WIN32_KEYCODES[] = {
+    /* clang-format off */
     VK_LBUTTON,                                 0x0000,
     VK_RBUTTON,                                 0x0000,
     VK_CANCEL,                                  0x0000,
@@ -199,4 +200,5 @@ static int WIN32_KEYCODES[] = {
     VK_PA1,                                     0x0000,
     VK_OEM_CLEAR,                               0x0000,
     0, 0
+    /* clang-format on */
 };

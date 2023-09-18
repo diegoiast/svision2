@@ -65,18 +65,7 @@ auto PosixTimer::stop() -> void {
     if (!is_running) {
         return;
     }
-
-    struct itimerspec trigger;
-    memset(&trigger, 0, sizeof trigger);
-    trigger.it_interval = {0, 0};
-    trigger.it_value = {0, 0};
-
-    auto ret = timer_settime(timerid, 0, &trigger, NULL);
-    if (ret == -1) {
-        // perror("setitimer error");
-        exit(EXIT_FAILURE);
-    }
-
+    timer_delete(timerid);
     is_running = false;
 }
 

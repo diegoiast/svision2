@@ -56,7 +56,7 @@ auto WidgetCollection::on_mouse(const EventMouse &event) -> void {
             w->on_mouse(child_event);
             switch (event.type) {
             case MouseEvents::Release:
-                   on_mouse_release(event, w);
+                on_mouse_release(event, w);
                 break;
             case MouseEvents::Press:
                 on_mouse_press(event, w);
