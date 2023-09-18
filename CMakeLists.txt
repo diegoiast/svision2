@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 3.24.2)
+cmake_minimum_required (VERSION 3.22.0)
 
 project (svision2)
 
@@ -60,7 +60,7 @@ set(SVISION_SOURCES
     src/widget.h
 )
 
-if (LINUX)
+if (UNIX)
     list(APPEND SVISION_SOURCES
         src/platformx11.cpp
         src/platformx11.h
@@ -72,6 +72,8 @@ elseif(WIN32)
         src/platformwin32.h
         src/platformwin32-keycodes.h
     )
+else()
+	message(FATAL_ERROR "unsupported platform" )
 endif()
 add_library(svision2 ${SVISION_SOURCES})
 

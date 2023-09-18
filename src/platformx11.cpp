@@ -197,9 +197,8 @@ auto PlatformX11::main_loop() -> void {
             break;
         case DestroyNotify:
             target_window->on_close();
-            windows.extract(ev.xany.window);
+            windows.erase(ev.xany.window);
             break;
-
         case ButtonPress:
         case ButtonRelease: {
             // TODO - verify this!
