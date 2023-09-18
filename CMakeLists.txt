@@ -81,6 +81,7 @@ target_link_libraries(svision2 PUBLIC
     spdlog::spdlog $<$<BOOL:${MINGW}>:ws2_32>
     ${SVISION_PLATFORM_LIBS})
 target_include_directories(svision2 PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src")
+target_compile_features(svision2 PUBLIC cxx_std_17)
 
 # Development demo
 add_executable (demo src/main.cxx )
