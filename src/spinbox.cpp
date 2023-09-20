@@ -7,6 +7,7 @@
 
 #include "spinbox.h"
 #include "spdlog/spdlog.h"
+#include "fmt/core.h"
 
 Spinbox::Spinbox(Position position, Size size)
     : TextField(position, size)
@@ -19,11 +20,11 @@ Spinbox::Spinbox(Position position, Size size)
     button_position.y = s;
     this->down_button = std::make_shared<Button>(button_position, button_size, "-");
     up_button->on_button_click = [this](){
-        spdlog::info("++");
+        this->increase_value();
     };
     up_button->set_auto_repeat(500);
     down_button->on_button_click = [this](){
-        spdlog::info("--");
+        this->decrease_value();
     };
     down_button->set_auto_repeat(500);
 
@@ -35,3 +36,15 @@ void Spinbox::draw()
 {
     TextField::draw();
 }
+
+
+auto Spinbox::increase_value() -> void {
+    value += interval;
+    set_text(fmt::format("{}", std::round(value)));
+}
+
+auto Spinbox::decrease_value() -> void {
+    value += interval;
+    set_text(fmt::format("{}", std::round(value)));
+}
+

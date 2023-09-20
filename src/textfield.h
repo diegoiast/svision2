@@ -22,7 +22,7 @@ struct TextField : Widget {
     auto get_selected_text() -> const std::string;
     auto has_selection() -> bool { return selection.end - selection.start > 0; }
     auto get_text() const -> std::string { return text; }
-    auto set_text(const std::string_view new_text);
+    auto set_text(const std::string_view new_text) -> void;
 
     int padding_start = 5;
     int padding_end = 5;
