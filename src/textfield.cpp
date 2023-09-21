@@ -212,11 +212,11 @@ auto TextField::ensure_cursor_visible() -> void {
     }
 }
 
-auto TextField::set_text(const std::string_view new_text)
+auto TextField::set_text(const std::string_view new_text) -> void
 {
     this->text = new_text;
-    cursor_position = 0;
-    selection.start = 0;
-    selection.end = 0;
+    this->cursor_position = 0;
+    this->selection.start = 0;
+    this->selection.end = 0;
     invalidate();
 }
