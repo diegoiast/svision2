@@ -20,6 +20,11 @@ struct Platform;
 struct PlatformWindow;
 struct Widget;
 
+enum class EventPropagation {
+    handled = true,
+    propagate = false,
+};
+
 struct WidgetCollection {
     std::list<std::shared_ptr<Widget>> widgets;
     std::shared_ptr<Widget> last_overed_widget;
@@ -28,9 +33,9 @@ struct WidgetCollection {
 
     auto add(std::shared_ptr<Widget> widget, PlatformWindow *window) -> std::shared_ptr<Widget>;
 
-    auto on_mouse(const EventMouse &event) -> void;
-    auto on_mouse_release(const EventMouse &event, std::shared_ptr<Widget> w) -> void;
-    auto on_mouse_press(const EventMouse &event, std::shared_ptr<Widget> w) -> void;
+    auto on_mouse(const EventMouse &event) -> EventPropagation;
+    auto on_mouse_release(const EventMouse &event, std::shared_ptr<Widget> w) -> EventPropagation;
+    auto on_mouse_press(const EventMouse &event, std::shared_ptr<Widget> w) -> EventPropagation;
 
     auto focus_next_widget() -> void;
     auto focus_previous_widget() -> void;
@@ -58,14 +63,14 @@ struct Widget {
 
     auto invalidate() -> void;
     virtual auto draw() -> void;
-    virtual auto on_mouse(const EventMouse &event) -> void;
+    virtual auto on_mouse(const EventMouse &event) -> EventPropagation;
     virtual auto on_hover(const EventMouse &event) -> void;
     virtual auto on_mouse_enter() -> void;
     virtual auto on_mouse_leave() -> void;
-    virtual auto on_mouse_click(const EventMouse &event) -> void;
-    virtual auto on_focus_change(bool new_state) -> void{};
-    virtual auto on_keyboard(const EventKeyboard &) -> void{};
-    virtual auto on_remove() -> void{};
+    virtual auto on_mouse_click(const EventMouse &event) -> EventPropagation;
+    virtual auto on_focus_change(bool new_state) -> void;
+    virtual auto on_keyboard(const EventKeyboard &) -> EventPropagation;
+    virtual auto on_remove() -> void;
 
     // TODO - make sure this T derieves from `Widget`
     template <typename T> auto add(T widget) -> T {

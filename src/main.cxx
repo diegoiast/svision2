@@ -51,7 +51,7 @@ struct DebugWidget : public Widget {
         invalidate();
     }
 
-    auto on_mouse_click(const EventMouse &event) -> void {
+    auto on_mouse_click(const EventMouse &event) -> EventPropagation {
         if (event.type == MouseEvents::Press) {
             spdlog::info("Click inside widget, {}", fmt::ptr(this));
             state_pressed = true;
@@ -64,6 +64,7 @@ struct DebugWidget : public Widget {
             unclick_inside = event.is_local;
         }
         invalidate();
+        return Widget::on_mouse_click(event);
     }
 
     virtual auto draw() -> void {
@@ -137,7 +138,7 @@ int main() {
         ->set_value(1200, 2000, 200, 50);
     w1->add(std::make_shared<ScrollBar>(Position{10, 330}, 400, true))
         ->set_value(1800, 2000, 200, 50);
-        w1->add(std::make_shared<Spinbox>(Position{10,380},Size{165, 40} )) ;
+    w1->add(std::make_shared<Spinbox>(Position{10,380},Size{165, 40} )) ;
     platform.show_window(w1);
 
     t1.start();

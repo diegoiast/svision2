@@ -41,10 +41,12 @@ auto WidgetCollection::add(std::shared_ptr<Widget> widget, PlatformWindow *windo
     return widget;
 }
 
-auto WidgetCollection::on_mouse(const EventMouse &event) -> void {
+auto WidgetCollection::on_mouse(const EventMouse &event) -> EventPropagation {
     auto widget_under_mouse = std::shared_ptr<Widget>();
+    auto result = EventPropagation::propagate;
     for (auto w : this->widgets) {
         auto child_event = event;
+        child_event.is_local = false;
         if (point_in_rect(w->position, w->content.size, event.x, event.y)) {
             child_event.x = event.x - w->position.x;
             child_event.y = event.y - w->position.y;
@@ -53,24 +55,29 @@ auto WidgetCollection::on_mouse(const EventMouse &event) -> void {
         }
 
         if (child_event.is_local || w->read_external_mouse_events) {
+            // propagate the event to sub-widgets
             w->on_mouse(child_event);
+
+            // not handled by subwidgets, send this event to the widget itself
             switch (event.type) {
-            case MouseEvents::Release:
-                on_mouse_release(event, w);
+            case MouseEvents::Release: {
+                auto b = on_mouse_release(event, w);
                 break;
-            case MouseEvents::Press:
-                on_mouse_press(event, w);
+            }
+            case MouseEvents::Press: {
+                auto b = on_mouse_press(event, w);
                 break;
-            case MouseEvents::MouseMove:
+            }
+            case MouseEvents::MouseMove: {
                 // TODO: is this the correct event?
-                on_mouse_press(event, w);
+                auto b = on_mouse_press(event, w);
                 break;
+            }
             case MouseEvents::Unknown:
                 break;
             }
         }
     }
-
     if (last_overed_widget != widget_under_mouse) {
         if (last_overed_widget) {
             last_overed_widget->on_mouse_leave();
@@ -80,10 +87,11 @@ auto WidgetCollection::on_mouse(const EventMouse &event) -> void {
             last_overed_widget->on_mouse_enter();
         }
     }
+    return result;
 }
 
 auto WidgetCollection::on_mouse_release(const EventMouse &event, std::shared_ptr<Widget> w)
-    -> void {
+    -> EventPropagation {
     auto click_event = event;
     // is the release event is inside the widget -
     // we send him a "local event", with local coordinates.
@@ -94,14 +102,15 @@ auto WidgetCollection::on_mouse_release(const EventMouse &event, std::shared_ptr
         click_event.y = event.y - w->position.y;
         click_event.is_local = true;
     }
-    w->on_mouse_click(click_event);
+    return w->on_mouse_click(click_event);
 }
 
-auto WidgetCollection::on_mouse_press(const EventMouse &event, std::shared_ptr<Widget> w) -> void {
+auto WidgetCollection::on_mouse_press(const EventMouse &event, std::shared_ptr<Widget> w) -> EventPropagation {
     if (!point_in_rect(w->position, w->content.size, event.x, event.y)) {
-        return;
+        return EventPropagation::propagate;
     }
 
+    auto result = EventPropagation::propagate;
     auto local_event = event;
     local_event.is_local = true;
     local_event.x = event.x - w->position.x;
@@ -118,7 +127,7 @@ auto WidgetCollection::on_mouse_press(const EventMouse &event, std::shared_ptr<W
     if (event.type == MouseEvents::MouseMove) {
         w->on_hover(local_event);
     } else {
-        w->on_mouse_click(local_event);
+        result = w->on_mouse_click(local_event);
     }
     last_overed_widget = w;
 
@@ -133,6 +142,7 @@ auto WidgetCollection::on_mouse_press(const EventMouse &event, std::shared_ptr<W
             }
         }
     }
+    return result;
 }
 
 auto WidgetCollection::focus_next_widget() -> void {
@@ -266,10 +276,10 @@ Widget::~Widget() {}
 auto Widget::invalidate() -> void {
     this->needs_redraw = true;
     if (this->window) {
-        window->invalidate();
+        this->window->invalidate();
     }
     if (this->parent) {
-        parent->invalidate();
+        this->parent->invalidate();
     }
 }
 
@@ -283,15 +293,27 @@ auto Widget::draw() -> void {
     }
 }
 
-auto Widget::on_mouse(const EventMouse &event) -> void { widgets.on_mouse(event); }
+auto Widget::on_mouse(const EventMouse &event) -> EventPropagation {
+    return widgets.on_mouse(event);
+}
 
-auto Widget::on_hover(const EventMouse &event) -> void {}
+auto Widget::on_hover(const EventMouse &event) -> void {};
 
 auto Widget::on_mouse_enter() -> void {}
 
 auto Widget::on_mouse_leave() -> void {}
 
-auto Widget::on_mouse_click(const EventMouse &event) -> void {}
+auto Widget::on_mouse_click(const EventMouse &event) -> EventPropagation{
+    return EventPropagation::propagate;
+};
+
+auto Widget::on_focus_change(bool new_state) -> void {};
+
+auto Widget::on_keyboard(const EventKeyboard &) -> EventPropagation{
+    return EventPropagation::propagate;
+};
+
+auto Widget::on_remove() -> void{};
 
 auto Widget::get_theme() -> std::shared_ptr<Theme> {
     if (theme)
@@ -355,7 +377,9 @@ auto PlatformWindow::on_keyboard(const EventKeyboard &event) -> void {
     }
 }
 
-auto PlatformWindow::on_mouse(const EventMouse &event) -> void { widgets.on_mouse(event); }
+auto PlatformWindow::on_mouse(const EventMouse &event) -> void {
+    widgets.on_mouse(event);
+}
 
 auto PlatformWindow::invalidate() -> void {
     assert(platform);

@@ -120,16 +120,12 @@ auto Button::on_mouse_leave() -> void {
     }
 }
 
-auto Button::on_mouse_click(const EventMouse &event) -> void {
-    if (!is_enabled) {
-        Widget::on_mouse_click(event);
-        return;
+auto Button::on_mouse_click(const EventMouse &event) -> EventPropagation {
+    if (!is_enabled || !event.is_local) {
+        return Widget::on_mouse_click(event);
     }
 
-    if (!event.is_local) {
-        Widget::on_mouse_click(event);
-        return;
-    }
+    auto result = EventPropagation::propagate;
 
     switch (state) {
     case ButtonStates::ClickedInside:
@@ -142,16 +138,18 @@ auto Button::on_mouse_click(const EventMouse &event) -> void {
                 if (repeat_state != RepeatState::Repeating && on_button_click) {
                     on_button_click();
                 }
+                invalidate();
+                result = EventPropagation::handled;
                 break;
             default:
                 break;
             }
-            invalidate();
         }
         break;
     case ButtonStates::ClickedOutside:
         if (event.pressed) {
             state = ButtonStates::ClickedInside;
+            result = EventPropagation::handled;
             invalidate();
         } else {
             state = ButtonStates::Normal;
@@ -161,6 +159,7 @@ auto Button::on_mouse_click(const EventMouse &event) -> void {
         break;
     case ButtonStates::Hovered:
         if (event.pressed) {
+            result = EventPropagation::handled;
             state = ButtonStates::ClickedInside;
             invalidate();
         }
@@ -177,21 +176,21 @@ auto Button::on_mouse_click(const EventMouse &event) -> void {
     case ButtonStates::Normal:
         if (event.pressed) {
             state = ButtonStates::ClickedInside;
-            invalidate();
+            invalidate();            
         }
         break;
     }
-
     if (!event.pressed && click_timer) {
         click_timer->stop();
         click_timer.reset();
         repeat_state = RepeatState::Normal;
     }
+    return result;
 }
 
 auto Button::on_focus_change(bool new_state) -> void { invalidate(); }
 
-auto Button::on_keyboard(const EventKeyboard &event) -> void {
+auto Button::on_keyboard(const EventKeyboard &event) -> EventPropagation {
     if (event.keydown) {
         if (event.key == KeyCodes::Enter || event.key == KeyCodes::Return ||
             event.key == KeyCodes::Space) {
@@ -199,8 +198,10 @@ auto Button::on_keyboard(const EventKeyboard &event) -> void {
             if (on_button_click) {
                 on_button_click();
             }
+            return EventPropagation::handled;
         }
     }
+    return Widget::on_keyboard(event);
 };
 
 auto Button::set_auto_repeat(int64_t repeat_millies, int64_t repeat_start) -> void {

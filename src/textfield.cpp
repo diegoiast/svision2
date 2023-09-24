@@ -40,7 +40,8 @@ auto TextField::draw() -> void {
     Widget::draw();
 }
 
-auto TextField::on_keyboard(const EventKeyboard &event) -> void {
+auto TextField::on_keyboard(const EventKeyboard &event) -> EventPropagation {
+    auto result = EventPropagation::propagate;
     switch (event.key) {
     case KeyCodes::Enter:
         spdlog::info("Pressed enter");
@@ -55,6 +56,7 @@ auto TextField::on_keyboard(const EventKeyboard &event) -> void {
             ensure_cursor_visible();
             invalidate();
         }
+        result = EventPropagation::handled;
         break;
     case KeyCodes::ArrowRight:
         if (cursor_position < text.length()) {
@@ -66,6 +68,7 @@ auto TextField::on_keyboard(const EventKeyboard &event) -> void {
             ensure_cursor_visible();
             invalidate();
         }
+        result = EventPropagation::handled;
         break;
     case KeyCodes::Home:
         // TODO - change selection
@@ -76,6 +79,7 @@ auto TextField::on_keyboard(const EventKeyboard &event) -> void {
             select_none();
             invalidate();
         }
+        result = EventPropagation::handled;
         break;
     case KeyCodes::End:
         // TODO - change selection
@@ -84,7 +88,7 @@ auto TextField::on_keyboard(const EventKeyboard &event) -> void {
         ensure_cursor_visible();
         select_none();
         invalidate();
-        break;
+        return EventPropagation::handled;
     case KeyCodes::Delete:
         if (has_selection()) {
             text.erase(selection.start, selection.end);
@@ -95,6 +99,7 @@ auto TextField::on_keyboard(const EventKeyboard &event) -> void {
         ensure_cursor_visible();
         select_none();
         invalidate();
+        result = EventPropagation::handled;
         break;
     case KeyCodes::Backspace:
         if (has_selection()) {
@@ -113,6 +118,7 @@ auto TextField::on_keyboard(const EventKeyboard &event) -> void {
                 invalidate();
             }
         }
+        result = EventPropagation::handled;
         break;
     default:
         // TODO handle non ascii input
@@ -121,6 +127,7 @@ auto TextField::on_keyboard(const EventKeyboard &event) -> void {
         if (is_a_pressed && is_control_pressed) {
             spdlog::info("Selecting all");
             select_all();
+            result = EventPropagation::handled;
             break;
         }
         if ((int)event.key >= ' ' && (int)event.key <= 128) {
@@ -137,16 +144,18 @@ auto TextField::on_keyboard(const EventKeyboard &event) -> void {
             select_none();
             ensure_cursor_visible();
             invalidate();
+            result = EventPropagation::handled;
         } else {
             spdlog::info("KeyCode = {:x}", (int)event.key);
         }
         break;
     }
+    return result;
 }
 
-auto TextField::on_mouse_click(const EventMouse &event) -> void {
+auto TextField::on_mouse_click(const EventMouse &event) -> EventPropagation {
     if (!event.pressed || event.button != 1 || !event.is_local) {
-        return;
+        return EventPropagation::propagate;
     }
 
     auto padding = 5;
@@ -155,6 +164,7 @@ auto TextField::on_mouse_click(const EventMouse &event) -> void {
     cursor_position = std::min((size_t)cursor_position, text.length());
     cursor_on = true;
     invalidate();
+    return EventPropagation::handled;
 }
 
 auto TextField::on_focus_change(bool new_state) -> void {
