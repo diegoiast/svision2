@@ -26,8 +26,7 @@ auto TextField::draw() -> void {
     auto center_y = (content.size.height - 16) / 2;
     auto selection_width = (selection.end - selection.start) - display_from;
     selection_width *= 8;
-    content.fill_rect(padding_start - 1,
-                      padding_vertical - 1, selection_width + 1,
+    content.fill_rect(padding_start - 1, padding_vertical - 1, selection_width + 1,
                       content.size.height - padding_vertical - 2,
                       ThemePlasma::button_selected_background);
     // TODO handle partial selection
@@ -35,7 +34,8 @@ auto TextField::draw() -> void {
 
     if (this->cursor_on && this->has_focus) {
         auto position_x = padding_start + (cursor_position - display_from) * 8;
-        content.draw_rectangle(position_x, padding_vertical, 1, content.size.height - padding_vertical * 2, 0, 0);
+        content.draw_rectangle(position_x, padding_vertical, 1,
+                               content.size.height - padding_vertical * 2, 0, 0);
     }
     Widget::draw();
 }
@@ -222,8 +222,7 @@ auto TextField::ensure_cursor_visible() -> void {
     }
 }
 
-auto TextField::set_text(const std::string_view new_text) -> void
-{
+auto TextField::set_text(const std::string_view new_text) -> void {
     this->text = new_text;
     this->cursor_position = 0;
     this->selection.start = 0;

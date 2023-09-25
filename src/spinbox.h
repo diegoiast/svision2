@@ -7,9 +7,9 @@
 
 #pragma once
 
-#include <widget.h>
-#include <textfield.h>
 #include <button.h>
+#include <textfield.h>
+#include <widget.h>
 
 struct Spinbox : public TextField {
     double min_value = 0.0;
@@ -23,8 +23,8 @@ struct Spinbox : public TextField {
 
     auto increase_value() -> void;
     auto decrease_value() -> void;
+
   private:
     std::shared_ptr<Button> up_button = {};
     std::shared_ptr<Button> down_button = {};
-
 };

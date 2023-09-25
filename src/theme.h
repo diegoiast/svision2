@@ -10,8 +10,6 @@
 #include <bitmap.h>
 #include <buttonstates.h>
 
-//#define SVISION_OLDIE_ENABLED
-
 struct Theme {
     virtual auto init() -> void = 0;
     virtual auto draw_widget_background(Bitmap &content) -> void = 0;

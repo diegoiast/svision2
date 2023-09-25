@@ -6,8 +6,8 @@
  */
 
 #include "timer.h"
-#include <cstring>
 #include <cstdlib>
+#include <cstring>
 #include <errno.h>
 #include <time.h>
 

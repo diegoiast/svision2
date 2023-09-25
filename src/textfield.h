@@ -26,6 +26,7 @@ struct TextField : Widget {
 
     int padding_start = 5;
     int padding_end = 5;
+
   private:
     auto ensure_cursor_visible() -> void;
 

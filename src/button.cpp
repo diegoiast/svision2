@@ -176,7 +176,7 @@ auto Button::on_mouse_click(const EventMouse &event) -> EventPropagation {
     case ButtonStates::Normal:
         if (event.pressed) {
             state = ButtonStates::ClickedInside;
-            invalidate();            
+            invalidate();
         }
         break;
     }

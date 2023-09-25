@@ -117,7 +117,8 @@ auto WidgetCollection::on_mouse_release(const EventMouse &event, std::shared_ptr
     return w->on_mouse_click(click_event);
 }
 
-auto WidgetCollection::on_mouse_press(const EventMouse &event, std::shared_ptr<Widget> w) -> EventPropagation {
+auto WidgetCollection::on_mouse_press(const EventMouse &event, std::shared_ptr<Widget> w)
+    -> EventPropagation {
     if (!point_in_rect(w->position, w->content.size, event.x, event.y)) {
         return EventPropagation::propagate;
     }
@@ -309,19 +310,19 @@ auto Widget::on_mouse(const EventMouse &event) -> EventPropagation {
     return widgets.on_mouse(event);
 }
 
-auto Widget::on_hover(const EventMouse &event) -> void {};
+auto Widget::on_hover(const EventMouse &event) -> void{};
 
 auto Widget::on_mouse_enter() -> void {}
 
 auto Widget::on_mouse_leave() -> void {}
 
-auto Widget::on_mouse_click(const EventMouse &event) -> EventPropagation{
+auto Widget::on_mouse_click(const EventMouse &event) -> EventPropagation {
     return EventPropagation::propagate;
 };
 
-auto Widget::on_focus_change(bool new_state) -> void {};
+auto Widget::on_focus_change(bool new_state) -> void{};
 
-auto Widget::on_keyboard(const EventKeyboard &) -> EventPropagation{
+auto Widget::on_keyboard(const EventKeyboard &) -> EventPropagation {
     return EventPropagation::propagate;
 };
 
@@ -389,9 +390,7 @@ auto PlatformWindow::on_keyboard(const EventKeyboard &event) -> void {
     }
 }
 
-auto PlatformWindow::on_mouse(const EventMouse &event) -> void {
-    widgets.on_mouse(event);
-}
+auto PlatformWindow::on_mouse(const EventMouse &event) -> void { widgets.on_mouse(event); }
 
 auto PlatformWindow::invalidate() -> void {
     assert(platform);

@@ -9,7 +9,6 @@
 
 #include <bitmap.h>
 #include <events.h>
-//#include <platform.h>
 
 #include <list>
 #include <memory>
