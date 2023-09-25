@@ -11,6 +11,11 @@
 #include <textfield.h>
 #include <widget.h>
 
+struct IntegerValidator : public TextField::input_validator {
+    virtual auto is_keyboard_input_valid(KeyCodes keycode, int position) -> bool override;
+    virtual auto is_string_valid(std::string_view str) -> bool override;
+};
+
 struct Spinbox : public TextField {
     double min_value = 0.0;
     double max_value = 0.0;
@@ -19,7 +24,7 @@ struct Spinbox : public TextField {
     double value = 0;
 
     Spinbox(Position position, Size size);
-    virtual auto draw() -> void;
+    virtual auto draw() -> void override;
 
     auto increase_value() -> void;
     auto decrease_value() -> void;

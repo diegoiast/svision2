@@ -9,6 +9,11 @@ struct SelectionRange {
 };
 
 struct TextField : Widget {
+    struct input_validator {
+        virtual auto is_keyboard_input_valid(KeyCodes keycode, int position) -> bool = 0;
+        virtual auto is_string_valid(std::string_view str) -> bool = 0;
+    };
+
     TextField(Position position, Size size);
     virtual ~TextField() override;
     virtual auto draw() -> void override;
@@ -26,6 +31,7 @@ struct TextField : Widget {
 
     int padding_start = 5;
     int padding_end = 5;
+    std::shared_ptr<input_validator> validator;
 
   private:
     auto ensure_cursor_visible() -> void;

@@ -7,7 +7,29 @@
 
 #include "spinbox.h"
 #include "fmt/core.h"
-#include "spdlog/spdlog.h"
+
+#include <iostream>
+#include <sstream>
+
+auto IntegerValidator::is_keyboard_input_valid(KeyCodes keycode, int position) -> bool {
+    auto literal = (int)keycode;
+    if (literal == '-' || literal == '+') {
+        return (position == 0);
+    }
+
+    if (literal >= '0' and literal <= '9') {
+        return true;
+    }
+
+    return false;
+}
+
+auto IntegerValidator::is_string_valid(std::string_view str) -> bool {
+    std::istringstream iss(std::string{str});
+    double value;
+    iss >> value;
+    return !iss.fail() && iss.eof();
+}
 
 Spinbox::Spinbox(Position position, Size size) : TextField(position, size) {
     auto s = content.size.height / 2;
@@ -22,6 +44,8 @@ Spinbox::Spinbox(Position position, Size size) : TextField(position, size) {
     down_button->on_button_click = [this]() { this->decrease_value(); };
     down_button->set_auto_repeat(500);
 
+    this->validator = std::make_shared<IntegerValidator>();
+
     add(up_button);
     add(down_button);
 }
@@ -29,11 +53,21 @@ Spinbox::Spinbox(Position position, Size size) : TextField(position, size) {
 void Spinbox::draw() { TextField::draw(); }
 
 auto Spinbox::increase_value() -> void {
+    std::istringstream iss(get_text());
+    iss >> value;
+    if (iss.fail() && iss.eof()) {
+        value = 0;
+    }
     value += interval;
     set_text(fmt::format("{}", std::round(value)));
 }
 
 auto Spinbox::decrease_value() -> void {
+    std::istringstream iss(get_text());
+    iss >> value;
+    if (iss.fail() && iss.eof()) {
+        value = 0;
+    }
     value += interval;
     set_text(fmt::format("{}", std::round(value)));
 }

@@ -131,6 +131,11 @@ auto TextField::on_keyboard(const EventKeyboard &event) -> EventPropagation {
             break;
         }
         if ((int)event.key >= ' ' && (int)event.key <= 128) {
+            if (validator) {
+                if (!validator->is_keyboard_input_valid(event.key, cursor_position)) {
+                    break;
+                }
+            }
             char ascii = (char)event.key;
             spdlog::info("new ascii char: {}", ascii);
 
@@ -223,6 +228,12 @@ auto TextField::ensure_cursor_visible() -> void {
 }
 
 auto TextField::set_text(const std::string_view new_text) -> void {
+    if (validator) {
+        if (!validator->is_string_valid(new_text)) {
+            return;
+        }
+    }
+
     this->text = new_text;
     this->cursor_position = 0;
     this->selection.start = 0;
