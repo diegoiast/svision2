@@ -56,16 +56,25 @@ auto WidgetCollection::on_mouse(const EventMouse &event) -> EventPropagation {
 
         if (child_event.is_local || w->read_external_mouse_events) {
             // propagate the event to sub-widgets
-            w->on_mouse(child_event);
+            auto b = w->on_mouse(child_event);
+            if (b == EventPropagation::handled) {
+                break;
+            }
 
             // not handled by subwidgets, send this event to the widget itself
             switch (event.type) {
             case MouseEvents::Release: {
                 auto b = on_mouse_release(event, w);
+                if (b == EventPropagation::handled) {
+                    result = EventPropagation::handled;
+                }
                 break;
             }
             case MouseEvents::Press: {
                 auto b = on_mouse_press(event, w);
+                if (b == EventPropagation::handled) {
+                    result = EventPropagation::handled;
+                }
                 break;
             }
             case MouseEvents::MouseMove: {
@@ -76,6 +85,9 @@ auto WidgetCollection::on_mouse(const EventMouse &event) -> EventPropagation {
             case MouseEvents::Unknown:
                 break;
             }
+        }
+        if (result == EventPropagation::handled) {
+            break;
         }
     }
     if (last_overed_widget != widget_under_mouse) {
