@@ -96,7 +96,6 @@ auto ThemeRedmond::draw_button(Bitmap &content, bool has_focus, bool is_default,
 auto ThemeRedmond::draw_input_background(Bitmap &content, const bool has_focus) -> void {
     draw_frame(content, {0, 0}, content.size, false);
     auto background = has_focus ? 0x00FFFFFF : ThemeRedmond::background_color;
-    background = 0x00ffffff;
     content.fill_rect(1, 1, content.size.width - 2, content.size.height - 2, background);
 }
 

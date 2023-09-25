@@ -16,11 +16,11 @@ PosixTimer::PosixTimer(int64_t millies, bool repeating, std::function<void()> ca
     this->millies = millies;
     this->repeating = repeating;
     this->callback = callback;
-    initialize();
+    PosixTimer::initialize();
 }
 
 PosixTimer::~PosixTimer() {
-    stop();
+    PosixTimer::stop();
     timer_delete(timerid);
 }
 
@@ -33,7 +33,7 @@ auto PosixTimer::initialize() -> void {
     int ret = timer_create(CLOCK_MONOTONIC, &sev, &timerid);
     if (ret) {
         ret = errno;
-        exit(1);
+        exit(ret);
     }
 }
 
@@ -53,7 +53,7 @@ auto PosixTimer::start() -> void {
     auto ret = timer_settime(timerid, 0, &trigger, NULL);
     if (ret) {
         ret = errno;
-        exit(1);
+        exit(ret);
     }
     is_running = true;
 

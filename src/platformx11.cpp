@@ -22,7 +22,6 @@
 
 auto convert_x11_key_event(XEvent &ev, Display *dpy) -> EventKeyboard {
     auto event = EventKeyboard();
-    auto k = XkbKeycodeToKeysym(dpy, ev.xkey.keycode, 0, 0);
     char buf[20];
     KeySym keySym;
     (void)XLookupString((XKeyEvent *)&ev, buf, 20, &keySym, nullptr);

@@ -131,7 +131,7 @@ auto ScrollBar::update_thumb_size() -> void {
                          ? maximum_thumb_size
                          : std::max(minimum_thumb_size, available_size * (visible_range / range));
         thumb_range = available_size - thumb_size;
-        thumb_position = (value - minimum) * thumb_range / range;
+        thumb_position = range == 0 ? 0 : (value - minimum) * thumb_range / range;
 
         spdlog::info("value={}, range={}, available_size={}, thumb_size={}, thumb_position={}",
                      value, range, available_size, thumb_size, thumb_position);

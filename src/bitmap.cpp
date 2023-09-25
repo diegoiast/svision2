@@ -52,10 +52,10 @@ auto Lighter(uint32_t color, double percentage) -> uint32_t {
 
 auto Bitmap::resize(int width, int height) -> void {
     auto new_buffer = new uint32_t[width * height];
+#if 0
     auto xx = std::min(width, size.width);
     auto yy = std::min(height, size.height);
 
-#if 0
     // todo - instead of filling the whole buffer we could clean
     // the right, and bottom dirty parts.
     std::fill_n(new_buffer, width * height, background_color);
