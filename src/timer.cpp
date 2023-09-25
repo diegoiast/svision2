@@ -65,7 +65,14 @@ auto PosixTimer::stop() -> void {
     if (!is_running) {
         return;
     }
-    timer_delete(timerid);
+    struct itimerspec its;
+    its.it_value.tv_sec = 0;
+    its.it_value.tv_nsec = 0;
+    its.it_interval.tv_sec = 0;
+    its.it_interval.tv_nsec = 0;
+    if (timer_settime(timerid, 0, &its, NULL) == -1) {
+        exit(-1);
+    }
     is_running = false;
 }
 
