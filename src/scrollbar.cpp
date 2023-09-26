@@ -34,7 +34,9 @@ ScrollBar::ScrollBar(Position position, int length, bool horizontal, int maximum
     }
 
     this->up_button->on_button_click = [this]() { step_up(); };
+    this->down_button->set_auto_repeat(500);
     this->down_button->on_button_click = [this]() { step_down(); };
+    this->up_button->set_auto_repeat(500);
 
     this->is_horizontal = horizontal;
     this->maximum = maximum;
