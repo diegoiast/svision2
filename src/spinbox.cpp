@@ -68,6 +68,6 @@ auto Spinbox::decrease_value() -> void {
     if (iss.fail() && iss.eof()) {
         value = 0;
     }
-    value += interval;
+    value -= interval;
     set_text(fmt::format("{}", std::round(value)));
 }
