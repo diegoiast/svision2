@@ -17,11 +17,11 @@
 enum class RepeatState { Normal, WaitForFirstRepeat, Repeating };
 
 struct Button : Widget {
-    ButtonStates state = ButtonStates::Normal;
     bool is_default = false;
     bool is_enabled = true;
     std::string text;
     std::function<void()> on_button_click;
+    AbstractButtonState state;
 
     // TODO this part can be extracted into another helper class to be re-used.
     std::shared_ptr<Timer> click_timer;

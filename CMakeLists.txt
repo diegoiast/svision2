@@ -42,6 +42,8 @@ set(SVISION_SOURCES
     src/bitmap.h
     src/button.cpp
     src/button.h
+    src/buttonstates.cpp
+    src/buttonstates.h
     src/label.cpp
     src/label.h
     src/platform.cpp

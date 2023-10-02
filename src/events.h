@@ -9,6 +9,11 @@
 
 #include <sizepoint.h>
 
+enum class EventPropagation {
+    handled = true,
+    propagate = false,
+};
+
 enum class MouseEvents {
     Unknown,
     Press,

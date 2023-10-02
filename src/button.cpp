@@ -19,7 +19,7 @@ auto start_repeate_timer(Button *button) -> void {
     case RepeatState::Normal:
         button->repeat_state = RepeatState::WaitForFirstRepeat;
         button->click_timer = std::make_shared<Timer>(button->autorepeat_start, false, [button]() {
-            if (button->state == ButtonStates::ClickedInside) {
+            if (button->state.state == ButtonStates::ClickedInside) {
                 button->repeat_state = RepeatState::Repeating;
                 if (button->on_button_click)
                     button->on_button_click();
@@ -48,7 +48,7 @@ auto start_repeate_timer(Button *button) -> void {
                 return;
             }
 
-            if (button->state != ButtonStates::ClickedInside) {
+            if (button->state.state != ButtonStates::ClickedInside) {
                 button->repeat_state = RepeatState::Repeating;
                 if (button->on_button_click)
                     button->on_button_click();
@@ -71,53 +71,23 @@ Button::Button(Position pp, Size size, std::string text, bool is_default,
 }
 
 auto Button::draw() -> void {
-    get_theme()->draw_button(content, has_focus, is_default, is_enabled, state, text);
+    get_theme()->draw_button(content, has_focus, is_default, is_enabled, state.state, text);
 }
 
 auto Button::on_hover(const EventMouse &event) -> void {
-    // default implementation demands redraw, we
-    // don't need this by default
+    // default implementation demands redraw, we don't need this by default
 }
 
 auto Button::on_mouse_enter() -> void {
     mouse_over = true;
-    switch (state) {
-    case ButtonStates::ClickedInside:
-        state = ButtonStates::ClickedOutside;
-        invalidate();
-        break;
-    case ButtonStates::ClickedOutside:
-        state = ButtonStates::ClickedInside;
-        invalidate();
-        break;
-    case ButtonStates::Hovered:
-        break;
-    case ButtonStates::Normal:
-        state = ButtonStates::Hovered;
-        invalidate();
-        break;
-    }
+    state.on_mouse_enter();
+    invalidate();
 }
 
 auto Button::on_mouse_leave() -> void {
     mouse_over = false;
-
-    switch (state) {
-    case ButtonStates::ClickedInside:
-        state = ButtonStates::ClickedOutside;
-        invalidate();
-        break;
-    case ButtonStates::ClickedOutside:
-        state = ButtonStates::ClickedInside;
-        invalidate();
-        break;
-    case ButtonStates::Hovered:
-        state = ButtonStates::Normal;
-        invalidate();
-        break;
-    case ButtonStates::Normal:
-        break;
-    }
+    state.on_mouse_leave();
+    invalidate();
 }
 
 auto Button::on_mouse_click(const EventMouse &event) -> EventPropagation {
@@ -125,61 +95,48 @@ auto Button::on_mouse_click(const EventMouse &event) -> EventPropagation {
         return Widget::on_mouse_click(event);
     }
 
-    auto result = EventPropagation::propagate;
+    auto result = state.on_mouse_click(event);
 
-    switch (state) {
+    switch (state.state) {
     case ButtonStates::ClickedInside:
-        if (!event.pressed) {
-            state = ButtonStates::Hovered;
-            switch (event.button) {
-            case 1:
-                // if the button has auto repeat state, unclicking
-                // will trigger the event, unless a single click has been emited
-                if (repeat_state != RepeatState::Repeating && on_button_click) {
-                    on_button_click();
+        switch (event.button) {
+        case 1:
+            if (is_autorepeat) {
+                if (event.pressed) {
+                    start_repeate_timer(this);
+                } else {
+                    spdlog::info("Stopped auto repeat timer");
+                    click_timer.reset();
+                    repeat_state = RepeatState::Normal;
                 }
-                invalidate();
-                result = EventPropagation::handled;
-                break;
-            default:
-                break;
             }
+            invalidate();
+            break;
         }
         break;
     case ButtonStates::ClickedOutside:
-        if (event.pressed) {
-            state = ButtonStates::ClickedInside;
-            result = EventPropagation::handled;
-            invalidate();
-        } else {
-            state = ButtonStates::Normal;
-            invalidate();
-            spdlog::debug("Button click aborted");
-        }
+        invalidate();
         break;
     case ButtonStates::Hovered:
-        if (event.pressed) {
-            result = EventPropagation::handled;
-            state = ButtonStates::ClickedInside;
-            invalidate();
-        }
-        if (is_autorepeat) {
-            if (event.pressed) {
-                start_repeate_timer(this);
-            } else {
-                spdlog::info("Stopped auto repeat timer");
-                click_timer.reset();
-                repeat_state = RepeatState::Normal;
+        // this means a button has been released
+        if (result == EventPropagation::handled) {
+            switch (event.button)
+            {
+            case 1:
+                if (repeat_state != RepeatState::Repeating && on_button_click) {
+                    on_button_click();
+                }
+                break;            
+            default:
+                break;
             }
+            invalidate();
         }
         break;
     case ButtonStates::Normal:
-        if (event.pressed) {
-            state = ButtonStates::ClickedInside;
-            invalidate();
-        }
         break;
     }
+
     if (!event.pressed && click_timer) {
         click_timer->stop();
         click_timer.reset();
@@ -191,15 +148,8 @@ auto Button::on_mouse_click(const EventMouse &event) -> EventPropagation {
 auto Button::on_focus_change(bool new_state) -> void { invalidate(); }
 
 auto Button::on_keyboard(const EventKeyboard &event) -> EventPropagation {
-    if (event.keydown) {
-        if (event.key == KeyCodes::Enter || event.key == KeyCodes::Return ||
-            event.key == KeyCodes::Space) {
-            // TODO - animate the button click
-            if (on_button_click) {
-                on_button_click();
-            }
-            return EventPropagation::handled;
-        }
+    if (state.on_keyboard(event, on_button_click) == EventPropagation::propagate) {
+        return EventPropagation::handled;
     }
     return Widget::on_keyboard(event);
 };

@@ -19,11 +19,6 @@ struct Platform;
 struct PlatformWindow;
 struct Widget;
 
-enum class EventPropagation {
-    handled = true,
-    propagate = false,
-};
-
 struct WidgetCollection {
     std::list<std::shared_ptr<Widget>> widgets;
     std::shared_ptr<Widget> last_overed_widget;
