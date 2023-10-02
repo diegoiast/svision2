@@ -24,5 +24,6 @@ struct AbstractButtonState {
     auto on_mouse_enter() -> void;
     auto on_mouse_leave() -> void;
     auto on_mouse_click(const EventMouse &event) -> EventPropagation;
-    auto on_keyboard(const EventKeyboard &event, const std::function<void()> &on_button_click) -> EventPropagation;
+    auto on_keyboard(const EventKeyboard &event, const std::function<void()> &on_button_click)
+        -> EventPropagation;
 };

@@ -120,13 +120,12 @@ auto Button::on_mouse_click(const EventMouse &event) -> EventPropagation {
     case ButtonStates::Hovered:
         // this means a button has been released
         if (result == EventPropagation::handled) {
-            switch (event.button)
-            {
+            switch (event.button) {
             case 1:
                 if (repeat_state != RepeatState::Repeating && on_button_click) {
                     on_button_click();
                 }
-                break;            
+                break;
             default:
                 break;
             }
