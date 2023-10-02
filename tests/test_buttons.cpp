@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-#include <button.h>
+#include <buttonstates.h>
 #include <catch2/catch_test_macros.hpp>
 #include <vector>
 
@@ -49,66 +49,63 @@ TEST_CASE("Button states", "[button]") {
 
     SECTION("Testing hover in and out") {
         bool clicked = false;
-        Button button(Position{0, 0}, Size{20, 20}, "dummy");
-        button.on_button_click = [&clicked]() { clicked = true; };
-        REQUIRE(button.state == ButtonStates::Normal);
+        AbstractButtonState buttonState;
+        auto on_button_click = [&clicked]() { clicked = true; };
+        REQUIRE(buttonState.state == ButtonStates::Normal);
 
-        button.on_mouse_enter();
-        REQUIRE(button.state == ButtonStates::Hovered);
-        button.on_mouse_leave();
-        REQUIRE(button.state == ButtonStates::Normal);
+        buttonState.on_mouse_enter();
+        REQUIRE(buttonState.state == ButtonStates::Hovered);
+        buttonState.on_mouse_leave();
+        REQUIRE(buttonState.state == ButtonStates::Normal);
 
-        button.on_mouse_enter();
-        button.on_mouse_enter();
-        button.on_mouse_enter();
-        button.on_mouse_enter();
-        REQUIRE(button.state == ButtonStates::Hovered);
+        buttonState.on_mouse_enter();
+        buttonState.on_mouse_enter();
+        buttonState.on_mouse_enter();
+        buttonState.on_mouse_enter();
+        REQUIRE(buttonState.state == ButtonStates::Hovered);
 
-        button.on_mouse_leave();
-        REQUIRE(button.state == ButtonStates::Normal);
+        buttonState.on_mouse_leave();
+        REQUIRE(buttonState.state == ButtonStates::Normal);
     }
 
     SECTION("Normal click inside") {
-        bool clicked = false;
-        Button button(Position{0, 0}, Size{20, 20}, "dummy");
-        button.on_button_click = [&clicked]() { clicked = true; };
-        REQUIRE(button.state == ButtonStates::Normal);
+        AbstractButtonState buttonState;
+        EventPropagation result;
+        REQUIRE(buttonState.state == ButtonStates::Normal);
 
-        button.on_mouse_enter();
-        REQUIRE(button.state == ButtonStates::Hovered);
-        REQUIRE(clicked == false);
+        buttonState.on_mouse_enter();
+        REQUIRE(buttonState.state == ButtonStates::Hovered);
 
-        button.on_mouse_click(event_click);
-        REQUIRE(button.state == ButtonStates::ClickedInside);
-        REQUIRE(clicked == false);
+        result = buttonState.on_mouse_click(event_click);
+        REQUIRE(buttonState.state == ButtonStates::ClickedInside);
+        REQUIRE(result == EventPropagation::handled);
 
-        button.on_mouse_click(event_release_inside);
-        REQUIRE(button.state == ButtonStates::Hovered);
-        REQUIRE(clicked == true);
+        result = buttonState.on_mouse_click(event_release_inside);
+        REQUIRE(buttonState.state == ButtonStates::Hovered);
+        REQUIRE(result == EventPropagation::handled);
 
-        button.on_mouse_leave();
-        REQUIRE(button.state == ButtonStates::Normal);
+        buttonState.on_mouse_leave();
+        REQUIRE(buttonState.state == ButtonStates::Normal);
     }
 
     SECTION("Normal click abort") {
         bool clicked = false;
-        Button button(Position{0, 0}, Size{20, 20}, "dummy");
-        button.on_button_click = [&clicked]() { clicked = true; };
-        REQUIRE(button.state == ButtonStates::Normal);
+        AbstractButtonState buttonState;
+        REQUIRE(buttonState.state == ButtonStates::Normal);
 
-        button.on_mouse_enter();
-        REQUIRE(button.state == ButtonStates::Hovered);
+        buttonState.on_mouse_enter();
+        REQUIRE(buttonState.state == ButtonStates::Hovered);
         REQUIRE(clicked == false);
 
-        button.on_mouse_click(event_click);
-        REQUIRE(button.state == ButtonStates::ClickedInside);
+        buttonState.on_mouse_click(event_click);
+        REQUIRE(buttonState.state == ButtonStates::ClickedInside);
         REQUIRE(clicked == false);
 
-        button.on_mouse_leave();
-        REQUIRE(button.state == ButtonStates::ClickedOutside);
+        buttonState.on_mouse_leave();
+        REQUIRE(buttonState.state == ButtonStates::ClickedOutside);
 
-        button.on_mouse_click(event_release_outside);
-        REQUIRE(button.state == ButtonStates::Normal);
+        buttonState.on_mouse_click(event_release_outside);
+        REQUIRE(buttonState.state == ButtonStates::Normal);
         REQUIRE(clicked == false);
     }
 }
