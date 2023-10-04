@@ -93,9 +93,34 @@ auto ThemeRedmond::draw_button(Bitmap &content, bool has_focus, bool is_default,
     content.write_fixed(text_position, text, 0xffffff);
 }
 
+auto ThemeRedmond::draw_checkbox(Bitmap &content, bool has_focus, bool is_enabled, bool is_checked, ButtonStates state, const std::string &text) -> void {
+    draw_frame(content, {0,0}, content.size, has_focus);
+    content.fill_rect(1, 1, content.size.width - 2, content.size.height - 2,
+                               ThemeRedmond::background_input);
+
+    auto checkbox_size = content.size.height;
+    if (is_checked) {
+    content.line_thikness(0,0, checkbox_size-1, checkbox_size-1, 2, text_color);
+    content.line_thikness(checkbox_size-1,0, 0, checkbox_size-1, 2, text_color);
+    }
+    content.write_fixed( {checkbox_size + 5,5}, text, ThemeRedmond::text_color);
+
+    switch (state)
+    {
+    case ButtonStates::ClickedInside :
+        break;
+    case ButtonStates::ClickedOutside :
+        break;
+    case ButtonStates::Hovered :
+        break;
+    case ButtonStates::Normal :
+        break;
+    }
+}
+
 auto ThemeRedmond::draw_input_background(Bitmap &content, const bool has_focus) -> void {
     draw_frame(content, {0, 0}, content.size, false);
-    auto background = has_focus ? 0x00FFFFFF : ThemeRedmond::background_color;
+    auto background = has_focus ? ThemeRedmond::background_input : ThemeRedmond::background_color;
     content.fill_rect(1, 1, content.size.width - 2, content.size.height - 2, background);
 }
 
@@ -188,6 +213,9 @@ auto ThemeVision::draw_button(Bitmap &content, bool has_focus, bool is_default, 
 
     if (is_enabled)
         content.write_fixed(text_position, text, color);
+}
+
+auto ThemeVision::draw_checkbox(Bitmap &content, bool has_focus, bool is_default,  bool is_checked, ButtonStates state, const std::string &text) -> void {
 }
 
 auto ThemeVision::draw_input_background(Bitmap &content, const bool has_focus) -> void {
@@ -294,6 +322,9 @@ auto ThemePlasma::draw_button(Bitmap &content, bool has_focus, bool is_default, 
 
     if (is_enabled)
         content.write_fixed(text_position, text, color);
+}
+
+auto ThemePlasma::draw_checkbox(Bitmap &content, bool has_focus, bool is_default,  bool is_checked, ButtonStates state, const std::string &text) -> void {
 }
 
 auto ThemePlasma::draw_input_background(Bitmap &content, const bool has_focus) -> void {
