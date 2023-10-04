@@ -37,6 +37,8 @@ enum class KeyCodes {
     Backspace = 0x0008,
     Insert = 0x007E,
     Space = ' ',
+    ShiftLeft = 0xffe1,
+    ShiftRight = 0xffe2,
     ControlLeft = 0xffe3,
     ControlRight = 0xffe4,
 };

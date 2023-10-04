@@ -1284,10 +1284,10 @@ static int X11_KEYCODES[] = {
     0xffde, 0x0000,    // F33
     0xffdf, 0x0000,    // F34
     0xffe0, 0x0000,    // F35
-    0xffe1, 0x0000,    // Shift_L
-    0xffe2, 0x0000,    // Shift_R
-    0xffe3, 0x0000,    // Control_L
-    0xffe4, 0x0000,    // Control_R
+    0xffe1, (int) KeyCodes::ShiftLeft,    // Shift_L
+    0xffe2, (int) KeyCodes::ShiftRight,    // Shift_R
+    0xffe3, (int) KeyCodes::ControlLeft,    // Control_L
+    0xffe4, (int) KeyCodes::ControlRight,    // Control_R
     0xffe5, 0x0000,    // Caps_Lock
     0xffe6, 0x0000,    // Shift_Lock
     0xffe7, 0x0000,    // Meta_L
