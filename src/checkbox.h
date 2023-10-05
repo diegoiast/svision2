@@ -23,9 +23,6 @@ struct Checkbox : Widget {
     std::function<void()> on_checkbox_click;
     AbstractButtonState state;
 
-
-    // TODO add support for buttons with images
-
     Checkbox(Position pp, int length, std::string text, std::function<void()> on_button_click = {});
 
     virtual auto draw() -> void override;
@@ -35,4 +32,6 @@ struct Checkbox : Widget {
     virtual auto on_mouse_click(const EventMouse &event) -> EventPropagation override;
     virtual auto on_focus_change(bool new_state) -> void override;
     virtual auto on_keyboard(const EventKeyboard &) -> EventPropagation override;
+
+    auto toggle() -> bool;
 };

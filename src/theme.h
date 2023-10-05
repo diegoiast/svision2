@@ -35,6 +35,7 @@ struct ThemeRedmond : Theme {
     static const int32_t line_color4 = 0x808080;
 
     static const int32_t text_color = 0x000000;
+    static const int32_t text_color_disabled = 0x202020;
 
     virtual auto init() -> void override{};
     virtual auto draw_widget_background(Bitmap &content) -> void override {

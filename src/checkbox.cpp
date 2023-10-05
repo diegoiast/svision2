@@ -46,15 +46,7 @@ auto Checkbox::on_mouse_click(const EventMouse &event) -> EventPropagation {
 
     switch (state.state) {
     case ButtonStates::ClickedInside:
-        switch (event.button) {
-        case 1:
-            if (result == EventPropagation::handled) 
-            {
-                this->is_checked = !this->is_checked;
-                invalidate();
-            }
-            break;
-        }
+        invalidate();
         break;
     case ButtonStates::ClickedOutside:
         invalidate();
@@ -64,6 +56,7 @@ auto Checkbox::on_mouse_click(const EventMouse &event) -> EventPropagation {
         if (result == EventPropagation::handled) {
             switch (event.button) {
             case 1:
+                toggle();
                 break;
             default:
                 break;
@@ -81,9 +74,20 @@ auto Checkbox::on_mouse_click(const EventMouse &event) -> EventPropagation {
 auto Checkbox::on_focus_change(bool new_state) -> void { invalidate(); }
 
 auto Checkbox::on_keyboard(const EventKeyboard &event) -> EventPropagation {
-    if (state.on_keyboard(event, on_checkbox_click) == EventPropagation::propagate) {
+    if (state.on_keyboard(event, [this](){
+        toggle();
+        if (on_checkbox_click) {
+            on_checkbox_click();
+        }
+    }) == EventPropagation::propagate) {
         return EventPropagation::handled;
     }
     return Widget::on_keyboard(event);
 };
 
+auto Checkbox::toggle() -> bool 
+{
+    this->is_checked = !this->is_checked;
+    invalidate();
+    return is_checked;
+}

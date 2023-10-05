@@ -94,27 +94,50 @@ auto ThemeRedmond::draw_button(Bitmap &content, bool has_focus, bool is_default,
 }
 
 auto ThemeRedmond::draw_checkbox(Bitmap &content, bool has_focus, bool is_enabled, bool is_checked, ButtonStates state, const std::string &text) -> void {
-    draw_frame(content, {0,0}, content.size, has_focus);
-    content.fill_rect(1, 1, content.size.width - 2, content.size.height - 2,
-                               ThemeRedmond::background_input);
 
+    auto background_color = ThemeRedmond::background_input;
+    auto foreground_color = ThemeRedmond::text_color;
     auto checkbox_size = content.size.height;
-    if (is_checked) {
-    content.line_thikness(0,0, checkbox_size-1, checkbox_size-1, 2, text_color);
-    content.line_thikness(checkbox_size-1,0, 0, checkbox_size-1, 2, text_color);
-    }
-    content.write_fixed( {checkbox_size + 5,5}, text, ThemeRedmond::text_color);
+
 
     switch (state)
     {
     case ButtonStates::ClickedInside :
+        foreground_color = Lighter(foreground_color, 0.2);
+        foreground_color = 0x22bb22;
         break;
     case ButtonStates::ClickedOutside :
+        foreground_color = Lighter(foreground_color, 0.5);
+        foreground_color = 0x228822;
         break;
-    case ButtonStates::Hovered :
+    case ButtonStates::Hovered:
+        if (!is_enabled) {
+            foreground_color = ThemeRedmond::text_color_disabled;
+        } else {
+            foreground_color = Darker(foreground_color, 0.1);
+        }
         break;
-    case ButtonStates::Normal :
+    case ButtonStates::Normal:
+        if (!is_enabled) {
+            foreground_color = ThemeRedmond::text_color_disabled;
+        }
         break;
+    }
+
+
+    content.fill(ThemeRedmond::background_color);
+    content.fill_rect(1, 1, checkbox_size - 2, checkbox_size - 2, background_color);
+    draw_frame(content, {0,0}, {checkbox_size, checkbox_size}, false);
+
+    content.write_fixed( {checkbox_size + 5,5}, text, foreground_color);
+    if (is_checked) {
+        auto padding = 4;
+        content.line_thikness(padding, padding, 
+            checkbox_size-padding, checkbox_size-padding, 
+            2, foreground_color);
+        content.line_thikness(checkbox_size-padding, padding, 
+            padding, checkbox_size-padding, 
+            2, foreground_color);
     }
 }
 
@@ -127,14 +150,14 @@ auto ThemeRedmond::draw_input_background(Bitmap &content, const bool has_focus) 
 auto ThemeRedmond::draw_frame(Bitmap &content, Position position, Size size, bool elevated)
     -> void {
     if (elevated) {
-        content.draw_rectangle(0, 0, content.size.width, content.size.height,
+        content.draw_rectangle(0, 0, size.width, size.height,
                                ThemeRedmond::line_color1, ThemeRedmond::line_color2);
-        content.draw_rectangle(1, 1, content.size.width - 2, content.size.height - 2,
+        content.draw_rectangle(1, 1, size.width - 2, size.height - 2,
                                ThemeRedmond::line_color3, ThemeRedmond::line_color4);
     } else {
-        content.draw_rectangle(0, 0, content.size.width, content.size.height,
+        content.draw_rectangle(0, 0, size.width, size.height,
                                ThemeRedmond::line_color2, ThemeRedmond::line_color1);
-        content.draw_rectangle(1, 1, content.size.width - 2, content.size.height - 2,
+        content.draw_rectangle(1, 1, size.width - 2, size.height - 2,
                                ThemeRedmond::line_color4, ThemeRedmond::line_color3);
     }
 }
