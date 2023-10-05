@@ -68,7 +68,9 @@ auto AbstractButtonState::on_mouse_click(const EventMouse &event) -> EventPropag
     return result;
 }
 
-auto AbstractButtonState::on_keyboard(const EventKeyboard &event, const std::function<void()> &on_button_click) -> EventPropagation {
+auto AbstractButtonState::on_keyboard(const EventKeyboard &event,
+                                      const std::function<void()> &on_button_click)
+    -> EventPropagation {
     if (event.keydown) {
         if (event.key == KeyCodes::Enter || event.key == KeyCodes::Return ||
             event.key == KeyCodes::Space) {
@@ -81,4 +83,3 @@ auto AbstractButtonState::on_keyboard(const EventKeyboard &event, const std::fun
     }
     return EventPropagation::propagate;
 };
-

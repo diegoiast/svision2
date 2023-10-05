@@ -14,11 +14,10 @@
 #include <timer.h>
 #include <widget.h>
 
-
 struct Checkbox : Widget {
     bool is_enabled = true;
     bool is_checked = true;
-    
+
     std::string text;
     std::function<void()> on_checkbox_click;
     AbstractButtonState state;

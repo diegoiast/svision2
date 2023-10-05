@@ -93,20 +93,19 @@ auto ThemeRedmond::draw_button(Bitmap &content, bool has_focus, bool is_default,
     content.write_fixed(text_position, text, 0xffffff);
 }
 
-auto ThemeRedmond::draw_checkbox(Bitmap &content, bool has_focus, bool is_enabled, bool is_checked, ButtonStates state, const std::string &text) -> void {
+auto ThemeRedmond::draw_checkbox(Bitmap &content, bool has_focus, bool is_enabled, bool is_checked,
+                                 ButtonStates state, const std::string &text) -> void {
 
     auto background_color = ThemeRedmond::background_input;
     auto foreground_color = ThemeRedmond::text_color;
     auto checkbox_size = content.size.height;
 
-
-    switch (state)
-    {
-    case ButtonStates::ClickedInside :
+    switch (state) {
+    case ButtonStates::ClickedInside:
         foreground_color = Lighter(foreground_color, 0.2);
         foreground_color = 0x22bb22;
         break;
-    case ButtonStates::ClickedOutside :
+    case ButtonStates::ClickedOutside:
         foreground_color = Lighter(foreground_color, 0.5);
         foreground_color = 0x228822;
         break;
@@ -124,20 +123,17 @@ auto ThemeRedmond::draw_checkbox(Bitmap &content, bool has_focus, bool is_enable
         break;
     }
 
-
     content.fill(ThemeRedmond::background_color);
     content.fill_rect(1, 1, checkbox_size - 2, checkbox_size - 2, background_color);
-    draw_frame(content, {0,0}, {checkbox_size, checkbox_size}, false);
+    draw_frame(content, {0, 0}, {checkbox_size, checkbox_size}, false);
 
-    content.write_fixed( {checkbox_size + 5,5}, text, foreground_color);
+    content.write_fixed({checkbox_size + 5, 5}, text, foreground_color);
     if (is_checked) {
         auto padding = 4;
-        content.line_thikness(padding, padding, 
-            checkbox_size-padding, checkbox_size-padding, 
-            2, foreground_color);
-        content.line_thikness(checkbox_size-padding, padding, 
-            padding, checkbox_size-padding, 
-            2, foreground_color);
+        content.line_thikness(padding, padding, checkbox_size - padding, checkbox_size - padding, 2,
+                              foreground_color);
+        content.line_thikness(checkbox_size - padding, padding, padding, checkbox_size - padding, 2,
+                              foreground_color);
     }
 }
 
@@ -150,15 +146,15 @@ auto ThemeRedmond::draw_input_background(Bitmap &content, const bool has_focus) 
 auto ThemeRedmond::draw_frame(Bitmap &content, Position position, Size size, bool elevated)
     -> void {
     if (elevated) {
-        content.draw_rectangle(0, 0, size.width, size.height,
-                               ThemeRedmond::line_color1, ThemeRedmond::line_color2);
-        content.draw_rectangle(1, 1, size.width - 2, size.height - 2,
-                               ThemeRedmond::line_color3, ThemeRedmond::line_color4);
+        content.draw_rectangle(0, 0, size.width, size.height, ThemeRedmond::line_color1,
+                               ThemeRedmond::line_color2);
+        content.draw_rectangle(1, 1, size.width - 2, size.height - 2, ThemeRedmond::line_color3,
+                               ThemeRedmond::line_color4);
     } else {
-        content.draw_rectangle(0, 0, size.width, size.height,
-                               ThemeRedmond::line_color2, ThemeRedmond::line_color1);
-        content.draw_rectangle(1, 1, size.width - 2, size.height - 2,
-                               ThemeRedmond::line_color4, ThemeRedmond::line_color3);
+        content.draw_rectangle(0, 0, size.width, size.height, ThemeRedmond::line_color2,
+                               ThemeRedmond::line_color1);
+        content.draw_rectangle(1, 1, size.width - 2, size.height - 2, ThemeRedmond::line_color4,
+                               ThemeRedmond::line_color3);
     }
 }
 
@@ -238,8 +234,8 @@ auto ThemeVision::draw_button(Bitmap &content, bool has_focus, bool is_default, 
         content.write_fixed(text_position, text, color);
 }
 
-auto ThemeVision::draw_checkbox(Bitmap &content, bool has_focus, bool is_default,  bool is_checked, ButtonStates state, const std::string &text) -> void {
-}
+auto ThemeVision::draw_checkbox(Bitmap &content, bool has_focus, bool is_default, bool is_checked,
+                                ButtonStates state, const std::string &text) -> void {}
 
 auto ThemeVision::draw_input_background(Bitmap &content, const bool has_focus) -> void {
     auto line1 = ThemeVision::button_border_hover;
@@ -347,8 +343,8 @@ auto ThemePlasma::draw_button(Bitmap &content, bool has_focus, bool is_default, 
         content.write_fixed(text_position, text, color);
 }
 
-auto ThemePlasma::draw_checkbox(Bitmap &content, bool has_focus, bool is_default,  bool is_checked, ButtonStates state, const std::string &text) -> void {
-}
+auto ThemePlasma::draw_checkbox(Bitmap &content, bool has_focus, bool is_default, bool is_checked,
+                                ButtonStates state, const std::string &text) -> void {}
 
 auto ThemePlasma::draw_input_background(Bitmap &content, const bool has_focus) -> void {
     auto line1 = has_focus ? ThemePlasma::button_selected_border : ThemePlasma::border_active;

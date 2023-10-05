@@ -14,10 +14,10 @@
 #endif
 
 #include <button.h>
+#include <checkbox.h>
 #include <label.h>
 #include <scrollbar.h>
 #include <spinbox.h>
-#include <checkbox.h>
 #include <textfield.h>
 
 #include <spdlog/spdlog.h>
@@ -140,7 +140,6 @@ int main() {
     w1->add(std::make_shared<ScrollBar>(Position{10, 330}, 400, true))
         ->set_value(1800, 2000, 200, 50);
     w1->add(std::make_shared<Spinbox>(Position{10, 380}, Size{165, 40}));
-
 
     w1->add(std::make_shared<Checkbox>(Position{200, 380}, 100, "Show/hide"));
     platform.show_window(w1);
