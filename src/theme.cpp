@@ -95,7 +95,6 @@ auto ThemeRedmond::draw_button(Bitmap &content, bool has_focus, bool is_default,
 
 auto ThemeRedmond::draw_checkbox(Bitmap &content, bool has_focus, bool is_enabled, bool is_checked,
                                  ButtonStates state, const std::string &text) -> void {
-
     auto background_color = ThemeRedmond::background_input;
     auto foreground_color = ThemeRedmond::text_color;
     auto checkbox_size = content.size.height;
@@ -343,8 +342,51 @@ auto ThemePlasma::draw_button(Bitmap &content, bool has_focus, bool is_default, 
         content.write_fixed(text_position, text, color);
 }
 
-auto ThemePlasma::draw_checkbox(Bitmap &content, bool has_focus, bool is_default, bool is_checked,
-                                ButtonStates state, const std::string &text) -> void {}
+auto ThemePlasma::draw_checkbox(Bitmap &content, bool has_focus, bool is_enabled, bool is_checked,
+                                ButtonStates state, const std::string &text) -> void {
+    auto background_color = ThemePlasma::window_background_color;
+    auto foreground_color = ThemePlasma::text_color;
+    auto checkbox_size = content.size.height;
+    auto checkbox_color = ThemePlasma::border_hover;
+
+    switch (state) {
+    case ButtonStates::ClickedInside:
+        if (is_checked) {
+            checkbox_color = ThemePlasma::border_disabled;
+        } else {
+            checkbox_color = ThemePlasma::border_hover;
+        }
+        break;
+    case ButtonStates::ClickedOutside:
+        if (is_checked) {
+            checkbox_color = ThemePlasma::border_hover;
+        } else {
+            checkbox_color = ThemePlasma::border_disabled;
+        }
+        break;
+    case ButtonStates::Hovered:
+        break;
+    case ButtonStates::Normal:
+        break;
+    }
+
+    content.fill(background_color);
+    {
+        auto padding = 2;
+        auto p = Position{padding, padding};
+        auto w = Size{checkbox_size - padding * 2, checkbox_size - padding * 2};
+        content.draw_rounded_rectangle(p.x, p.y, w.width, w.height, 1, ThemePlasma::border_hover,
+                                       ThemePlasma::border_hover);
+    }
+
+    if (is_checked) {
+        auto padding = 5;
+        auto p = Position{padding, padding};
+        auto w = Size{checkbox_size - padding * 2, checkbox_size - padding * 2};
+        content.fill_rect(p.x, p.y, w.width, w.height, checkbox_color);
+    }
+    content.write_fixed({checkbox_size + 5, 5}, text, foreground_color);
+}
 
 auto ThemePlasma::draw_input_background(Bitmap &content, const bool has_focus) -> void {
     auto line1 = has_focus ? ThemePlasma::button_selected_border : ThemePlasma::border_active;
