@@ -351,11 +351,8 @@ auto ThemePlasma::draw_checkbox(Bitmap &content, bool has_focus, bool is_enabled
 
     switch (state) {
     case ButtonStates::ClickedInside:
-        if (is_checked) {
-            checkbox_color = ThemePlasma::border_disabled;
-        } else {
-            checkbox_color = ThemePlasma::border_hover;
-        }
+        checkbox_color = ThemePlasma::border_disabled;
+        is_checked = true;
         break;
     case ButtonStates::ClickedOutside:
         if (is_checked) {
