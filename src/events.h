@@ -63,7 +63,7 @@ struct EventMouse : Event {
     int x = -1;
     int y = -1;
 
-    auto invalidate() -> auto{
+    auto invalidate() -> auto {
         x = -1;
         y = -1;
     }

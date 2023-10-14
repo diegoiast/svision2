@@ -74,12 +74,16 @@ struct Widget {
     }
 
     auto get_theme() -> std::shared_ptr<Theme>;
+    auto show() -> void;
+    auto hide() -> void;
+    auto is_visible() const -> bool { return is_widget_visible; }
 
     friend class PlatformWindow;
     friend class WidgetCollection;
 
   private:
     bool needs_redraw = true;
+    bool is_widget_visible = true;
 };
 
 struct PlatformWindow {

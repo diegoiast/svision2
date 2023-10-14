@@ -10,10 +10,10 @@
 #include <theme.h>
 
 Checkbox::Checkbox(Position p, int length, std::string text,
-                   std::function<void()> on_Checkbox_click)
+                   std::function<void(Checkbox &)> on_checkbox_change)
     : Widget(p, {}, 0) {
     this->text = text;
-    this->on_checkbox_click = on_Checkbox_click;
+    this->on_checkbox_change = on_checkbox_change;
     this->can_focus = true;
     this->content.resize({length, 22});
 }
@@ -75,12 +75,7 @@ auto Checkbox::on_mouse_click(const EventMouse &event) -> EventPropagation {
 auto Checkbox::on_focus_change(bool new_state) -> void { invalidate(); }
 
 auto Checkbox::on_keyboard(const EventKeyboard &event) -> EventPropagation {
-    if (state.on_keyboard(event, [this]() {
-            toggle();
-            if (on_checkbox_click) {
-                on_checkbox_click();
-            }
-        }) == EventPropagation::propagate) {
+    if (state.on_keyboard(event, [this]() { toggle(); }) == EventPropagation::propagate) {
         return EventPropagation::handled;
     }
     return Widget::on_keyboard(event);
@@ -88,6 +83,9 @@ auto Checkbox::on_keyboard(const EventKeyboard &event) -> EventPropagation {
 
 auto Checkbox::toggle() -> bool {
     this->is_checked = !this->is_checked;
+    if (on_checkbox_change) {
+        on_checkbox_change(*this);
+    }
     invalidate();
     return is_checked;
 }

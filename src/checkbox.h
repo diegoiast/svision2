@@ -19,10 +19,11 @@ struct Checkbox : Widget {
     bool is_checked = true;
 
     std::string text;
-    std::function<void()> on_checkbox_click;
+    std::function<void(Checkbox &)> on_checkbox_change;
     AbstractButtonState state;
 
-    Checkbox(Position pp, int length, std::string text, std::function<void()> on_button_click = {});
+    Checkbox(Position pp, int length, std::string text,
+             std::function<void(Checkbox &)> on_checkbox_change = {});
 
     virtual auto draw() -> void override;
     virtual auto on_hover(const EventMouse &event) -> void override;

@@ -115,7 +115,8 @@ int main() {
     platform.show_window(w2);
 
     auto w1 = platform.open_window(100, 100, 640, 480, "test 1");
-    w1->add(std::make_shared<DebugWidget>(Position{350, 10}, Size{200, 40}, 0x22dd37));
+    auto debug_widget =
+        w1->add(std::make_shared<DebugWidget>(Position{350, 10}, Size{200, 40}, 0x22dd37));
     w1->add(std::make_shared<Button>(Position{10, 100}, Size{200, 40}, "OK", true, [&platform]() {
         spdlog::info("OK clicked!");
         platform.exit_loop = true;
@@ -141,7 +142,14 @@ int main() {
         ->set_value(1800, 2000, 200, 50);
     w1->add(std::make_shared<Spinbox>(Position{10, 380}, Size{165, 40}));
 
-    w1->add(std::make_shared<Checkbox>(Position{200, 380}, 100, "Show/hide"));
+    w1->add(std::make_shared<Checkbox>(Position{200, 380}, 100, "Show/hide"))->on_checkbox_change =
+        [debug_widget](Checkbox &cb) {
+            if (cb.is_checked) {
+                debug_widget->show();
+            } else {
+                debug_widget->hide();
+            }
+        };
     platform.show_window(w1);
 
     t1.start();

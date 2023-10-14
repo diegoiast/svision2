@@ -45,6 +45,10 @@ auto WidgetCollection::on_mouse(const EventMouse &event) -> EventPropagation {
     auto widget_under_mouse = std::shared_ptr<Widget>();
     auto result = EventPropagation::propagate;
     for (auto w : this->widgets) {
+        if (!w->is_visible()) {
+            continue;
+        }
+
         auto child_event = event;
         child_event.is_local = false;
         if (point_in_rect(w->position, w->content.size, event.x, event.y)) {
@@ -336,6 +340,22 @@ auto Widget::get_theme() -> std::shared_ptr<Theme> {
     return window->theme;
 }
 
+auto Widget::show() -> void {
+    if (is_visible()) {
+        return;
+    }
+    is_widget_visible = true;
+    invalidate();
+}
+
+auto Widget::hide() -> void {
+    if (!is_visible()) {
+        return;
+    }
+    is_widget_visible = false;
+    invalidate();
+}
+
 PlatformWindow::~PlatformWindow() { spdlog::info("Window done"); }
 
 auto PlatformWindow::draw() -> void {
@@ -345,6 +365,10 @@ auto PlatformWindow::draw() -> void {
         theme->draw_window_background(content);
 
     for (auto w : widgets.widgets) {
+        if (!w->is_visible()) {
+            continue;
+        }
+
         if (w->needs_redraw) {
             w->draw();
             w->needs_redraw = false;
