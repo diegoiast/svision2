@@ -83,8 +83,6 @@ auto ScrollBar::step_up() -> void {
     this->up_button->invalidate();
     this->down_button->invalidate();
     update_thumb_size();
-    spdlog::info("value++: value = {}, pos={}, size={} - (step={} up-enabled={}), ", value,
-                 thumb_position, thumb_size, step, up_button->is_enabled);
     invalidate();
 }
 
