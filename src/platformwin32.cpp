@@ -5,8 +5,12 @@
  * SPDX-License-Identifier: MIT
  */
 
-#include <iostream>
+#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+#undef min
+#undef max
+
+#include <iostream>
 
 #include "events.h"
 #include "platformwin32.h"
@@ -151,8 +155,9 @@ static auto win32_paint_window(PlatformWindowWin32 *window) -> void {
     BITMAPINFO bi = {
         {sizeof(bi), window->content.size.width, -window->content.size.height, 1, 32, BI_RGB}};
     bi.bmiColors[0].rgbRed = 0xff;
-    bi.bmiColors[1].rgbGreen = 0xff;
-    bi.bmiColors[2].rgbBlue = 0xff;
+    bi.bmiColors[0].rgbGreen = 0xff;
+    bi.bmiColors[0].rgbBlue = 0xff;
+    bi.bmiColors[0].rgbReserved = 0xff;
 
     SetDIBitsToDevice(memdc, 0, 0, window->content.size.width, window->content.size.height, 0, 0, 0,
                       window->content.size.height, window->content.buf, (BITMAPINFO *)&bi,

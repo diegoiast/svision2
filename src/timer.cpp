@@ -9,9 +9,9 @@
 #include <cstdlib>
 #include <cstring>
 #include <errno.h>
-#include <time.h>
 
 #if defined(POSIX) || defined(__linux__)
+#include <time.h>
 PosixTimer::PosixTimer(int64_t millies, bool repeating, std::function<void()> callback) {
     this->millies = millies;
     this->repeating = repeating;

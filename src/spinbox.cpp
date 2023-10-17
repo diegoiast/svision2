@@ -10,10 +10,11 @@
 
 #include <iostream>
 #include <sstream>
+#include <ciso646>
 
 auto IntegerValidator::is_keyboard_input_valid(KeyCodes keycode, int position) -> bool {
     auto literal = (int)keycode;
-    if (literal == '-' || literal == '+') {
+    if (literal == '-' or literal == '+') {
         return (position == 0);
     }
 
@@ -55,7 +56,7 @@ void Spinbox::draw() { TextField::draw(); }
 auto Spinbox::increase_value() -> void {
     std::istringstream iss(get_text());
     iss >> value;
-    if (iss.fail() && iss.eof()) {
+    if (iss.fail() and iss.eof()) {
         value = 0;
     }
     value += interval;
@@ -65,7 +66,7 @@ auto Spinbox::increase_value() -> void {
 auto Spinbox::decrease_value() -> void {
     std::istringstream iss(get_text());
     iss >> value;
-    if (iss.fail() && iss.eof()) {
+    if (iss.fail() and iss.eof()) {
         value = 0;
     }
     value -= interval;

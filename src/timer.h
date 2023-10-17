@@ -9,7 +9,6 @@
 
 #include <cstdint>
 #include <functional>
-#include <signal.h>
 
 struct PlatformTimer {
     int64_t millies = 0;
@@ -31,6 +30,7 @@ struct PlatformTimer {
 };
 
 #if defined(POSIX) || defined(__linux__)
+#include <signal.h>
 #include <time.h>
 
 struct PosixTimer : PlatformTimer {
@@ -53,8 +53,12 @@ using Timer = PosixTimer;
 #if defined(_win32) || defined(WIN32)
 
 #include <map>
-#include <windef.h>
-#include <winuser.h>
+
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+
+#undef min
+#undef max
 
 struct Win32Timer : PlatformTimer {
     Win32Timer(int64_t millies, bool repeating, std::function<void()> callback);
