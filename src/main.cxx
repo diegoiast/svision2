@@ -16,6 +16,7 @@
 #include <button.h>
 #include <checkbox.h>
 #include <label.h>
+#include <radiobuttongroup.h>
 #include <scrollbar.h>
 #include <spinbox.h>
 #include <textfield.h>
@@ -104,6 +105,7 @@ int main() {
     int timer_count = 0;
     auto platform = ThePlatform();
     platform.init();
+    platform.default_theme = std::make_shared<ThemeVision>();
 
     Timer t1(500, true, [&timer_count]() {
         timer_count++;
@@ -132,7 +134,7 @@ int main() {
     w1->add(std::make_shared<Label>(Position{10, 10}, Size{100, 20}, "Hello world!"));
     w1->add(std::make_shared<TextField>(Position{10, 35}, Size{165, 40}));
     w1->add(std::make_shared<ScrollBar>(Position{10, 155}, 400, true));
-    w1->add(std::make_shared<ScrollBar>(Position{450, 75}, 400, false))
+    w1->add(std::make_shared<ScrollBar>(Position{610, 75}, 400, false))
         ->set_value(100, 200, 200, 5);
     w1->add(std::make_shared<ScrollBar>(Position{10, 255}, 400, true))
         ->set_value(1000, 2000, 200, 50);
@@ -150,6 +152,14 @@ int main() {
                 debug_widget->hide();
             }
         };
+
+    std::list<std::string> options = {
+        "Option 1",
+        "Option 2",
+        "Option 3",
+        "Option 4",
+    };
+    w1->add(std::make_shared<RadioButtonGroup>(Position{450, 100}, 150, options));
     platform.show_window(w1);
 
     t1.start();

@@ -397,22 +397,25 @@ auto ThemePlasma::draw_checkbox(Bitmap &content, bool has_focus, bool is_enabled
     auto foreground_color = ThemePlasma::text_color;
     auto checkbox_size = content.size.height;
     auto checkbox_color = ThemePlasma::border_hover;
+    auto checkbox_border = ThemePlasma::border_disabled;
 
     switch (state) {
     case ButtonStates::ClickedInside:
         checkbox_color = ThemePlasma::border_disabled;
+        checkbox_border = ThemePlasma::border_hover;
         is_checked = true;
         break;
     case ButtonStates::ClickedOutside:
-        if (is_checked) {
-            checkbox_color = ThemePlasma::border_hover;
-        } else {
-            checkbox_color = ThemePlasma::border_disabled;
-        }
+        checkbox_border = ThemePlasma::border_hover;
+        checkbox_color  = has_focus ?  ThemePlasma::border_disabled : ThemePlasma::border_hover;
+
         break;
     case ButtonStates::Hovered:
+        checkbox_border = ThemePlasma::border_hover;
         break;
     case ButtonStates::Normal:
+        checkbox_border = has_focus ?  ThemePlasma::border_hover : ThemePlasma::border_disabled;
+        checkbox_color  = has_focus ?  ThemePlasma::border_hover : ThemePlasma::border_disabled;
         break;
     }
 
@@ -421,15 +424,20 @@ auto ThemePlasma::draw_checkbox(Bitmap &content, bool has_focus, bool is_enabled
         auto padding = 2;
         auto p = Position{padding, padding};
         auto w = Size{checkbox_size - padding * 2, checkbox_size - padding * 2};
-        content.draw_rounded_rectangle(p.x, p.y, w.width, w.height, 1, ThemePlasma::border_hover,
-                                       ThemePlasma::border_hover);
+        content.draw_rounded_rectangle(p.x, p.y, w.width, w.height, 1,
+                                       checkbox_border,
+                                       checkbox_border);
     }
 
-    if (is_checked) {
+    {
         auto padding = 5;
         auto p = Position{padding, padding};
         auto w = Size{checkbox_size - padding * 2, checkbox_size - padding * 2};
-        content.fill_rect(p.x, p.y, w.width, w.height, checkbox_color);
+        if (is_checked) {
+           content.fill_rect(p.x, p.y, w.width, w.height, checkbox_color);
+        } else {
+           content.fill_rect(p.x, p.y, w.width, w.height, background_color);
+        }
     }
     content.write_fixed({checkbox_size + 5, 5}, text, foreground_color);
 }

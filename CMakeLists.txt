@@ -50,6 +50,8 @@ set(SVISION_SOURCES
     src/label.h
     src/platform.cpp
     src/platform.h
+    src/radiobuttongroup.h
+    src/radiobuttongroup.cpp
     src/scrollbar.cpp
     src/scrollbar.h
     src/spinbox.cpp
