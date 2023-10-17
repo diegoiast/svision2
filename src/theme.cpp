@@ -163,9 +163,10 @@ auto ThemeVision::draw_window_background(Bitmap &content) -> void {
 }
 
 auto ThemeVision::draw_scrollbar_background(Bitmap &content) -> void {
-    // TODO - do we need a frame? different color?
-    content.fill_rect(0, 0, content.size.width, content.size.height,
+    content.fill_rect(1, 1, content.size.width-1, content.size.height-1,
                       ThemeVision::window_background_color);
+    content.draw_rectangle(0, 0, content.size.width, content.size.height,
+                           ThemeVision::button_border, ThemeVision::button_border);
 }
 
 auto ThemeVision::draw_button(Bitmap &content, bool has_focus, bool is_default, bool is_enabled,
