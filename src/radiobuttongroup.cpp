@@ -5,7 +5,7 @@ RadioButtonGroup::RadioButtonGroup(Position position, size_t width, std::list<st
     :Widget(position, {}, 0 )
 {
     auto padding = 5;
-    auto p = position;
+    auto p = Position{0, 0};
     auto height = 0;
 
     for( auto &item: items) {
