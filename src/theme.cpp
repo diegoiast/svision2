@@ -234,7 +234,55 @@ auto ThemeVision::draw_button(Bitmap &content, bool has_focus, bool is_default, 
 }
 
 auto ThemeVision::draw_checkbox(Bitmap &content, bool has_focus, bool is_default, bool is_checked,
-                                ButtonStates state, const std::string &text) -> void {}
+                                ButtonStates state, const std::string &text) -> void {
+           auto background_color = ThemeVision::window_background_color;
+    auto foreground_color = ThemeVision::text_color;
+    auto checkbox_size = content.size.height;
+    auto checkbox_color = ThemeVision::button_border_hover;
+
+    switch (state) {
+    case ButtonStates::ClickedInside:
+        checkbox_color = ThemeVision::button_border_hover;
+        is_checked = true;
+        break;
+    case ButtonStates::ClickedOutside:
+        if (is_checked) {
+            checkbox_color = ThemeVision::button_border_hover;
+        } else {
+            // TODO - missing disabled color?
+            checkbox_color = ThemeVision::button_border;
+        }
+        break;
+    case ButtonStates::Hovered:
+        break;
+    case ButtonStates::Normal:
+        break;
+    }
+
+    content.fill(background_color);
+    {
+        auto padding = 2;
+        auto p = Position{padding, padding};
+        auto w = Size{checkbox_size - padding * 2, checkbox_size - padding * 2};
+        content.draw_rounded_rectangle(p.x, p.y, w.width, w.height, 1, ThemeVision::button_border_hover,
+                                       ThemeVision::button_border_hover);
+    }
+
+    if (is_checked) {
+        auto padding = 1;
+        auto p = Position{padding, padding};
+        auto w = Size{checkbox_size - padding * 2, checkbox_size - padding * 2};
+        content.fill_rect(p.x, p.y, w.width, w.height, checkbox_color);
+        content.line( p.x + 5, p.y + w.height - 10, 
+            p.x + 8, p.y + w.height - 5, 
+            0xffffff);
+
+        content.line( p.x + 8,  p.y + w.height - 5, 
+            p.x + 13, p.y + w.height - 15, 
+            0xffffff);
+    }
+    content.write_fixed({checkbox_size + 5, 5}, text, foreground_color);
+}
 
 auto ThemeVision::draw_input_background(Bitmap &content, const bool has_focus) -> void {
     auto line1 = ThemeVision::button_border_hover;
