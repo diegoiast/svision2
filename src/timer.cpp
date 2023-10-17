@@ -86,7 +86,13 @@ auto PosixTimer::handler(sigval sival_int) -> void {
 
 std::map<UINT_PTR, Win32Timer *> Win32Timer::available_timers;
 
-Win32Timer::Win32Timer(int64_t millies, bool repeating, std::function<void()> callback) {}
+Win32Timer::Win32Timer(int64_t millies, bool repeating, std::function<void()> callback) {
+    this->millies = millies;
+    this->repeating = repeating;
+    this->callback = callback;
+    Win32Timer::initialize();  
+}
+
 Win32Timer::~Win32Timer() { stop(); }
 
 auto Win32Timer::initialize() -> void {}
