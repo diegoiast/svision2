@@ -46,6 +46,7 @@ struct Widget {
     PlatformWindow *window = nullptr;
     Widget *parent = nullptr;
 
+    bool draw_background = true;
     bool read_external_mouse_events = false;
     bool mouse_over = false;
     bool has_focus = false;

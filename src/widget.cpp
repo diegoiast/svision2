@@ -301,6 +301,9 @@ auto Widget::invalidate() -> void {
 }
 
 auto Widget::draw() -> void {
+    if (draw_background) {
+        get_theme()->draw_widget_background(content);
+    }
     for (auto w : widgets.widgets) {
         if (w->needs_redraw) {
             w->draw();

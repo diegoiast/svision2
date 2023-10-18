@@ -13,12 +13,14 @@ TextField::TextField(Position position, Size size) : Widget(position, size, 0) {
     };
     timer.initialize();
     this->can_focus = true;
+    this->draw_background = false;
 }
 
 TextField::~TextField() { timer.stop(); }
 
 auto TextField::draw() -> void {
     theme->draw_input_background(content, has_focus);
+    Widget::draw();
 
     auto padding_vertical = 5;
     auto display_text_logical = (content.size.width - padding_start - padding_end) / 8;
@@ -37,7 +39,6 @@ auto TextField::draw() -> void {
         content.draw_rectangle(position_x, padding_vertical, 1,
                                content.size.height - padding_vertical * 2, 0, 0);
     }
-    Widget::draw();
 }
 
 auto TextField::on_keyboard(const EventKeyboard &event) -> EventPropagation {

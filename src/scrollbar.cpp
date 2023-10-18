@@ -38,6 +38,7 @@ ScrollBar::ScrollBar(Position position, int length, bool horizontal, int maximum
     this->down_button->on_button_click = [this]() { step_down(); };
     this->up_button->set_auto_repeat(500);
 
+    this->draw_background = false;
     this->is_horizontal = horizontal;
     this->maximum = maximum;
     this->update_thumb_size();
@@ -46,6 +47,7 @@ ScrollBar::ScrollBar(Position position, int length, bool horizontal, int maximum
 auto ScrollBar::draw() -> void {
     auto theme = get_theme();
     theme->draw_scrollbar_background(content);
+    Widget::draw();
 
     if (is_horizontal) {
         auto offset = down_button->content.size.width + thumb_position;
@@ -54,7 +56,6 @@ auto ScrollBar::draw() -> void {
         auto offset = down_button->content.size.height + thumb_position;
         content.fill_rect(0, offset, content.size.width, thumb_size, 0x20a0a0);
     }
-    Widget::draw();
 }
 
 auto ScrollBar::set_value(int minimum, int maximum, int value, int step) -> void {
