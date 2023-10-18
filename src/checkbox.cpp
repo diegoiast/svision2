@@ -89,3 +89,25 @@ auto Checkbox::toggle() -> bool {
     invalidate();
     return is_checked;
 }
+
+auto Checkbox::set_checked(EventPropagation propagate) -> void {
+    if (is_checked) {
+        return;
+    }
+    is_checked = true;
+    if (propagate == EventPropagation::propagate && on_checkbox_change) {
+        on_checkbox_change(*this);
+    }
+    invalidate();
+}
+
+auto Checkbox::set_unchecked(EventPropagation propagate) -> void {
+    if (!is_checked) {
+        return;
+    }
+    is_checked = false;
+    if (propagate == EventPropagation::propagate && on_checkbox_change) {
+        on_checkbox_change(*this);
+    }
+    invalidate();
+}

@@ -16,7 +16,7 @@
 
 struct Checkbox : Widget {
     bool is_enabled = true;
-    bool is_checked = true;
+    bool is_checked = false;
 
     std::string text;
     std::function<void(Checkbox &)> on_checkbox_change;
@@ -34,4 +34,6 @@ struct Checkbox : Widget {
     virtual auto on_keyboard(const EventKeyboard &) -> EventPropagation override;
 
     auto toggle() -> bool;
+    auto set_checked(EventPropagation propagate) -> void;
+    auto set_unchecked(EventPropagation propagate) -> void;
 };
