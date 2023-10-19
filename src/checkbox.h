@@ -13,6 +13,7 @@
 #include <memory>
 #include <timer.h>
 #include <widget.h>
+#include <checkboxshape.h>
 
 struct Checkbox : Widget {
     bool is_enabled = true;
@@ -20,7 +21,8 @@ struct Checkbox : Widget {
 
     std::string text;
     std::function<void(Checkbox &)> on_checkbox_change;
-    AbstractButtonState state;
+    AbstractButtonState state {};
+    CheckboxShape shape = CheckboxShape::Checkbox;
 
     Checkbox(Position pp, int length, std::string text,
              std::function<void(Checkbox &)> on_checkbox_change = {});

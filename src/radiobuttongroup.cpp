@@ -23,6 +23,7 @@ RadioButtonGroup::RadioButtonGroup(Position position, size_t width, const std::l
 
     for (auto &item: items) {
         auto cb = add(std::make_shared<Checkbox>(p, width, item ));
+        cb->shape = CheckboxShape::RadioButton;
         cb->on_checkbox_change = [this](Checkbox& cb) {
             on_radio_button_selected(*this, cb) ;
         };

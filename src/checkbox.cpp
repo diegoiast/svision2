@@ -19,7 +19,7 @@ Checkbox::Checkbox(Position p, int length, std::string text,
 }
 
 auto Checkbox::draw() -> void {
-    get_theme()->draw_checkbox(content, has_focus, is_enabled, is_checked, state.state, text);
+    get_theme()->draw_checkbox(content, has_focus, is_enabled, is_checked, state.state, text, shape);
 }
 
 auto Checkbox::on_hover(const EventMouse &event) -> void {

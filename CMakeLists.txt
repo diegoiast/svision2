@@ -46,6 +46,7 @@ set(SVISION_SOURCES
     src/buttonstates.h
     src/checkbox.cpp
     src/checkbox.h
+    src/checkboxshape.h
     src/label.cpp
     src/label.h
     src/platform.cpp
