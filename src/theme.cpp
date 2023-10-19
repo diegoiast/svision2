@@ -94,7 +94,8 @@ auto ThemeRedmond::draw_button(Bitmap &content, bool has_focus, bool is_default,
 }
 
 auto ThemeRedmond::draw_checkbox(Bitmap &content, bool has_focus, bool is_enabled, bool is_checked,
-                                 ButtonStates state, const std::string &text, CheckboxShape shape) -> void {
+                                 ButtonStates state, const std::string &text, CheckboxShape shape)
+    -> void {
     auto background_color = ThemeRedmond::background_input;
     auto foreground_color = ThemeRedmond::text_color;
     auto checkbox_size = content.size.height;
@@ -128,16 +129,16 @@ auto ThemeRedmond::draw_checkbox(Bitmap &content, bool has_focus, bool is_enable
 
     switch (shape) {
     case CheckboxShape::Checkbox:
-        content.fill_rect(padding, padding, checkbox_size - padding*2, checkbox_size - padding*2, background_color);
+        content.fill_rect(padding, padding, checkbox_size - padding * 2,
+                          checkbox_size - padding * 2, background_color);
         draw_frame(content, {0, 0}, {checkbox_size, checkbox_size}, false);
         break;
     case CheckboxShape::RadioButton:
-        content.fill_circle(m, m, checkbox_size/2 - padding, background_color);
-        content.draw_circle(m, m, checkbox_size/2 - padding, ThemeRedmond::line_color1);
-        content.draw_circle(m, m, checkbox_size/2 - padding-1, ThemeRedmond::line_color2);
+        content.fill_circle(m, m, checkbox_size / 2 - padding, background_color);
+        content.draw_circle(m, m, checkbox_size / 2 - padding, ThemeRedmond::line_color1);
+        content.draw_circle(m, m, checkbox_size / 2 - padding - 1, ThemeRedmond::line_color2);
         break;
     }
-
 
     content.write_fixed({checkbox_size + 5, 5}, text, foreground_color);
     if (is_checked) {
@@ -145,14 +146,16 @@ auto ThemeRedmond::draw_checkbox(Bitmap &content, bool has_focus, bool is_enable
 
         switch (shape) {
         case CheckboxShape::Checkbox:
-            content.line_thikness(padding, padding, checkbox_size - padding, checkbox_size - padding, 2,
-                                  foreground_color);
-            content.line_thikness(checkbox_size - padding, padding, padding, checkbox_size - padding, 2,
-                                  foreground_color);
+            content.line_thikness(padding, padding, checkbox_size - padding,
+                                  checkbox_size - padding, 2, foreground_color);
+            content.line_thikness(checkbox_size - padding, padding, padding,
+                                  checkbox_size - padding, 2, foreground_color);
             break;
         case CheckboxShape::RadioButton:
-            content.fill_circle(m+1, m+1, checkbox_size/2 - padding-3, ThemeRedmond::line_color2);
-//            content.fill_circle(m+2, m+2, checkbox_size/2 - padding-4, ThemeRedmond::line_color2);
+            content.fill_circle(m + 1, m + 1, checkbox_size / 2 - padding - 3,
+                                ThemeRedmond::line_color2);
+            //            content.fill_circle(m+2, m+2, checkbox_size/2 - padding-4,
+            //            ThemeRedmond::line_color2);
             break;
         }
     }
@@ -185,7 +188,7 @@ auto ThemeVision::draw_window_background(Bitmap &content) -> void {
 }
 
 auto ThemeVision::draw_scrollbar_background(Bitmap &content) -> void {
-    content.fill_rect(1, 1, content.size.width-1, content.size.height-1,
+    content.fill_rect(1, 1, content.size.width - 1, content.size.height - 1,
                       ThemeVision::window_background_color);
     content.draw_rectangle(0, 0, content.size.width, content.size.height,
                            ThemeVision::button_border, ThemeVision::button_border);
@@ -255,8 +258,9 @@ auto ThemeVision::draw_button(Bitmap &content, bool has_focus, bool is_default, 
 }
 
 auto ThemeVision::draw_checkbox(Bitmap &content, bool has_focus, bool is_default, bool is_checked,
-                                ButtonStates state, const std::string &text, CheckboxShape shape) -> void {
-           auto background_color = ThemeVision::window_background_color;
+                                ButtonStates state, const std::string &text, CheckboxShape shape)
+    -> void {
+    auto background_color = ThemeVision::window_background_color;
     auto foreground_color = ThemeVision::text_color;
     auto checkbox_size = content.size.height;
     auto checkbox_color = ThemeVision::button_border_hover;
@@ -289,14 +293,14 @@ auto ThemeVision::draw_checkbox(Bitmap &content, bool has_focus, bool is_default
 
         switch (shape) {
         case CheckboxShape::Checkbox:
-            content.draw_rounded_rectangle(p.x, p.y, w.width, w.height, 1, ThemeVision::button_border_hover,
+            content.draw_rounded_rectangle(p.x, p.y, w.width, w.height, 1,
+                                           ThemeVision::button_border_hover,
                                            ThemeVision::button_border_hover);
             break;
         case CheckboxShape::RadioButton:
-            content.draw_circle(m, m, checkbox_size/2 - padding, checkbox_color);
+            content.draw_circle(m, m, checkbox_size / 2 - padding, checkbox_color);
             break;
         }
-
     }
 
     switch (shape) {
@@ -306,20 +310,16 @@ auto ThemeVision::draw_checkbox(Bitmap &content, bool has_focus, bool is_default
             auto p = Position{padding, padding};
             auto w = Size{checkbox_size - padding * 2, checkbox_size - padding * 2};
             content.fill_rect(p.x, p.y, w.width, w.height, checkbox_color);
-            content.line( p.x + 5, p.y + w.height - 10,
-                         p.x + 8, p.y + w.height - 5,
-                         0xffffff);
+            content.line(p.x + 5, p.y + w.height - 10, p.x + 8, p.y + w.height - 5, 0xffffff);
 
-            content.line( p.x + 8,  p.y + w.height - 5,
-                         p.x + 13, p.y + w.height - 15,
-                         0xffffff);
+            content.line(p.x + 8, p.y + w.height - 5, p.x + 13, p.y + w.height - 15, 0xffffff);
         }
         break;
     case CheckboxShape::RadioButton:
         if (is_checked) {
             auto padding = 5;
             auto m = checkbox_size / 2;
-            content.fill_circle(m, m, checkbox_size/2 - padding, checkbox_color);
+            content.fill_circle(m, m, checkbox_size / 2 - padding, checkbox_color);
         }
         break;
     }
@@ -434,7 +434,8 @@ auto ThemePlasma::draw_button(Bitmap &content, bool has_focus, bool is_default, 
 }
 
 auto ThemePlasma::draw_checkbox(Bitmap &content, bool has_focus, bool is_enabled, bool is_checked,
-                                ButtonStates state, const std::string &text, CheckboxShape shape) -> void {
+                                ButtonStates state, const std::string &text, CheckboxShape shape)
+    -> void {
     auto background_color = ThemePlasma::window_background_color;
     auto foreground_color = ThemePlasma::text_color;
     auto checkbox_size = content.size.height;
@@ -449,15 +450,15 @@ auto ThemePlasma::draw_checkbox(Bitmap &content, bool has_focus, bool is_enabled
         break;
     case ButtonStates::ClickedOutside:
         checkbox_border = ThemePlasma::border_hover;
-        checkbox_color  = has_focus ?  ThemePlasma::border_disabled : ThemePlasma::border_hover;
+        checkbox_color = has_focus ? ThemePlasma::border_disabled : ThemePlasma::border_hover;
 
         break;
     case ButtonStates::Hovered:
         checkbox_border = ThemePlasma::border_hover;
         break;
     case ButtonStates::Normal:
-        checkbox_border = has_focus ?  ThemePlasma::border_hover : ThemePlasma::border_disabled;
-        checkbox_color  = has_focus ?  ThemePlasma::border_hover : ThemePlasma::border_disabled;
+        checkbox_border = has_focus ? ThemePlasma::border_hover : ThemePlasma::border_disabled;
+        checkbox_color = has_focus ? ThemePlasma::border_hover : ThemePlasma::border_disabled;
         break;
     }
 
@@ -470,12 +471,11 @@ auto ThemePlasma::draw_checkbox(Bitmap &content, bool has_focus, bool is_enabled
 
         switch (shape) {
         case CheckboxShape::Checkbox:
-            content.draw_rounded_rectangle(p.x, p.y, w.width, w.height, 1,
-                                           checkbox_border,
+            content.draw_rounded_rectangle(p.x, p.y, w.width, w.height, 1, checkbox_border,
                                            checkbox_border);
             break;
         case CheckboxShape::RadioButton:
-            content.draw_circle(m, m, checkbox_size/2 - padding, checkbox_border);
+            content.draw_circle(m, m, checkbox_size / 2 - padding, checkbox_border);
             break;
         }
     }
@@ -492,7 +492,7 @@ auto ThemePlasma::draw_checkbox(Bitmap &content, bool has_focus, bool is_enabled
             content.fill_rect(p.x, p.y, w.width, w.height, inner_color);
             break;
         case CheckboxShape::RadioButton:
-            content.fill_circle(m, m, checkbox_size/2 - padding, inner_color);
+            content.fill_circle(m, m, checkbox_size / 2 - padding, inner_color);
             break;
         }
     }

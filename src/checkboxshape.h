@@ -11,4 +11,3 @@ enum class CheckboxShape {
     Checkbox,
     RadioButton,
 };
-

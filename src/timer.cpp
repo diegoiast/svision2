@@ -90,7 +90,7 @@ Win32Timer::Win32Timer(int64_t millies, bool repeating, std::function<void()> ca
     this->millies = millies;
     this->repeating = repeating;
     this->callback = callback;
-    Win32Timer::initialize();  
+    Win32Timer::initialize();
 }
 
 Win32Timer::~Win32Timer() { stop(); }

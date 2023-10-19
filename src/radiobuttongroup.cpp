@@ -11,22 +11,20 @@ auto on_radio_button_selected(RadioButtonGroup &group, Checkbox &checkbox) -> vo
         }
     }
 
-//    group.on_radio_button_selected();
+    //    group.on_radio_button_selected();
 }
 
-RadioButtonGroup::RadioButtonGroup(Position position, size_t width, const std::list<std::string> &items)
-    :Widget(position, {}, 0 )
-{
+RadioButtonGroup::RadioButtonGroup(Position position, size_t width,
+                                   const std::list<std::string> &items)
+    : Widget(position, {}, 0) {
     auto padding = 5;
     auto p = Position{0, 0};
     auto height = 0;
 
-    for (auto &item: items) {
-        auto cb = add(std::make_shared<Checkbox>(p, width, item ));
+    for (auto &item : items) {
+        auto cb = add(std::make_shared<Checkbox>(p, width, item));
         cb->shape = CheckboxShape::RadioButton;
-        cb->on_checkbox_change = [this](Checkbox& cb) {
-            on_radio_button_selected(*this, cb) ;
-        };
+        cb->on_checkbox_change = [this](Checkbox &cb) { on_radio_button_selected(*this, cb); };
         radio_buttons.push_back(cb);
         p.y += cb->content.size.height + padding;
         height += cb->content.size.height + padding;

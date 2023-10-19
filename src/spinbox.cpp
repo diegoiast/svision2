@@ -8,9 +8,9 @@
 #include "spinbox.h"
 #include "fmt/core.h"
 
+#include <ciso646>
 #include <iostream>
 #include <sstream>
-#include <ciso646>
 
 auto IntegerValidator::is_keyboard_input_valid(KeyCodes keycode, int position) -> bool {
     auto literal = (int)keycode;

@@ -5,8 +5,7 @@
 
 class Checkbox;
 
-class RadioButtonGroup : public Widget
-{
+class RadioButtonGroup : public Widget {
   public:
     RadioButtonGroup(Position pos, size_t width, const std::list<std::string> &items);
 
