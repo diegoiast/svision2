@@ -464,7 +464,7 @@ auto ThemePlasma::draw_checkbox(Bitmap &content, bool has_focus, bool is_enabled
 
     content.fill(background_color);
     {
-        auto padding = 2;
+        auto padding = 3;
         auto p = Position{padding, padding};
         auto w = Size{checkbox_size - padding * 2, checkbox_size - padding * 2};
         auto m = checkbox_size / 2;
@@ -475,7 +475,13 @@ auto ThemePlasma::draw_checkbox(Bitmap &content, bool has_focus, bool is_enabled
                                            checkbox_border);
             break;
         case CheckboxShape::RadioButton:
-            content.draw_circle(m, m, checkbox_size / 2 - padding, checkbox_border);
+            if (is_checked) {
+                content.fill_circle(m, m, checkbox_size / 2 - padding,
+                                    ThemePlasma::button_selected_background);
+                content.draw_circle(m, m, checkbox_size / 2 - padding, ThemePlasma::border_hover);
+            } else {
+                content.draw_circle(m, m, checkbox_size / 2 - padding, checkbox_border);
+            }
             break;
         }
     }
@@ -492,7 +498,9 @@ auto ThemePlasma::draw_checkbox(Bitmap &content, bool has_focus, bool is_enabled
             content.fill_rect(p.x, p.y, w.width, w.height, inner_color);
             break;
         case CheckboxShape::RadioButton:
-            content.fill_circle(m, m, checkbox_size / 2 - padding, inner_color);
+            if (is_checked) {
+                content.fill_circle(m, m, 4, ThemePlasma::text_color);
+            }
             break;
         }
     }
