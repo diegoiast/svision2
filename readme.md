@@ -28,11 +28,15 @@ libraries - and python pip. For Debina/Ubuntu:
 apt install cmake ninja-build python3-pip
 ```
 
-Then install conan using `pip` (on Debian I found that `pipx` works and `pip` does not):
+Then install conan using `pip` (on Debian I found that `pipx` works and `pip` does not). 
+If you already have conan package installer (an older version) you might need to add
+`--force` to the end of this command.
 
 ```
-pip3 install conan==1.59.0
+pip3 install conan==1.61
 ```
+
+
 
 To compile from the command line:
 
