@@ -105,7 +105,6 @@ int main() {
     int timer_count = 0;
     auto platform = ThePlatform();
     platform.init();
-    platform.default_theme = std::make_shared<ThemeVision>();
 
     Timer t1(500, true, [&timer_count]() {
         timer_count++;
@@ -159,7 +158,10 @@ int main() {
         "Option 3",
         "Option 4",
     };
-    w1->add(std::make_shared<RadioButtonGroup>(Position{450, 100}, 150, options));
+    w1->add(std::make_shared<RadioButtonGroup>(Position{450, 100}, 150, options))->on_selected =
+        [](int index, Checkbox& button){
+            spdlog::info("Selected item {} with text {}", index, button.text);
+        };
     platform.show_window(w1);
 
     t1.start();

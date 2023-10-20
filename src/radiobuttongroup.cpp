@@ -3,15 +3,16 @@
 #include <spdlog/spdlog.h>
 
 auto on_radio_button_selected(RadioButtonGroup &group, Checkbox &checkbox) -> void {
+    auto index = 0;
     for (auto &cb : group.radio_buttons) {
         if (cb.get() == &checkbox) {
             cb->set_checked(EventPropagation::handled);
+            group.on_selected(index, checkbox);
         } else {
             cb->set_unchecked(EventPropagation::handled);
         }
+        index ++;
     }
-
-    //    group.on_radio_button_selected();
 }
 
 RadioButtonGroup::RadioButtonGroup(Position position, size_t width,

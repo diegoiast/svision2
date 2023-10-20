@@ -20,7 +20,7 @@ struct Checkbox : Widget {
     bool is_checked = false;
 
     std::string text;
-    std::function<void(Checkbox &)> on_checkbox_change;
+    std::function<void(Checkbox &)> on_checkbox_change = {};
     AbstractButtonState state{};
     CheckboxShape shape = CheckboxShape::Checkbox;
 
