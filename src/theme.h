@@ -38,7 +38,7 @@ struct ThemeRedmond : Theme {
     static const int32_t line_color4 = 0x808080;
 
     static const int32_t text_color = 0x000000;
-    static const int32_t text_color_disabled = 0x202020;
+    static const int32_t text_color_disabled = 0x606060;
 
     virtual auto init() -> void override{};
     virtual auto draw_widget_background(Bitmap &content) -> void override {
@@ -64,6 +64,7 @@ struct ThemeVision : Theme {
     static const int32_t button_background = MakeColor(225, 225, 225);
     static const int32_t button_border = MakeColor(173, 173, 173);
     static const int32_t text_color = MakeColor(0, 0, 0);
+    static const int32_t text_color_disabled = MakeColor(130,130, 130);
     static const int32_t focus_color = MakeColor(80, 80, 80);
 
     static const int32_t button_border_hover = MakeColor(0, 120, 215);

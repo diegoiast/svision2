@@ -135,12 +135,17 @@ auto ThemeRedmond::draw_checkbox(Bitmap &content, bool has_focus, bool is_enable
         break;
     case CheckboxShape::RadioButton:
         content.fill_circle(m, m, checkbox_size / 2 - padding, background_color);
-        content.draw_circle(m, m, checkbox_size / 2 - padding, ThemeRedmond::line_color1);
-        content.draw_circle(m, m, checkbox_size / 2 - padding - 1, ThemeRedmond::line_color2);
+
+        if (is_enabled) {
+            content.draw_circle(m, m, checkbox_size / 2 - padding, ThemeRedmond::line_color1);
+            content.draw_circle(m, m, checkbox_size / 2 - padding - 1, ThemeRedmond::line_color2);
+        } else {
+            content.draw_circle(m, m, checkbox_size / 2 - padding, ThemeRedmond::text_color_disabled);
+        }
         break;
     }
 
-    content.write_fixed({checkbox_size + 5, 5}, text, foreground_color);
+    content.write_fixed({checkbox_size + 5, 5}, text, is_enabled ? foreground_color : ThemeRedmond::text_color_disabled);
     if (is_checked) {
         auto padding = 4;
 
@@ -257,7 +262,7 @@ auto ThemeVision::draw_button(Bitmap &content, bool has_focus, bool is_default, 
     content.write_fixed(text_position, text, color);
 }
 
-auto ThemeVision::draw_checkbox(Bitmap &content, bool has_focus, bool is_default, bool is_checked,
+auto ThemeVision::draw_checkbox(Bitmap &content, bool has_focus, bool is_enabled, bool is_checked,
                                 ButtonStates state, const std::string &text, CheckboxShape shape)
     -> void {
     auto background_color = ThemeVision::window_background_color;
@@ -298,7 +303,7 @@ auto ThemeVision::draw_checkbox(Bitmap &content, bool has_focus, bool is_default
                                            ThemeVision::button_border_hover);
             break;
         case CheckboxShape::RadioButton:
-            content.draw_circle(m, m, checkbox_size / 2 - padding, checkbox_color);
+            content.draw_circle(m, m, checkbox_size / 2 - padding, is_enabled ? checkbox_color : ThemeVision::text_color_disabled);
             break;
         }
     }
@@ -319,12 +324,12 @@ auto ThemeVision::draw_checkbox(Bitmap &content, bool has_focus, bool is_default
         if (is_checked) {
             auto padding = 5;
             auto m = checkbox_size / 2;
-            content.fill_circle(m, m, checkbox_size / 2 - padding, checkbox_color);
+            content.fill_circle(m, m, checkbox_size / 2 - padding, is_enabled ? checkbox_color : ThemeVision::text_color_disabled);
         }
         break;
     }
 
-    content.write_fixed({checkbox_size + 5, 5}, text, foreground_color);
+    content.write_fixed({checkbox_size + 5, 5}, text, is_enabled?  foreground_color : ThemeVision::text_color_disabled );
 }
 
 auto ThemeVision::draw_input_background(Bitmap &content, const bool has_focus) -> void {
@@ -454,12 +459,18 @@ auto ThemePlasma::draw_checkbox(Bitmap &content, bool has_focus, bool is_enabled
 
         break;
     case ButtonStates::Hovered:
-        checkbox_border = ThemePlasma::border_hover;
+        if (is_enabled) {
+            checkbox_border = ThemePlasma::border_hover;
+        }
         break;
     case ButtonStates::Normal:
         checkbox_border = has_focus ? ThemePlasma::border_hover : ThemePlasma::border_disabled;
         checkbox_color = has_focus ? ThemePlasma::border_hover : ThemePlasma::border_disabled;
         break;
+    }
+
+    if (!is_enabled) {
+        checkbox_color = ThemePlasma::text_color_disabled;
     }
 
     content.fill(background_color);
@@ -476,9 +487,15 @@ auto ThemePlasma::draw_checkbox(Bitmap &content, bool has_focus, bool is_enabled
             break;
         case CheckboxShape::RadioButton:
             if (is_checked) {
-                content.fill_circle(m, m, checkbox_size / 2 - padding,
-                                    ThemePlasma::button_selected_background);
-                content.draw_circle(m, m, checkbox_size / 2 - padding, ThemePlasma::border_hover);
+                if (is_enabled) {
+                    content.fill_circle(m, m, checkbox_size / 2 - padding,
+                                        ThemePlasma::button_selected_background);
+                    content.draw_circle(m, m, checkbox_size / 2 - padding, ThemePlasma::border_hover);
+                } else {
+                    content.fill_circle(m, m, checkbox_size / 2 - padding,
+                                        checkbox_border);
+                    content.draw_circle(m, m, checkbox_size / 2 - padding, ThemePlasma::text_color_disabled);
+                }
             } else {
                 content.draw_circle(m, m, checkbox_size / 2 - padding, checkbox_border);
             }
@@ -504,7 +521,7 @@ auto ThemePlasma::draw_checkbox(Bitmap &content, bool has_focus, bool is_enabled
             break;
         }
     }
-    content.write_fixed({checkbox_size + 5, 5}, text, foreground_color);
+    content.write_fixed({checkbox_size + 5, 5}, text, is_enabled ? foreground_color : text_color_disabled);
 }
 
 auto ThemePlasma::draw_input_background(Bitmap &content, const bool has_focus) -> void {

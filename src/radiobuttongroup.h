@@ -8,10 +8,10 @@ class Checkbox;
 
 class RadioButtonGroup : public Widget {
   public:
-    RadioButtonGroup(Position pos, size_t width, const std::list<std::string> &items);
+    RadioButtonGroup(Position pos, size_t width, const std::vector<std::string> &items);
 
     std::function<void(int index, Checkbox& button)> on_selected  = {};
-    std::list<std::shared_ptr<Checkbox>> radio_buttons = {};
+    std::vector<std::shared_ptr<Checkbox>> radio_buttons = {};
 };
 
 #endif // RADIOBUTTONGROUP_H

@@ -16,7 +16,7 @@ auto on_radio_button_selected(RadioButtonGroup &group, Checkbox &checkbox) -> vo
 }
 
 RadioButtonGroup::RadioButtonGroup(Position position, size_t width,
-                                   const std::list<std::string> &items)
+                                   const std::vector<std::string> &items)
     : Widget(position, {}, 0) {
     auto padding = 5;
     auto p = Position{0, 0};

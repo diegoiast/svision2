@@ -105,6 +105,8 @@ int main() {
     int timer_count = 0;
     auto platform = ThePlatform();
     platform.init();
+//    platform.default_theme = std::make_shared<ThemeVision>();
+//    platform.default_theme = std::make_shared<ThemeRedmond>();
 
     Timer t1(500, true, [&timer_count]() {
         timer_count++;
@@ -152,16 +154,18 @@ int main() {
             }
         };
 
-    std::list<std::string> options = {
+    std::vector<std::string> options = {
         "Option 1",
         "Option 2",
         "Option 3",
         "Option 4",
     };
-    w1->add(std::make_shared<RadioButtonGroup>(Position{450, 100}, 150, options))->on_selected =
-        [](int index, Checkbox& button){
-            spdlog::info("Selected item {} with text {}", index, button.text);
-        };
+    auto rb = w1->add(std::make_shared<RadioButtonGroup>(Position{450, 100}, 150, options));
+    rb->on_selected = [](int index, Checkbox& button){
+        spdlog::info("Selected item {} with text {}", index, button.text);
+    };
+    rb->radio_buttons[1]->is_enabled = false;
+
     platform.show_window(w1);
 
     t1.start();
