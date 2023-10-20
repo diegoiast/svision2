@@ -6,11 +6,14 @@
  */
 
 #pragma once
+#include <functional>
 #include <widget.h>
 
 class Button;
 
 struct ScrollBar : Widget {
+    std::function<void(ScrollBar *, int value)> did_change = {};
+
     ScrollBar(Position position, int length, bool horizontal, int max = 100);
 
     bool is_horizontal = false;
@@ -20,7 +23,9 @@ struct ScrollBar : Widget {
     int step = (maximum - minimum) / 10;
 
     auto draw() -> void override;
-    auto set_value(int minimum, int maximum, int value, int step = 0) -> void;
+
+    auto set_value(int value) -> void;
+    auto set_values(int minimum, int maximum, int value, int step = 0) -> void;
     auto step_up() -> void;
     auto step_down() -> void;
 

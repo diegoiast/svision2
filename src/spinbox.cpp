@@ -61,6 +61,9 @@ auto Spinbox::increase_value() -> void {
     }
     value += interval;
     set_text(fmt::format("{}", std::round(value)));
+    if (did_change) {
+        did_change(this, value);
+    }
 }
 
 auto Spinbox::decrease_value() -> void {
@@ -71,4 +74,30 @@ auto Spinbox::decrease_value() -> void {
     }
     value -= interval;
     set_text(fmt::format("{}", std::round(value)));
+    if (did_change) {
+        did_change(this, value);
+    }
+}
+
+auto Spinbox::set_value(double value) -> void {
+    if (fabs(value - this->value) < 0.00001) {
+        return;
+    }
+    if (value > max_value) {
+        value = max_value;
+    }
+    if (value < min_value) {
+        value = min_value;
+    }
+    this->value = value;
+    set_text(fmt::format("{}", std::round(value)));
+    if (did_change) {
+        did_change(this, value);
+    }
+}
+
+auto Spinbox::set_values(double min, double max, double value) -> void {
+    this->min_value = min;
+    this->max_value = max;
+    this->value = value;
 }

@@ -17,6 +17,8 @@ struct IntegerValidator : public TextField::input_validator {
 };
 
 struct Spinbox : public TextField {
+    std::function<void(Spinbox *, double value)> did_change = {};
+
     double min_value = 0.0;
     double max_value = 0.0;
     double interval = 1.0;
@@ -28,6 +30,8 @@ struct Spinbox : public TextField {
 
     auto increase_value() -> void;
     auto decrease_value() -> void;
+    auto set_value(double value) -> void;
+    auto set_values(double value, double min, double max) -> void;
 
   private:
     std::shared_ptr<Button> up_button = {};

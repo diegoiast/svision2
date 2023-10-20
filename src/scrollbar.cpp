@@ -58,7 +58,29 @@ auto ScrollBar::draw() -> void {
     }
 }
 
-auto ScrollBar::set_value(int minimum, int maximum, int value, int step) -> void {
+auto ScrollBar::set_value(int value) -> void {
+    if (value == this->value) {
+        return;
+    }
+
+    if (value < minimum) {
+        value = minimum;
+    }
+    if (value >= maximum) {
+        value = maximum;
+    }
+    this->value = value;
+    update_thumb_size();
+    up_button->invalidate();
+    down_button->invalidate();
+    invalidate();
+
+    if (did_change) {
+        this->did_change(this, value);
+    }
+}
+
+auto ScrollBar::set_values(int minimum, int maximum, int value, int step) -> void {
     if (value < minimum) {
         value = minimum;
     }
@@ -73,7 +95,14 @@ auto ScrollBar::set_value(int minimum, int maximum, int value, int step) -> void
     this->step = step;
     this->value = value;
     update_thumb_size();
+    up_button->invalidate();
+    down_button->invalidate();
     invalidate();
+
+    if (did_change) {
+        // TODO - has any of the values been modified?
+        this->did_change(this, value);
+    }
 }
 
 auto ScrollBar::step_up() -> void {
@@ -85,6 +114,9 @@ auto ScrollBar::step_up() -> void {
     this->down_button->invalidate();
     update_thumb_size();
     invalidate();
+    if (did_change) {
+        this->did_change(this, value);
+    }
 }
 
 auto ScrollBar::step_down() -> void {
@@ -96,6 +128,9 @@ auto ScrollBar::step_down() -> void {
     this->down_button->invalidate();
     update_thumb_size();
     invalidate();
+    if (did_change) {
+        this->did_change(this, value);
+    }
 }
 
 auto ScrollBar::update_thumb_size() -> void {
