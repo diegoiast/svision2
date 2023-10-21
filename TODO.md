@@ -1,0 +1,51 @@
+# TODO
+
+Random list of things to be implemented on this library
+
+1. Widgets
+    1. List view
+    2. Combo box
+    3. StackWidget
+    4. TabView
+    5. Toolbar
+    6. ScrollBar
+        1. Finish drawing barrel
+        2. Click on empty areas - step up/down
+        3. Drag the barrel - change value (needs mouse drag support?)
+        4. Scroll wheel support
+    7. Layout system (<https://www.qt.io/blog/responsive-layouts-in-qt>?)
+    8. Menus
+    9. Dialog
+        1. Normal dialog
+        2. Inline dialog (no window created)
+        3. Message boxes
+        4. Save/Open dir dialogs
+        5. Choose dir dialog
+2. Infrastructure
+    1. Mouse drag
+    2. Mouse wheel support
+    3. `widget::add<Widget>.. (constructor )`
+    4. All *getters* should return a reference
+    5. All *callbacks* should have a reference to the widget as first argument
+    6. Override functions for the library, callbacks for the consumers of the API
+    7. `on_theme_changed()` - modify implicit widget sizes
+    8. OSX support
+    9. MSDOS support (for gaming!)
+    10. Multitouch (?)
+    11. High DPI: drawing functions will be on a wrapper - that will
+        multiply values before caling good-old-raster-code
+    12. Rounded corner rectangle drawing
+    13. Alpha blending drawing
+    14. Use freetype for better text
+    15. Use Harfbuzz for better rendering
+    16. Wayland native support (see <https://gaultier.github.io/blog/wayland_from_scratch.html>)
+    17. Connan recipe - for consumers of this library
+    18. VCPKG - both internally, and for consumers of this library
+    19. Rust integration? How can I use this in Rust?
+    20. D integration?  How can I use this in D?
+    20. GoLang integration?  How can I use this in GoLang?
+3. 3rd party porting
+    1. Code to load images: I would like to be able to choose     which decoders to use:
+            (libpng, libjpg) vs, <https://libspng.org/>, and stb (<https://github.com/nothings/stb>)
+    2. HTML widget - <https://github.com/litehtml/litehtml>
+    3. TextEditor - <https://www.scintilla.org/>
