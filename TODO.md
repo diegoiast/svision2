@@ -24,7 +24,7 @@ Random list of things to be implemented on this library
 2. Infrastructure
     1. Mouse drag
     2. Mouse wheel support
-    3. `widget::add<Widget>.. (constructor )`
+    3. DONE: ~~~`widget::add<Widget>.. (constructor )` (is this possible at all?)~~~
     4. All *getters* should return a reference
     5. All *callbacks* should have a reference to the widget as first argument
     6. Override functions for the library, callbacks for the consumers of the API
@@ -43,7 +43,13 @@ Random list of things to be implemented on this library
     18. VCPKG - both internally, and for consumers of this library
     19. Rust integration? How can I use this in Rust?
     20. D integration?  How can I use this in D?
-    20. GoLang integration?  How can I use this in GoLang?
+    21. GoLang integration?  How can I use this in GoLang?
+    22. Clipboard integration
+    23. Printing support
+    24. Move all code into a namespace. `namespace svision;`, `auto a = std::make_shared<svision::Widget>(pos,size);`
+    25. Move all public includes into `/inc/svision`, and
+        in the cmake - make it public api (will trigger
+        a refactor in all code - `#include <svision/widget>`)
 3. 3rd party porting
     1. Code to load images: I would like to be able to choose     which decoders to use:
             (libpng, libjpg) vs, <https://libspng.org/>, and stb (<https://github.com/nothings/stb>)

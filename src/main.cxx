@@ -118,10 +118,8 @@ int main() {
     platform.show_window(w2);
 
     auto w1 = platform.open_window(100, 100, 640, 480, "test 1");
-
-    w1->add(std::make_shared<Label>(Position{10, 10}, Size{100, 20}, "Hello world!"));
-
-    w1->add(std::make_shared<TextField>(Position{10, 35}, Size{165, 30}));
+    w1->add_new<Label>(Position{10, 10}, Size{100, 20}, "Hello world!");
+    w1->add_new<TextField>(Position{10, 35}, Size{165, 30});
 
     std::vector<std::string> options = {
         "Option 1",
@@ -129,16 +127,14 @@ int main() {
         "Option 3",
         "Option 4",
     };
-    auto rb = w1->add(std::make_shared<RadioButtonGroup>(Position{400, 20}, 160, options));
+    auto rb = w1->add_new<RadioButtonGroup>(Position{400, 20}, 160, options);
     rb->on_selected = [](int index, Checkbox &button) {
         spdlog::info("Selected item {} with text {}", index, button.text);
     };
     rb->radio_buttons[1]->is_enabled = false;
 
-    auto debug_widget =
-        w1->add(std::make_shared<DebugWidget>(Position{400, 160}, Size{200, 40}, 0x22dd37));
-    auto cb =
-        w1->add(std::make_shared<Checkbox>(Position{400, 130}, 220, "Show/hide debug widget"));
+    auto debug_widget = w1->add_new<DebugWidget>(Position{400, 160}, Size{200, 40}, 0x22dd37);
+    auto cb = w1->add_new<Checkbox>(Position{400, 130}, 220, "Show/hide debug widget");
     cb->on_checkbox_change = [debug_widget](Checkbox &cb) {
         if (cb.is_checked) {
             debug_widget->show();
@@ -148,30 +144,27 @@ int main() {
     };
     cb->set_checked(EventPropagation::handled);
 
-    w1->add(std::make_shared<ScrollBar>(Position{615, 00}, 480, false))
-        ->set_values(100, 200, 200, 5);
+    w1->add_new<ScrollBar>(Position{615, 00}, 480, false)->set_values(100, 200, 200, 5);
 
     std::shared_ptr<ScrollBar> scroll;
     std::shared_ptr<Spinbox> spin;
 
-    scroll = w1->add(std::make_shared<ScrollBar>(Position{10, 380}, 400, true));
+    scroll = w1->add_new<ScrollBar>(Position{10, 380}, 400, true);
     scroll->set_values(1000, 2000, 200, 50);
     scroll->did_change = [&spin](auto scrollbar, auto value) { spin->set_value(value); };
-    spin = w1->add(std::make_shared<Spinbox>(Position{10, 330}, Size{165, 30}));
+    spin = w1->add_new<Spinbox>(Position{10, 330}, Size{165, 30});
     spin->set_values(1000, 2000, 200);
     spin->did_change = [&scroll](auto spinbox, auto value) { scroll->set_value(value); };
 
-    w1->add(std::make_shared<Button>(Position{10, 420}, Size{200, 40}, "OK", true, [&platform]() {
+    w1->add_new<Button>(Position{10, 420}, Size{200, 40}, "OK", true, [&platform]() {
         spdlog::info("OK clicked!");
         platform.exit_loop = true;
-    }));
-    w1->add(std::make_shared<Button>(Position{220, 420}, Size{200, 40}, "Cancel", false,
-                                     [&platform]() {
-                                         static auto clicked_count = 0;
-                                         clicked_count++;
-                                         spdlog::info("Cancel clicke1d! count = {}", clicked_count);
-                                     }))
-        ->set_auto_repeat(300, 700);
+    });
+    w1->add_new<Button>(Position{220, 420}, Size{200, 40}, "Cancel", false, [&platform]() {
+          static auto clicked_count = 0;
+          clicked_count++;
+          spdlog::info("Cancel clicke1d! count = {}", clicked_count);
+      })->set_auto_repeat(300, 700);
 
     platform.show_window(w1);
 

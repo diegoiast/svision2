@@ -116,5 +116,10 @@ struct PlatformWindow {
         widget->window = this;
         widget->theme = theme;
         return widget;
-    }
+    };
+
+    // TODO - make sure this T derieves from `Widget`
+    template <typename T, typename... Args> auto add_new(Args &&...args) -> std::shared_ptr<T> {
+        return add(std::make_shared<T>(std::forward<Args>(args)...));
+    };
 };
