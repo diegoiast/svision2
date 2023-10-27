@@ -51,7 +51,14 @@ auto Lighter(uint32_t color, double percentage) -> uint32_t {
 }
 
 auto Bitmap::resize(int width, int height) -> void {
-    auto new_buffer = new uint32_t[width * height];
+    if (width == this->size.width && height == this->size.height) {
+        return;
+    }
+
+    // no need to reallocate if we have a widget with the same buffer size
+    // for example 100x200 -> 200x100, or 10x50 -> 5x100 etc.
+    if (width * height != this->size.width * this->size.height) {
+        auto new_buffer = new uint32_t[width * height];
 #if 0
     auto xx = std::min(width, size.width);
     auto yy = std::min(height, size.height);
@@ -67,8 +74,9 @@ auto Bitmap::resize(int width, int height) -> void {
         }
     }
 #endif
-    delete[] buf;
-    buf = new_buffer;
+        delete[] buf;
+        buf = new_buffer;
+    }
     size.width = width;
     size.height = height;
 }
