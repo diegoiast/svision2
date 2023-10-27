@@ -49,6 +49,8 @@ set(SVISION_SOURCES
     src/checkboxshape.h
     src/label.cpp
     src/label.h
+    src/listview.cpp
+    src/listview.h
     src/platform.cpp
     src/platform.h
     src/radiobuttongroup.h

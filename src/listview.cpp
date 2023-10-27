@@ -1,0 +1,75 @@
+#include "listview.h"
+#include "label.h"
+#include "scrollbar.h"
+
+auto ListItemAdapter::get_widget(size_t) -> PWidget {
+    auto position = Position{0, 0};
+    auto size = Size{20, 20};
+    return std::make_shared<Label>(position, size, "");
+}
+
+auto ListItemAdapter::set_content(PWidget widget, size_t position, ItemStatus status) -> void {
+    auto label = std::dynamic_pointer_cast<Label>(widget);
+    label->text = strings.at(position);
+}
+
+ListView::ListView(Position position, Size size) : Widget(position, size, 0) {
+
+    position.x = size.width - 18;
+    position.y = 0;
+    this->scrollbar = add_new<ScrollBar>(position, size.height, true);
+    this->scrollbar->did_change = [this](auto *s, int value) { this->invalidate(); };
+}
+
+auto ListView::draw() -> void {
+    // TODO draw shit
+    Widget::draw();
+    if (reserved_widgets.empty()) {
+        did_adapter_update();
+    }
+
+    auto first_widget = adapter->get_widget(0);
+    auto padding = 5;
+    auto item_height = (first_widget->content.size.height + padding);
+    auto widget_count = this->content.size.height / item_height;
+    auto first_item = scrollbar->value / item_height;
+    auto offset = scrollbar->value % item_height;
+
+    for (auto i = 0; i < widget_count; i++) {
+        auto position = Position{0, offset};
+        auto size = Size{this->content.size.width, first_widget->content.size.height};
+        auto status = ItemStatus{false, false};
+
+        if (first_item >= widget_count) {
+            continue;
+        }
+        auto w = reserved_widgets[i];
+        w->position = position;
+        w->content.resize(size);
+        adapter->set_content(w, first_item, status);
+        w->invalidate();
+        offset += item_height;
+        first_item++;
+    }
+}
+
+auto ListView::did_adapter_update() -> void {
+    auto first_widget = adapter->get_widget(0);
+    auto padding = 5;
+    auto item_height = (first_widget->content.size.height + padding);
+    auto widget_count = this->content.size.height / item_height;
+
+    this->scrollbar->set_values(0, adapter->get_count() * item_height, item_height);
+
+    widget_count++;
+    while (widget_count != 0) {
+        // while this would work, this is unacceptable code. It does 3
+        // different actions in a single line, and will become undebuggable
+        // reserved_widgets.push_back(add(adapter->get_widget(widget_count)));
+
+        auto b = adapter->get_widget(widget_count);
+        this->add(b);
+        this->reserved_widgets.push_back(b);
+        widget_count--;
+    }
+}
