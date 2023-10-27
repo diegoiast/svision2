@@ -74,6 +74,11 @@ struct Widget {
         return widget;
     }
 
+    // TODO - make sure this T derieves from `Widget`
+    template <typename T, typename... Args> auto add_new(Args &&...args) -> std::shared_ptr<T> {
+        return add(std::make_shared<T>(std::forward<Args>(args)...));
+    };
+
     auto get_theme() -> std::shared_ptr<Theme>;
     auto show() -> void;
     auto hide() -> void;
