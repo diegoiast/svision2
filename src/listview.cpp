@@ -15,15 +15,17 @@ auto ListItemAdapter::set_content(PWidget widget, size_t position, ItemStatus st
 
 ListView::ListView(Position position, Size size) : Widget(position, size, 0) {
 
-    position.x = size.width - 18;
+    position.x = size.width - 22;
     position.y = 0;
-    this->scrollbar = add_new<ScrollBar>(position, size.height, true);
+    this->scrollbar = add_new<ScrollBar>(position, size.height, false);
     this->scrollbar->did_change = [this](auto *s, int value) { this->invalidate(); };
+    this->draw_background = false;
 }
 
 auto ListView::draw() -> void {
-    // TODO draw shit
+    content.fill(0xffff00);
     Widget::draw();
+
     if (reserved_widgets.empty()) {
         did_adapter_update();
     }
@@ -37,10 +39,11 @@ auto ListView::draw() -> void {
 
     for (auto i = 0; i < widget_count; i++) {
         auto position = Position{0, offset};
-        auto size = Size{this->content.size.width, first_widget->content.size.height};
+        auto size = Size{this->content.size.width - scrollbar->content.size.width - padding,
+                         first_widget->content.size.height};
         auto status = ItemStatus{false, false};
 
-        if (first_item >= widget_count) {
+        if (first_item >= widget_count || first_item >= adapter->get_count()) {
             continue;
         }
         auto w = reserved_widgets[i];
