@@ -338,8 +338,13 @@ auto Widget::on_remove() -> void{};
 auto Widget::get_theme() -> std::shared_ptr<Theme> {
     if (theme)
         return theme;
-    if (parent && parent->theme)
-        return parent->theme;
+
+    auto p = parent;
+    while (p) {
+        if (p->theme)
+            return p->theme;
+        p = p->parent;
+    }
     return window->theme;
 }
 
