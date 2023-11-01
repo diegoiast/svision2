@@ -24,7 +24,6 @@ ListView::ListView(Position position, Size size) : Widget(position, size, 0) {
 
 auto ListView::draw() -> void {
     content.fill(0xffff00);
-    Widget::draw();
 
     if (reserved_widgets.empty()) {
         did_adapter_update();
@@ -54,6 +53,7 @@ auto ListView::draw() -> void {
         offset += item_height;
         first_item++;
     }
+    Widget::draw();
 }
 
 auto ListView::did_adapter_update() -> void {
