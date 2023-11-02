@@ -11,7 +11,7 @@ auto on_radio_button_selected(RadioButtonGroup &group, Checkbox &checkbox) -> vo
         } else {
             cb->set_unchecked(EventPropagation::handled);
         }
-        index ++;
+        index++;
     }
 }
 

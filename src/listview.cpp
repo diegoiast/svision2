@@ -23,7 +23,8 @@ ListView::ListView(Position position, Size size) : Widget(position, size, 0) {
 }
 
 auto ListView::draw() -> void {
-    get_theme()->draw_widget_background(content);
+    //    get_theme()->draw_widget_background(content);
+    get_theme()->draw_input_background(content, has_focus);
     if (reserved_widgets.empty()) {
         did_adapter_update();
     }
