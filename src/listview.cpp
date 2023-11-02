@@ -34,7 +34,7 @@ auto ListView::draw() -> void {
     auto item_height = (first_widget->content.size.height + padding);
     auto widget_count = this->content.size.height / item_height;
     auto first_item = scrollbar->value / item_height;
-    auto offset = scrollbar->value % item_height;
+    auto offset = -(scrollbar->value % item_height);
 
     for (auto i = 0; i < widget_count; i++) {
         auto position = Position{0, offset};
