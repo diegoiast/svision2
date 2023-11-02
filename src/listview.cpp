@@ -41,10 +41,11 @@ auto ListView::draw() -> void {
                          first_widget->content.size.height};
         auto status = ItemStatus{false, false};
 
+        auto w = reserved_widgets[i];
         if (first_item >= widget_count || first_item >= adapter->get_count()) {
+            w->hide();
             continue;
         }
-        auto w = reserved_widgets[i];
         w->position = position;
         w->content.resize(size);
         adapter->set_content(w, first_item, status);
@@ -53,6 +54,7 @@ auto ListView::draw() -> void {
         } else {
             w->invalidate();
         }
+        auto label = std::dynamic_pointer_cast<Label>(w);
         offset += item_height;
         first_item++;
     }
@@ -66,7 +68,7 @@ auto ListView::did_adapter_update() -> void {
     auto item_height = (first_widget->content.size.height + padding);
     auto widget_count = this->content.size.height / item_height;
 
-    this->scrollbar->set_values(0, adapter->get_count() * item_height, item_height);
+    this->scrollbar->set_values(0, adapter->get_count() * item_height, 0, item_height);
 
     widget_count++;
     while (widget_count != 0) {
