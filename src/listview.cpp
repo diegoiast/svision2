@@ -23,8 +23,7 @@ ListView::ListView(Position position, Size size) : Widget(position, size, 0) {
 }
 
 auto ListView::draw() -> void {
-    content.fill(0xffff00);
-
+    get_theme()->draw_widget_background(content);
     if (reserved_widgets.empty()) {
         did_adapter_update();
     }
@@ -49,7 +48,11 @@ auto ListView::draw() -> void {
         w->position = position;
         w->content.resize(size);
         adapter->set_content(w, first_item, status);
-        w->invalidate();
+        if (!w->is_visible()) {
+            w->show();
+        } else {
+            w->invalidate();
+        }
         offset += item_height;
         first_item++;
     }
@@ -57,6 +60,7 @@ auto ListView::draw() -> void {
 }
 
 auto ListView::did_adapter_update() -> void {
+    reserved_widgets.clear();
     auto first_widget = adapter->get_widget(0);
     auto padding = 5;
     auto item_height = (first_widget->content.size.height + padding);
@@ -71,8 +75,10 @@ auto ListView::did_adapter_update() -> void {
         // reserved_widgets.push_back(add(adapter->get_widget(widget_count)));
 
         auto b = adapter->get_widget(widget_count);
+        b->hide();
         this->add(b);
         this->reserved_widgets.push_back(b);
         widget_count--;
     }
+    this->invalidate();
 }

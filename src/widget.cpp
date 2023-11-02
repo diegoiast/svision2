@@ -305,6 +305,9 @@ auto Widget::draw() -> void {
         get_theme()->draw_widget_background(content);
     }
     for (auto w : widgets.widgets) {
+        if (!w->is_visible()) {
+            continue;
+        }
         if (w->needs_redraw) {
             w->draw();
             w->needs_redraw = false;
