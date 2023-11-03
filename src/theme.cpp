@@ -313,6 +313,16 @@ auto ThemeVision::get_dark_colors(int32_t accent) -> ColorStyle {
     return colors;
 }
 
+auto ThemeRedmond::draw_listview_background(Bitmap &content, const bool has_focus,
+                                            bool draw_background) -> void {
+    draw_frame(content, {0, 0}, content.size, has_focus ? FrameStyles::Hover : FrameStyles::Normal,
+               FrameSize::SingleFrame);
+    auto background = has_focus ? colors.input_background_selected : colors.input_background_normal;
+    if (draw_background) {
+        content.fill_rect(1, 1, content.size.width - 2, content.size.height - 2, background);
+    }
+}
+
 auto ThemeVision::draw_window_background(Bitmap &content) -> void {
     content.fill_rect(0, 0, content.size.width, content.size.height, colors.window_background);
 }
@@ -531,6 +541,17 @@ auto ThemePlasma::get_dark_colors(int32_t accent) -> ColorStyle {
     return colors;
 }
 
+auto ThemeVision::draw_listview_background(Bitmap &content, const bool has_focus,
+                                           bool draw_background) -> void {
+
+    draw_frame(content, {0, 0}, content.size, has_focus ? FrameStyles::Hover : FrameStyles::Normal,
+               FrameSize::SingleFrame);
+    if (draw_background) {
+        content.fill_rect(1, 1, content.size.width - 2, content.size.height - 2,
+                          colors.input_background_normal);
+    }
+}
+
 auto ThemePlasma::draw_window_background(Bitmap &content) -> void {
     content.fill_rect(0, 0, content.size.width, content.size.height, colors.window_background);
     content.line(0, 0, content.size.width - 1, 0, colors.frame_disabled_color1);
@@ -711,4 +732,14 @@ auto ThemePlasma::draw_input_background(Bitmap &content, const bool has_focus) -
                FrameSize::SingleFrame);
     content.fill_rect(1, 1, content.size.width - 2, content.size.height - 2,
                       has_focus ? colors.input_background_hover : colors.input_background_normal);
+}
+
+auto ThemePlasma::draw_listview_background(Bitmap &content, const bool has_focus,
+                                           const bool draw_background) -> void {
+    draw_frame(content, {0, 0}, content.size, has_focus ? FrameStyles::Hover : FrameStyles::Normal,
+               FrameSize::SingleFrame);
+    auto background = has_focus ? colors.input_background_selected : colors.input_background_normal;
+    if (draw_background) {
+        content.fill_rect(1, 1, content.size.width - 2, content.size.height - 2, background);
+    }
 }

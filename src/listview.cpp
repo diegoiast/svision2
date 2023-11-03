@@ -15,7 +15,7 @@ auto ListItemAdapter::set_content(PWidget widget, size_t position, ItemStatus st
 
 ListView::ListView(Position position, Size size) : Widget(position, size, 0) {
 
-    position.x = size.width - 22;
+    position.x = size.width - 24;
     position.y = 0;
     this->scrollbar = add_new<ScrollBar>(position, size.height, false);
     this->scrollbar->did_change = [this](auto *s, int value) { this->invalidate(); };
@@ -23,23 +23,23 @@ ListView::ListView(Position position, Size size) : Widget(position, size, 0) {
 }
 
 auto ListView::draw() -> void {
-    //    get_theme()->draw_widget_background(content);
-    get_theme()->draw_input_background(content, has_focus);
+    get_theme()->draw_listview_background(content, has_focus, true);
     if (reserved_widgets.empty()) {
         did_adapter_update();
     }
 
     auto first_widget = adapter->get_widget(0);
-    auto padding = 5;
-    auto item_height = (first_widget->content.size.height + padding);
+    auto padding = 2;
+    auto item_height = (first_widget->content.size.height);
     auto widget_count = this->content.size.height / item_height;
     auto first_item = scrollbar->value / item_height;
     auto offset = -(scrollbar->value % item_height);
 
     for (auto i = 0; i < widget_count; i++) {
-        auto position = Position{0, offset};
-        auto size = Size{this->content.size.width - scrollbar->content.size.width - padding,
-                         first_widget->content.size.height};
+        auto position = Position{padding, padding + offset};
+        auto size =
+            Size{this->content.size.width - this->scrollbar->content.size.width - padding * 2 + 2,
+                 first_widget->content.size.height};
         auto status = ItemStatus{false, false};
 
         auto w = reserved_widgets[i];
@@ -60,6 +60,9 @@ auto ListView::draw() -> void {
         first_item++;
     }
     Widget::draw();
+    get_theme()->draw_listview_background(content, has_focus, false);
+
+    content.draw(scrollbar->position, scrollbar->content);
 }
 
 auto ListView::did_adapter_update() -> void {
@@ -69,7 +72,7 @@ auto ListView::did_adapter_update() -> void {
     auto item_height = (first_widget->content.size.height + padding);
     auto widget_count = this->content.size.height / item_height;
 
-    this->scrollbar->set_values(0, adapter->get_count() * item_height, 0, item_height);
+    this->scrollbar->set_values(0, adapter->get_count() * item_height, 0, (item_height * 3) / 11);
 
     widget_count++;
     while (widget_count != 0) {

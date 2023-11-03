@@ -73,6 +73,10 @@ struct Theme {
 
     // TODO - missing disabled state
     virtual auto draw_input_background(Bitmap &content, const bool has_focus) -> void = 0;
+
+    virtual auto draw_listview_background(Bitmap &content, const bool has_focus,
+                                          bool draw_background) -> void = 0;
+
     virtual auto needs_frame_for_focus() const -> bool = 0;
     virtual auto scrollbar_size() const -> int = 0;
 };
@@ -96,6 +100,9 @@ struct ThemeRedmond : Theme {
                                ButtonStates state, const std::string &text, CheckboxShape shape)
         -> void override;
     virtual auto draw_input_background(Bitmap &content, const bool has_focus) -> void override;
+    virtual auto draw_listview_background(Bitmap &content, const bool has_focus,
+                                          bool draw_background) -> void override;
+
     virtual auto needs_frame_for_focus() const -> bool override { return true; };
     virtual auto scrollbar_size() const -> int override { return 24; };
 
@@ -120,6 +127,9 @@ struct ThemeVision : Theme {
                                ButtonStates state, const std::string &text, CheckboxShape shape)
         -> void override;
     virtual auto draw_input_background(Bitmap &content, const bool has_focus) -> void override;
+    virtual auto draw_listview_background(Bitmap &content, const bool has_focus,
+                                          bool draw_background) -> void override;
+
     virtual auto needs_frame_for_focus() const -> bool override { return false; };
     virtual auto scrollbar_size() const -> int override { return 16; };
 };
@@ -143,6 +153,9 @@ struct ThemePlasma : Theme {
                                ButtonStates state, const std::string &text, CheckboxShape shape)
         -> void override;
     virtual auto draw_input_background(Bitmap &content, const bool has_focus) -> void override;
+    virtual auto draw_listview_background(Bitmap &content, const bool has_focus,
+                                          const bool draw_background) -> void override;
+
     virtual auto needs_frame_for_focus() const -> bool override { return false; };
     virtual auto scrollbar_size() const -> int override { return 16; };
 };

@@ -117,9 +117,9 @@ int main() {
         //        spdlog::info("timer");
     });
 
-    auto w2 = platform.open_window(300, 300, 640, 480, "test 2");
-    w2->content.background_color = 0x00FF00;
-    platform.show_window(w2);
+    //    auto w2 = platform.open_window(300, 300, 640, 480, "test 2");
+    //    w2->content.background_color = 0x00FF00;
+    //    plat  form.show_window(w2);
 
     auto w1 = platform.open_window(100, 100, 640, 480, "test 1");
     w1->add_new<Label>(Position{10, 10}, Size{100, 20}, "Hello world!");
@@ -132,7 +132,7 @@ int main() {
         "Option 4",
     };
 
-    auto ll = w1->add_new<ListView>(Position{10, 70}, Size{165, 100});
+    auto ll = w1->add_new<ListView>(Position{10, 80}, Size{165, 100});
     ll->adapter = std::make_shared<ListItemAdapter>(options);
     auto rb = w1->add_new<RadioButtonGroup>(Position{400, 20}, 160, options);
     rb->on_selected = [](int index, Checkbox &button) {
