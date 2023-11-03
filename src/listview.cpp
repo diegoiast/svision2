@@ -7,6 +7,7 @@ auto ListItemAdapter::get_widget(size_t) -> PWidget {
     auto size = Size{20, 20};
     auto p = std::make_shared<Label>(position, size, "");
     p->can_focus = true;
+    //    p->draw_background = false;
     return p;
 }
 
@@ -34,7 +35,7 @@ auto ListView::draw() -> void {
     auto first_widget = adapter->get_widget(0);
     auto padding = 2;
     auto item_height = (first_widget->content.size.height);
-    auto widget_count = this->content.size.height / item_height;
+    auto widget_count = this->content.size.height / item_height + 1;
     auto first_item = scrollbar->value / item_height;
     auto offset = -(scrollbar->value % item_height);
 
@@ -46,7 +47,10 @@ auto ListView::draw() -> void {
         auto status = ItemStatus{false, false};
 
         auto w = reserved_widgets[i];
-        if (first_item >= widget_count || first_item >= adapter->get_count()) {
+        if (!w) {
+            continue;
+        }
+        if (first_item >= adapter->get_count()) {
             w->hide();
             continue;
         }
@@ -73,7 +77,7 @@ auto ListView::did_adapter_update() -> void {
     auto first_widget = adapter->get_widget(0);
     auto padding = 5;
     auto item_height = (first_widget->content.size.height + padding);
-    auto widget_count = this->content.size.height / item_height;
+    auto widget_count = this->content.size.height / item_height + 1;
 
     this->scrollbar->set_values(0, adapter->get_count() * item_height, 0, (item_height * 3) / 11);
 

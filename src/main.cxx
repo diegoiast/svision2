@@ -125,16 +125,31 @@ int main() {
     w1->add_new<Label>(Position{10, 10}, Size{100, 20}, "Hello world!");
     w1->add_new<TextField>(Position{10, 35}, Size{165, 30});
 
-    std::vector<std::string> options = {
+    ;
+
+    auto ll = w1->add_new<ListView>(Position{10, 80}, Size{165, 100});
+    ll->adapter = std::make_shared<ListItemAdapter>(std::vector<std::string>{
         "Option 1",
         "Option 2",
         "Option 3",
         "Option 4",
-    };
+        "Option 5",
+        "Option 6",
+        "Option 7",
+        "Option 8",
+        "Option 9",
+        "Option 10",
+        "Option 11",
+        "Option 12",
+    });
 
-    auto ll = w1->add_new<ListView>(Position{10, 80}, Size{165, 100});
-    ll->adapter = std::make_shared<ListItemAdapter>(options);
-    auto rb = w1->add_new<RadioButtonGroup>(Position{400, 20}, 160, options);
+    auto rb = w1->add_new<RadioButtonGroup>(Position{400, 20}, 160,
+                                            std::vector<std::string>{
+                                                "Option 1",
+                                                "Option 2",
+                                                "Option 3",
+                                                "Option 4",
+                                            });
     rb->on_selected = [](int index, Checkbox &button) {
         spdlog::info("Selected item {} with text {}", index, button.text);
     };
