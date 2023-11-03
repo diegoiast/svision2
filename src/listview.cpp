@@ -5,7 +5,9 @@
 auto ListItemAdapter::get_widget(size_t) -> PWidget {
     auto position = Position{0, 0};
     auto size = Size{20, 20};
-    return std::make_shared<Label>(position, size, "");
+    auto p = std::make_shared<Label>(position, size, "");
+    p->can_focus = true;
+    return p;
 }
 
 auto ListItemAdapter::set_content(PWidget widget, size_t position, ItemStatus status) -> void {
@@ -20,6 +22,7 @@ ListView::ListView(Position position, Size size) : Widget(position, size, 0) {
     this->scrollbar = add_new<ScrollBar>(position, size.height, false);
     this->scrollbar->did_change = [this](auto *s, int value) { this->invalidate(); };
     this->draw_background = false;
+    this->can_focus = true;
 }
 
 auto ListView::draw() -> void {

@@ -268,6 +268,7 @@ auto WidgetCollection::focus_widget(std::shared_ptr<Widget> widget) -> void {
         spdlog::info("widget {} lost focus", focused_widget->focus_index);
         this->focused_widget->on_focus_change(false);
         this->focused_widget->has_focus = false;
+        this->focused_widget->needs_redraw = true;
         // TODO - we had this code - is it needed? probably not
         // last_focus_index = this->focus_widget->focus_index;
         widget->needs_redraw |= focused_widget->needs_redraw;
