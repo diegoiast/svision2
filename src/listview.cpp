@@ -75,8 +75,7 @@ auto ListView::draw() -> void {
 auto ListView::did_adapter_update() -> void {
     reserved_widgets.clear();
     auto first_widget = adapter->get_widget(0);
-    auto padding = 5;
-    auto item_height = (first_widget->content.size.height + padding);
+    auto item_height = first_widget->content.size.height;
     auto widget_count = this->content.size.height / item_height + 1;
 
     auto k = adapter->get_count() - widget_count - 1;
@@ -85,7 +84,10 @@ auto ListView::did_adapter_update() -> void {
     if (adapter->get_count() < widget_count) {
         k = 0;
     }
-    this->scrollbar->set_values(0, k * item_height, 0, (item_height * 3) / 11);
+
+    // +2 - means the frame size
+    // the speed is just to make wierd funkey updates
+    this->scrollbar->set_values(0, k * item_height + 2 * 2, 0, (item_height * 3) / 11);
 
     widget_count++;
     while (widget_count != 0) {
