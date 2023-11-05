@@ -82,6 +82,9 @@ auto ListView::did_adapter_update() -> void {
     auto k = adapter->get_count() - widget_count - 1;
     if (k < 0)
         k = 0;
+    if (adapter->get_count() < widget_count) {
+        k = 0;
+    }
     this->scrollbar->set_values(0, k * item_height, 0, (item_height * 3) / 11);
 
     widget_count++;
