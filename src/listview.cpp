@@ -74,12 +74,12 @@ auto ListView::draw() -> void {
     content.draw(scrollbar->position, scrollbar->content);
 }
 
-EventPropagation ListView::on_mouse_click(const EventMouse &event) {
+EventPropagation ListView::on_mouse(const EventMouse &event) {
     if (!event.pressed) {
-        return Widget::on_mouse_click(event);
+        return Widget::on_mouse(event);
     }
 
-    auto p = Widget::on_mouse_click(event);
+    auto p = Widget::on_mouse(event);
     if (p == EventPropagation::handled) {
         return p;
     }
