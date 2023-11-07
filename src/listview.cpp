@@ -1,19 +1,21 @@
 #include "listview.h"
-#include "label.h"
 #include "scrollbar.h"
+#include "spdlog/spdlog.h"
+#include "theme.h"
 
 auto ListItemAdapter::get_widget(size_t) -> PWidget {
     auto position = Position{0, 0};
     auto size = Size{20, 20};
-    auto p = std::make_shared<Label>(position, size, "");
+    auto p = std::make_shared<ListItemWidget>(position, size, "");
     p->can_focus = true;
     //    p->draw_background = false;
     return p;
 }
 
 auto ListItemAdapter::set_content(PWidget widget, size_t position, ItemStatus status) -> void {
-    auto label = std::dynamic_pointer_cast<Label>(widget);
-    label->text = strings.at(position);
+    auto item = std::dynamic_pointer_cast<ListItemWidget>(widget);
+    item->text = strings.at(position);
+    item->status = status;
 }
 
 ListView::ListView(Position position, Size size) : Widget(position, size, 0) {
@@ -45,15 +47,16 @@ auto ListView::draw() -> void {
             Size{this->content.size.width - this->scrollbar->content.size.width - padding * 2 + 2,
                  first_widget->content.size.height};
         auto status = ItemStatus{false, false};
-
         auto w = reserved_widgets[i];
         if (!w) {
             continue;
         }
+
         if (first_item >= adapter->get_count()) {
             w->hide();
             continue;
         }
+        status.is_active = this->current_item == first_item;
         w->position = position;
         w->content.resize(size);
         adapter->set_content(w, first_item, status);
@@ -62,7 +65,6 @@ auto ListView::draw() -> void {
         } else {
             w->invalidate();
         }
-        auto label = std::dynamic_pointer_cast<Label>(w);
         offset += item_height;
         first_item++;
     }
@@ -70,6 +72,31 @@ auto ListView::draw() -> void {
     get_theme()->draw_listview_background(content, has_focus, false);
 
     content.draw(scrollbar->position, scrollbar->content);
+}
+
+EventPropagation ListView::on_mouse_click(const EventMouse &event) {
+    if (!event.pressed) {
+        return Widget::on_mouse_click(event);
+    }
+
+    auto p = Widget::on_mouse_click(event);
+    if (p == EventPropagation::handled) {
+        return p;
+    }
+
+    auto first_widget = adapter->get_widget(0);
+    auto padding = 2;
+    auto item_height = (first_widget->content.size.height);
+    auto widget_count = this->content.size.height / item_height + 1;
+    auto first_item = scrollbar->value / item_height;
+    //    auto offset = -(scrollbar->value % item_height);
+
+    auto clicked_item_offset = (event.y - padding) / item_height;
+    this->current_item = clicked_item_offset + first_item;
+    spdlog::info("New current item = {}", this->current_item);
+    invalidate();
+
+    return EventPropagation::handled;
 }
 
 auto ListView::did_adapter_update() -> void {
@@ -102,4 +129,11 @@ auto ListView::did_adapter_update() -> void {
         widget_count--;
     }
     this->invalidate();
+}
+
+void ListItemWidget::draw() {
+    auto text_color = status.is_active ? 0 : 0;
+    auto background_color = status.is_active ? 0x60b060 : 0xffffff;
+    this->content.fill(background_color);
+    this->content.write_fixed(Position{5, 5}, text, text_color);
 }

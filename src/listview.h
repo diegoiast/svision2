@@ -36,16 +36,28 @@ struct ListItemAdapter : ItemAdapter {
     virtual auto set_content(PWidget widget, size_t position, ItemStatus status) -> void override;
 };
 
+struct ListItemWidget : public Widget {
+    std::string text = {};
+    ItemStatus status = {};
+
+    ListItemWidget(Position pp, Size size, std::string text) : Widget(pp, size, 0) {
+        this->text = text;
+    }
+
+    virtual auto draw() -> void override;
+};
+
 struct ListView : public Widget {
     using LPWidget = std::list<std::shared_ptr<Widget>>;
 
     std::shared_ptr<ScrollBar> scrollbar = {};
     std::shared_ptr<ItemAdapter> adapter = {};
     std::vector<std::shared_ptr<Widget>> reserved_widgets = {};
-    size_t offset = 0;
+    size_t current_item = 0;
 
     ListView(Position position, Size size);
     virtual auto draw() -> void override;
+    virtual auto on_mouse_click(const EventMouse &event) -> EventPropagation override;
 
     auto did_adapter_update() -> void;
 };
