@@ -89,13 +89,11 @@ EventPropagation ListView::on_mouse(const EventMouse &event) {
     auto item_height = (first_widget->content.size.height);
     auto widget_count = this->content.size.height / item_height + 1;
     auto first_item = scrollbar->value / item_height;
-    //    auto offset = -(scrollbar->value % item_height);
+    auto offset = -(scrollbar->value % item_height);
 
-    auto clicked_item_offset = (event.y - padding) / item_height;
+    auto clicked_item_offset = (event.y - offset - padding) / item_height;
     this->current_item = clicked_item_offset + first_item;
-    spdlog::info("New current item = {}", this->current_item);
     invalidate();
-
     return EventPropagation::handled;
 }
 
