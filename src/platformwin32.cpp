@@ -18,6 +18,28 @@
 #include "theme.h"
 #include "widget.h"
 
+
+int main(int arc, char *argv[]);
+
+int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
+    int argc = __argc;
+    char **argv = __argv;
+    int result = main(argc, argv);
+    LocalFree(argv);
+    return result;
+}
+std::wstring StringToWideString(const std::string &narrowStr) {
+    int wideStrLength = MultiByteToWideChar(CP_UTF8, 0, narrowStr.c_str(), -1, nullptr, 0);
+    if (wideStrLength == 0) {
+        return L"";
+    }
+
+    std::wstring wideStr(wideStrLength, L'\0');
+    MultiByteToWideChar(CP_UTF8, 0, narrowStr.c_str(), -1, &wideStr[0], wideStrLength);
+
+    return wideStr;
+}
+
 auto convert_win32_mouse_event(UINT msg, WPARAM wParam, LPARAM lParam) -> EventMouse {
     auto event = EventMouse();
     switch (msg) {
@@ -272,12 +294,7 @@ auto PlatformWin32::init() -> void {
     wc.lpszClassName = WINDOW_CLASS_NAME;
     RegisterClassExW(&wc);
 
-#if 0
-    default_theme = std::make_shared<ThemePlasma>();
-#else
-    //    default_theme = std::make_shared<ThemeRedmond>();
     default_theme = std::make_shared<ThemeVision>();
-#endif
     spdlog::info("PlatformWin32 initialized");
 }
 
@@ -308,16 +325,23 @@ auto PlatformWin32::main_loop() -> void {
 
 auto PlatformWin32::open_window(int x, int y, int width, int height, const std::string title)
     -> std::shared_ptr<PlatformWindow> {
-    HINSTANCE hInstance = GetModuleHandle(NULL);
+    auto hInstance = GetModuleHandle(nullptr);
+    auto windowRect = RECT{0, 0, width, height};
+    AdjustWindowRect(&windowRect, WS_OVERLAPPEDWINDOW, FALSE);
+
+    auto windowWidth = windowRect.right - windowRect.left;
+    auto windowHeight = windowRect.bottom - windowRect.top;
 
     auto window = std::make_shared<PlatformWindowWin32>();
     window->title = title;
-    // TODO - window title is so wrong, this almost hurts
-    window->hwnd = CreateWindowExW(
-        WS_EX_CLIENTEDGE, WINDOW_CLASS_NAME, (LPWSTR)window->title.c_str(), WS_OVERLAPPEDWINDOW,
-        CW_USEDEFAULT, CW_USEDEFAULT, width, height, NULL, NULL, hInstance, NULL);
-
-    if (window->hwnd == NULL) {
+    window->hwnd = CreateWindowExW(WS_EX_CLIENTEDGE, WINDOW_CLASS_NAME,
+                                   StringToWideString(window->title).c_str(), WS_OVERLAPPEDWINDOW,
+                                   CW_USEDEFAULT, CW_USEDEFAULT, windowWidth, windowHeight, NULL,
+                                   NULL, hInstance, NULL);
+    if (window->hwnd == nullptr) {
+        return nullptr;
+    }
+    if (window->hwnd == nullptr) {
         return nullptr;
     }
 
