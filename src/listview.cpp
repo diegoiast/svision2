@@ -129,9 +129,4 @@ auto ListView::did_adapter_update() -> void {
     this->invalidate();
 }
 
-void ListItemWidget::draw() {
-    auto text_color = status.is_active ? 0 : 0;
-    auto background_color = status.is_active ? 0x60b060 : 0xffffff;
-    this->content.fill(background_color);
-    this->content.write_fixed(Position{5, 5}, text, text_color);
-}
+void ListItemWidget::draw() { get_theme()->draw_listview_item(content, text, status); }

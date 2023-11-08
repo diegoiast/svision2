@@ -7,16 +7,12 @@
 
 #pragma once
 
+#include <checkboxshape.h>
 #include <string>
 #include <vector>
 #include <widget.h>
 
 class ScrollBar;
-
-struct ItemStatus {
-    bool is_selected = false;
-    bool is_active = false;
-};
 
 struct ItemAdapter {
     // ALA TurboVision

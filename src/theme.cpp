@@ -323,6 +323,15 @@ auto ThemeRedmond::draw_listview_background(Bitmap &content, const bool has_focu
     }
 }
 
+void ThemeRedmond::draw_listview_item(Bitmap &content, const std::string &text,
+                                      const ItemStatus status) {
+    auto text_color = status.is_active ? colors.text_selection_color : colors.text_color;
+    auto background_color =
+        status.is_active ? ThemePlasma::selection_background : ThemePlasma::input_background;
+    content.fill(background_color);
+    content.write_fixed(Position{5, 5}, text, text_color);
+}
+
 auto ThemeVision::draw_window_background(Bitmap &content) -> void {
     content.fill_rect(0, 0, content.size.width, content.size.height, colors.window_background);
 }
@@ -552,6 +561,15 @@ auto ThemeVision::draw_listview_background(Bitmap &content, const bool has_focus
     }
 }
 
+void ThemeVision::draw_listview_item(Bitmap &content, const std::string &text,
+                                     const ItemStatus status) {
+    auto text_color = status.is_active ? colors.text_selection_color : colors.text_color;
+    auto background_color =
+        status.is_active ? ThemePlasma::selection_background : ThemePlasma::input_background;
+    content.fill(background_color);
+    content.write_fixed(Position{5, 5}, text, text_color);
+}
+
 auto ThemePlasma::draw_window_background(Bitmap &content) -> void {
     content.fill_rect(0, 0, content.size.width, content.size.height, colors.window_background);
     content.line(0, 0, content.size.width - 1, 0, colors.frame_disabled_color1);
@@ -742,4 +760,13 @@ auto ThemePlasma::draw_listview_background(Bitmap &content, const bool has_focus
     if (draw_background) {
         content.fill_rect(1, 1, content.size.width - 2, content.size.height - 2, background);
     }
+}
+
+void ThemePlasma::draw_listview_item(Bitmap &content, const std::string &text,
+                                     const ItemStatus status) {
+    auto text_color = status.is_active ? colors.text_selection_color : colors.text_color;
+    auto background_color =
+        status.is_active ? ThemePlasma::selection_background : ThemePlasma::input_background;
+    content.fill(background_color);
+    content.write_fixed(Position{5, 5}, text, text_color);
 }

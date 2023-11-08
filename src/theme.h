@@ -76,6 +76,8 @@ struct Theme {
 
     virtual auto draw_listview_background(Bitmap &content, const bool has_focus,
                                           bool draw_background) -> void = 0;
+    virtual auto draw_listview_item(Bitmap &content, const std::string &text,
+                                    const ItemStatus status) -> void = 0;
 
     virtual auto needs_frame_for_focus() const -> bool = 0;
     virtual auto scrollbar_size() const -> int = 0;
@@ -87,6 +89,9 @@ struct ThemeRedmond : Theme {
     static auto get_dark_colors() -> ColorStyle;
 
     ThemeRedmond() { colors = get_light_colors(); }
+
+    static const int32_t selection_background = MakeColor(0xa0, 0xa0, 0xc8);
+    static const int32_t input_background = MakeColor(0xff, 0xff, 0xff);
 
     virtual auto init() -> void override{};
     virtual auto draw_widget_background(Bitmap &content) -> void override {
@@ -102,6 +107,8 @@ struct ThemeRedmond : Theme {
     virtual auto draw_input_background(Bitmap &content, const bool has_focus) -> void override;
     virtual auto draw_listview_background(Bitmap &content, const bool has_focus,
                                           bool draw_background) -> void override;
+    virtual auto draw_listview_item(Bitmap &content, const std::string &text,
+                                    const ItemStatus status) -> void override;
 
     virtual auto needs_frame_for_focus() const -> bool override { return true; };
     virtual auto scrollbar_size() const -> int override { return 24; };
@@ -115,6 +122,10 @@ struct ThemeVision : Theme {
 
     ThemeVision(int32_t accent = DefaultAccentLight) { colors = get_light_colors(accent); }
 
+    static const int32_t selection_background = MakeColor(0, 120, 215);
+    static const int32_t selection_foreground = MakeColor(0xff, 0xff, 0xff);
+    static const int32_t input_background = MakeColor(0xff, 0xff, 0xff);
+
     virtual auto init() -> void override{};
     virtual auto draw_widget_background(Bitmap &content) -> void override {
         content.fill(colors.window_background);
@@ -129,6 +140,8 @@ struct ThemeVision : Theme {
     virtual auto draw_input_background(Bitmap &content, const bool has_focus) -> void override;
     virtual auto draw_listview_background(Bitmap &content, const bool has_focus,
                                           bool draw_background) -> void override;
+    virtual auto draw_listview_item(Bitmap &content, const std::string &text,
+                                    const ItemStatus status) -> void override;
 
     virtual auto needs_frame_for_focus() const -> bool override { return false; };
     virtual auto scrollbar_size() const -> int override { return 16; };
@@ -140,6 +153,9 @@ struct ThemePlasma : Theme {
     static auto get_dark_colors(int32_t accent = DefaultAccentLight) -> ColorStyle;
 
     ThemePlasma(int32_t accent = DefaultAccentLight) { colors = get_light_colors(accent); }
+
+    static const int32_t selection_background = MakeColor(0x80, 0x80, 0xa0);
+    static const int32_t input_background = MakeColor(0xff, 0xff, 0xff);
 
     virtual auto init() -> void override{};
     virtual auto draw_widget_background(Bitmap &content) -> void override {
@@ -155,6 +171,8 @@ struct ThemePlasma : Theme {
     virtual auto draw_input_background(Bitmap &content, const bool has_focus) -> void override;
     virtual auto draw_listview_background(Bitmap &content, const bool has_focus,
                                           const bool draw_background) -> void override;
+    virtual auto draw_listview_item(Bitmap &content, const std::string &text,
+                                    const ItemStatus status) -> void override;
 
     virtual auto needs_frame_for_focus() const -> bool override { return false; };
     virtual auto scrollbar_size() const -> int override { return 16; };
