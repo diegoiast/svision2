@@ -54,6 +54,7 @@ struct ListView : public Widget {
     ListView(Position position, Size size);
     virtual auto draw() -> void override;
     virtual auto on_mouse(const EventMouse &event) -> EventPropagation override;
+    virtual auto on_keyboard(const EventKeyboard &) -> EventPropagation override;
 
     auto did_adapter_update() -> void;
 };

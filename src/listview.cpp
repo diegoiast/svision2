@@ -97,6 +97,27 @@ EventPropagation ListView::on_mouse(const EventMouse &event) {
     return EventPropagation::handled;
 }
 
+auto ListView::on_keyboard(const EventKeyboard &event) -> EventPropagation {
+    auto result = EventPropagation::propagate;
+    switch (event.key) {
+    case KeyCodes::ArrowUp:
+        result = EventPropagation::handled;
+        if (current_item < adapter->get_count())
+            current_item++;
+        invalidate();
+        break;
+    case KeyCodes::ArrowDown:
+        result = EventPropagation::handled;
+        if (current_item > 0)
+            current_item--;
+        invalidate();
+        break;
+    default:
+        break;
+    }
+    return result;
+}
+
 auto ListView::did_adapter_update() -> void {
     reserved_widgets.clear();
     auto first_widget = adapter->get_widget(0);
