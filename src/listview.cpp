@@ -87,7 +87,7 @@ EventPropagation ListView::on_mouse(const EventMouse &event) {
     auto first_widget = adapter->get_widget(0);
     auto padding = 2;
     auto item_height = (first_widget->content.size.height);
-    auto widget_count = this->content.size.height / item_height + 1;
+    auto widget_count = (this->content.size.height - padding) / item_height + 1;
     auto first_item = scrollbar->value / item_height;
     auto offset = -(scrollbar->value % item_height);
 
@@ -97,19 +97,42 @@ EventPropagation ListView::on_mouse(const EventMouse &event) {
     return EventPropagation::handled;
 }
 
+auto static ensure_item_in_viewport(ListView &l) {
+    auto first_widget = l.adapter->get_widget(0);
+    auto padding = 2;
+    auto item_height = (first_widget->content.size.height);
+    auto widget_count = l.content.size.height / item_height;
+    auto first_visible_item = l.scrollbar->value / item_height;
+
+    if (l.current_item >= first_visible_item &&
+        l.current_item < first_visible_item + widget_count) {
+        return;
+    }
+
+    if (l.current_item < first_visible_item) {
+        l.scrollbar->set_value(item_height * l.current_item);
+        return;
+    }
+
+    auto lll = (l.current_item - widget_count + 1);
+    l.scrollbar->set_value(item_height * lll);
+}
+
 auto ListView::on_keyboard(const EventKeyboard &event) -> EventPropagation {
     auto result = EventPropagation::propagate;
     switch (event.key) {
     case KeyCodes::ArrowUp:
         result = EventPropagation::handled;
-        if (current_item < adapter->get_count())
+        if (current_item < adapter->get_count() - 1)
             current_item++;
+        ensure_item_in_viewport(*this);
         invalidate();
         break;
     case KeyCodes::ArrowDown:
         result = EventPropagation::handled;
         if (current_item > 0)
             current_item--;
+        ensure_item_in_viewport(*this);
         invalidate();
         break;
     default:
@@ -122,7 +145,7 @@ auto ListView::did_adapter_update() -> void {
     reserved_widgets.clear();
     auto first_widget = adapter->get_widget(0);
     auto item_height = first_widget->content.size.height;
-    auto widget_count = this->content.size.height / item_height + 1;
+    auto widget_count = (this->content.size.height - 2) / item_height + 1;
 
     auto k = adapter->get_count() - widget_count - 1;
     if (k < 0)
