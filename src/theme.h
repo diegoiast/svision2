@@ -90,7 +90,7 @@ struct ThemeRedmond : Theme {
 
     ThemeRedmond() { colors = get_light_colors(); }
 
-    static const int32_t selection_background = MakeColor(0xa0, 0xa0, 0xc8);
+    static const int32_t selection_background = 0x2a5faa;
     static const int32_t input_background = MakeColor(0xff, 0xff, 0xff);
 
     virtual auto init() -> void override{};
@@ -154,7 +154,7 @@ struct ThemePlasma : Theme {
 
     ThemePlasma(int32_t accent = DefaultAccentLight) { colors = get_light_colors(accent); }
 
-    static const int32_t selection_background = MakeColor(0x80, 0x80, 0xa0);
+    static const int32_t selection_background = 0x3daee9;
     static const int32_t input_background = MakeColor(0xff, 0xff, 0xff);
 
     virtual auto init() -> void override{};
