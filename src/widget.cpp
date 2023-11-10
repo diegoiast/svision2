@@ -63,7 +63,6 @@ auto WidgetCollection::on_mouse(const EventMouse &event) -> EventPropagation {
             auto b = w->on_mouse(child_event);
             if (b == EventPropagation::handled) {
                 result = EventPropagation::handled;
-                break;
             }
 
             // not handled by subwidgets, send this event to the widget itself
