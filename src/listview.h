@@ -49,7 +49,7 @@ struct ListView : public Widget {
     std::shared_ptr<ScrollBar> scrollbar = {};
     std::shared_ptr<ItemAdapter> adapter = {};
     std::vector<std::shared_ptr<Widget>> reserved_widgets = {};
-    size_t current_item = 0;
+    int current_item = 0;
 
     ListView(Position position, Size size);
     virtual auto draw() -> void override;

@@ -1197,8 +1197,8 @@ static int X11_KEYCODES[] = {
     0xff52, 0x0011,    // Up
     0xff53, 0x0013,    // Right
     0xff54, 0x0012,    // Down
-    0xff55, 0x0000,    // Prior
-    0xff56, 0x0000,    // Next
+    0xff55, (int) KeyCodes::PageUp,    // Prior
+    0xff56, (int) KeyCodes::PageDown,    // Next
     0xff57, 0x0005,    // End
     0xff58, 0x0000,    // Begin
     0xff60, 0x0000,    // Select

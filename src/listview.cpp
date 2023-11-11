@@ -135,6 +135,34 @@ auto ListView::on_keyboard(const EventKeyboard &event) -> EventPropagation {
         ensure_item_in_viewport(*this);
         invalidate();
         break;
+    case KeyCodes::Home:
+        result = EventPropagation::handled;
+        current_item = 0;
+        ensure_item_in_viewport(*this);
+        invalidate();
+        break;
+    case KeyCodes::End:
+        result = EventPropagation::handled;
+        current_item = adapter->get_count() - 1;
+        ensure_item_in_viewport(*this);
+        invalidate();
+        break;
+    case KeyCodes::PageDown:
+        result = EventPropagation::handled;
+        current_item += adapter->get_count() / 5;
+        if (current_item >= adapter->get_count())
+            current_item = adapter->get_count() - 1;
+        ensure_item_in_viewport(*this);
+        invalidate();
+        break;
+    case KeyCodes::PageUp:
+        result = EventPropagation::handled;
+        current_item -= adapter->get_count() / 5;
+        if (current_item < 0)
+            current_item = 0;
+        ensure_item_in_viewport(*this);
+        invalidate();
+        break;
     default:
         break;
     }
@@ -156,7 +184,7 @@ auto ListView::did_adapter_update() -> void {
 
     // +2 - means the frame size
     // the speed is just to make wierd funkey updates
-    this->scrollbar->set_values(0, k * item_height + 2 * 2, 0, (item_height * 3) / 11);
+    this->scrollbar->set_values(0, (k + 1) * item_height, 0, (item_height * 3) / 11);
 
     widget_count++;
     while (widget_count != 0) {

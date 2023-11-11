@@ -36,6 +36,8 @@ enum class KeyCodes {
     Delete = 0x007F,
     Backspace = 0x0008,
     Insert = 0x007E,
+    PageDown = 0xff55,
+    PageUp = 0xff56,
     Space = ' ',
     ShiftLeft = 0xffe1,
     ShiftRight = 0xffe2,
