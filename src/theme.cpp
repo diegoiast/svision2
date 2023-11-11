@@ -324,7 +324,7 @@ auto ThemeRedmond::draw_listview_background(Bitmap &content, const bool has_focu
 }
 
 void ThemeRedmond::draw_listview_item(Bitmap &content, const std::string &text,
-                                      const ItemStatus status) {
+                                      const ItemStatus status, bool is_hover) {
     auto text_color = status.is_active ? colors.text_selection_color : colors.text_color;
     auto background_color =
         status.is_active ? ThemePlasma::selection_background : ThemePlasma::input_background;
@@ -562,7 +562,7 @@ auto ThemeVision::draw_listview_background(Bitmap &content, const bool has_focus
 }
 
 void ThemeVision::draw_listview_item(Bitmap &content, const std::string &text,
-                                     const ItemStatus status) {
+                                     const ItemStatus status, bool is_hover) {
     auto text_color = status.is_active ? colors.text_selection_color : colors.text_color;
     auto background_color =
         status.is_active ? ThemePlasma::selection_background : ThemePlasma::input_background;
@@ -763,10 +763,15 @@ auto ThemePlasma::draw_listview_background(Bitmap &content, const bool has_focus
 }
 
 void ThemePlasma::draw_listview_item(Bitmap &content, const std::string &text,
-                                     const ItemStatus status) {
+                                     const ItemStatus status, bool is_hover) {
+
     auto text_color = status.is_active ? colors.text_selection_color : colors.text_color;
     auto background_color =
-        status.is_active ? ThemePlasma::selection_background : ThemePlasma::input_background;
+        is_hover ? colors.input_background_hover : colors.input_background_normal;
+    if (status.is_active) {
+        background_color = ThemePlasma::selection_background;
+    }
+
     content.fill(background_color);
     content.write_fixed(Position{5, 5}, text, text_color);
 }

@@ -77,7 +77,7 @@ struct Theme {
     virtual auto draw_listview_background(Bitmap &content, const bool has_focus,
                                           bool draw_background) -> void = 0;
     virtual auto draw_listview_item(Bitmap &content, const std::string &text,
-                                    const ItemStatus status) -> void = 0;
+                                    const ItemStatus status, bool is_hover) -> void = 0;
 
     virtual auto needs_frame_for_focus() const -> bool = 0;
     virtual auto scrollbar_size() const -> int = 0;
@@ -108,7 +108,7 @@ struct ThemeRedmond : Theme {
     virtual auto draw_listview_background(Bitmap &content, const bool has_focus,
                                           bool draw_background) -> void override;
     virtual auto draw_listview_item(Bitmap &content, const std::string &text,
-                                    const ItemStatus status) -> void override;
+                                    const ItemStatus status, bool is_hover) -> void override;
 
     virtual auto needs_frame_for_focus() const -> bool override { return true; };
     virtual auto scrollbar_size() const -> int override { return 24; };
@@ -141,7 +141,7 @@ struct ThemeVision : Theme {
     virtual auto draw_listview_background(Bitmap &content, const bool has_focus,
                                           bool draw_background) -> void override;
     virtual auto draw_listview_item(Bitmap &content, const std::string &text,
-                                    const ItemStatus status) -> void override;
+                                    const ItemStatus status, bool is_hover) -> void override;
 
     virtual auto needs_frame_for_focus() const -> bool override { return false; };
     virtual auto scrollbar_size() const -> int override { return 16; };
@@ -154,6 +154,7 @@ struct ThemePlasma : Theme {
 
     ThemePlasma(int32_t accent = DefaultAccentLight) { colors = get_light_colors(accent); }
 
+    static const int32_t selection_background_hover = 0x20a0a0;
     static const int32_t selection_background = 0x3daee9;
     static const int32_t input_background = MakeColor(0xff, 0xff, 0xff);
 
@@ -172,7 +173,7 @@ struct ThemePlasma : Theme {
     virtual auto draw_listview_background(Bitmap &content, const bool has_focus,
                                           const bool draw_background) -> void override;
     virtual auto draw_listview_item(Bitmap &content, const std::string &text,
-                                    const ItemStatus status) -> void override;
+                                    const ItemStatus status, bool is_hover) -> void override;
 
     virtual auto needs_frame_for_focus() const -> bool override { return false; };
     virtual auto scrollbar_size() const -> int override { return 16; };

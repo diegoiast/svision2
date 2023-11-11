@@ -201,4 +201,7 @@ auto ListView::did_adapter_update() -> void {
     this->invalidate();
 }
 
-void ListItemWidget::draw() { get_theme()->draw_listview_item(content, text, status); }
+auto ListItemWidget::draw() -> void {
+    auto theme = get_theme();
+    theme->draw_listview_item(content, text, status, mouse_over);
+}
