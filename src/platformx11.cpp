@@ -102,12 +102,8 @@ auto PlatformX11::init() -> void {
         return;
     }
 
-#if 1
+    // TODO - detect GTK and use a GTK theme
     default_theme = std::make_shared<ThemePlasma>();
-#else
-    default_theme = std::make_shared<ThemeRedmond>();
-    // default_theme = std::make_shared<ThemeVision>();
-#endif
     spdlog::info("PlatformX11 initialized");
 }
 
