@@ -41,6 +41,8 @@ struct ListItemWidget : public Widget {
     }
 
     virtual auto draw() -> void override;
+    virtual auto on_mouse_enter() -> void override { invalidate(); };
+    virtual auto on_mouse_leave() -> void override { invalidate(); };
 };
 
 struct ListView : public Widget {

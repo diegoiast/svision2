@@ -154,7 +154,7 @@ struct ThemePlasma : Theme {
 
     ThemePlasma(int32_t accent = DefaultAccentLight) { colors = get_light_colors(accent); }
 
-    static const int32_t selection_background_hover = 0x20a0a0;
+    static const int32_t selection_background_hover = 0xe0e0e0;
     static const int32_t selection_background = 0x3daee9;
     static const int32_t input_background = MakeColor(0xff, 0xff, 0xff);
 

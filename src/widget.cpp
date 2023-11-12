@@ -133,13 +133,17 @@ auto WidgetCollection::on_mouse_press(const EventMouse &event, std::shared_ptr<W
     local_event.x = event.x - w->position.x;
     local_event.y = event.y - w->position.y;
     if (last_overed_widget && last_overed_widget != w) {
+        /*
         spdlog::info("Mouse focus changed from {} to {}", fmt::ptr(last_overed_widget.get()),
                      fmt::ptr(w.get()));
+        */
         last_overed_widget->on_mouse_leave();
+        last_overed_widget->mouse_over = false;
         w->needs_redraw |= last_overed_widget->needs_redraw;
     }
     if (!w->mouse_over) {
         w->on_mouse_enter();
+        w->mouse_over = true;
     }
     if (event.type == MouseEvents::MouseMove) {
         w->on_hover(local_event);
