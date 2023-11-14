@@ -28,9 +28,13 @@ auto TextField::draw() -> void {
     auto center_y = (content.size.height - 16) / 2;
     auto selection_width = (selection.end - selection.start) - display_from;
     selection_width *= 8;
+
+    /*
+     * TODO - unmanaged color writing in a widget
     content.fill_rect(padding_start - 1, padding_vertical - 1, selection_width + 1,
                       content.size.height - padding_vertical - 2,
                       ThemePlasma::button_selected_background);
+*/
     // TODO handle partial selection
     content.write_fixed(Position{padding_start, center_y}, display_text, 0);
 

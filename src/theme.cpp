@@ -344,82 +344,134 @@ auto ThemeVision::draw_input_background(Bitmap &content, const bool has_focus) -
     content.fill_rect(1, 1, content.size.width - 2, content.size.height - 2, background);
 }
 
+auto ThemePlasma::get_light_colors() -> ColorStyle {
+    ColorStyle light_colors = {};
+    light_colors.window_background = 0xeff0f1;
+    light_colors.input_background_normal = 0xffffff;
+    light_colors.input_background_hover = 0x0; // todo - is this needed at all?
+    light_colors.input_background_disabled = 0x0;
+    light_colors.frame_normal_color1 = 0xbbbcbd;
+    light_colors.frame_normal_color2 = 0xbbbcbd;
+    light_colors.frame_hover_color1 = 0x3daee9;
+    light_colors.frame_hover_color2 = 0x3daee9;
+    light_colors.frame_disabled_color1 = 0xd1d2d3;
+    light_colors.frame_disabled_color2 = 0xd1d2d3;
+    light_colors.button_background_1 = 0xfcfcfc;
+    light_colors.button_background_2 = 0xf5f5f5;
+    light_colors.button_selected_background = 0xd6ecf8;
+    //    colors.button_selected_border = 0x3daee9; // todo - needed?
+    light_colors.button_selected_text = 0x31373b;
+    light_colors.text_color = 0x2b2e31;
+    light_colors.text_color_disabled = 0x737577;
+    light_colors.text_selection_color = 0xffffff;
+    light_colors.text_selection_background = 0x3daee9;
+    return light_colors;
+}
+
+auto ThemePlasma::get_dark_colors() -> ColorStyle {
+    ColorStyle colors = {};
+    colors.window_background = 0x2ff0f1;
+    colors.input_background_normal = 0x393939;
+    colors.input_background_hover = 0x0; // todo - is this needed at all?
+    colors.input_background_disabled = 0x0;
+    colors.frame_normal_color1 = 0xbbbcbd;
+    colors.frame_normal_color2 = 0xbbbcbd;
+    colors.frame_hover_color1 = 0x3daee9;
+    colors.frame_hover_color2 = 0x3daee9;
+    colors.frame_disabled_color1 = 0x202020; // todo - is this the correct color?
+    colors.frame_disabled_color2 = 0x202020; // todo - is this the correct color?
+    colors.button_background_1 = 0xfcfcfc;
+    colors.button_background_2 = 0xf5f5f5;
+    colors.button_selected_background = 0xd6ecf8;
+    //    colors.button_selected_border = 0x3daee9; // todo - needed?
+    colors.button_selected_text = 0x31373b;
+    colors.text_color = 0x2b2e31;
+    colors.text_color_disabled = 0x737577;
+    colors.text_selection_color = 0xffffff;
+    colors.text_selection_background = 0x3daee9;
+    return colors;
+}
+
 auto ThemePlasma::draw_window_background(Bitmap &content) -> void {
-    content.fill_rect(0, 0, content.size.width, content.size.height,
-                      ThemePlasma::window_background_color);
-    content.line(0, 0, content.size.width - 1, 0, ThemePlasma::border_active);
+    content.fill_rect(0, 0, content.size.width, content.size.height, colors.window_background);
+
+    // TODO - port to the theme
+    //    content.line(0, 0, content.size.width - 1, 0, ThemePlasma::border_active);
+    content.line(0, 0, content.size.width - 1, 0, colors.frame_disabled_color1);
 }
 
 auto ThemePlasma::draw_scrollbar_background(Bitmap &content) -> void {
     auto the_width = content.size.width;
     auto the_height = content.size.height;
 
-    content.fill_rect(0, 0, the_width, the_height, ThemePlasma::window_background_color);
-    content.draw_rectangle(0, 0, the_width, the_height - 1, ThemePlasma::border_active,
-                           ThemePlasma::border_active);
-    content.line(0, the_height - 1, the_width, the_height - 1, ThemePlasma::border_shadow);
+    content.fill_rect(0, 0, the_width, the_height, colors.window_background);
+    content.draw_rectangle(0, 0, the_width, the_height - 1, colors.frame_normal_color1,
+                           colors.frame_normal_color1);
+    content.line(0, the_height - 1, the_width, the_height - 1, colors.frame_disabled_color1);
 }
 
 auto ThemePlasma::draw_button(Bitmap &content, bool has_focus, bool is_default, bool is_enabled,
                               ButtonStates state, const std::string &text) -> void {
     auto text_padding = 5;
 
-    auto background1 = ThemePlasma::button_background_1;
-    auto background2 = ThemePlasma::button_background_2;
-    auto border = ThemePlasma::border_active;
-    auto color = ThemePlasma::text_color;
+    auto background1 = colors.button_background_1;
+    auto background2 = colors.button_background_2;
+    auto border = colors.frame_normal_color1;
+    auto color = colors.text_color;
 
     switch (state) {
     case ButtonStates::Normal:
         if (has_focus) {
-            background1 = ThemePlasma::button_selected_background;
-            background2 = ThemePlasma::button_selected_background;
+            background1 = colors.button_selected_background;
+            background2 = colors.button_selected_background;
         } else {
-            background1 = ThemePlasma::button_background_1;
-            background2 = ThemePlasma::button_background_2;
+            background1 = colors.button_background_1;
+            background2 = colors.button_background_2;
         }
         break;
     case ButtonStates::Hovered:
         if (is_enabled) {
-            background1 = ThemePlasma::button_background_1;
-            background2 = ThemePlasma::button_background_2;
-            border = ThemePlasma::border_hover;
+            background1 = colors.button_background_1;
+            background2 = colors.button_background_2;
+            border = colors.frame_hover_color1;
         } else {
-            border = ThemePlasma::border_disabled;
+            border = colors.frame_disabled_color1;
         }
         break;
     case ButtonStates::ClickedInside:
-        background1 = ThemePlasma::button_selected_background;
-        background2 = ThemePlasma::button_selected_background;
-        border = ThemePlasma::button_selected_border;
-        color = ThemePlasma::button_selected_text;
+        background1 = colors.button_selected_background;
+        background2 = colors.button_selected_background;
+        border = colors.frame_hover_color1;
+        color = colors.button_selected_text;
         break;
     case ButtonStates::ClickedOutside:
-        background1 = ThemePlasma::button_background_1;
-        background2 = ThemePlasma::button_background_2;
-        border = ThemePlasma::border_active;
-        color = ThemePlasma::button_selected_text;
+        background1 = colors.button_background_1;
+        background2 = colors.button_background_2;
+        border = colors.frame_hover_color1;
+        color = colors.button_selected_text;
         break;
     default:
         break;
     }
     if (!is_enabled) {
-        border = ThemePlasma::border_disabled;
+        border = colors.frame_disabled_color1;
     } else {
         if (has_focus)
-            border = ThemePlasma::border_hover;
+            border = colors.frame_hover_color1;
     }
 
     content.draw_rounded_rectangle(0, 0, content.size.width, content.size.height - 1, 5, border,
                                    border);
+
+    // TODO - make this into the theme
+    auto border_shadow = colors.frame_disabled_color1;
     content.line(2, content.size.height - 1, content.size.width - 2, content.size.height - 1,
-                 ThemePlasma::border_shadow);
+                 border_shadow);
 
     // TODO - widget should be filled with real content from parent
-    content.put_pixel(0, content.size.height - 1, ThemePlasma::window_background_color);
-    content.put_pixel(1, content.size.height - 1, ThemePlasma::window_background_color);
-    content.put_pixel(content.size.width - 1, content.size.height - 1,
-                      ThemePlasma::window_background_color);
+    content.put_pixel(0, content.size.height - 1, colors.window_background);
+    content.put_pixel(1, content.size.height - 1, colors.window_background);
+    content.put_pixel(content.size.width - 1, content.size.height - 1, colors.window_background);
 
     if (background1 == background2) {
         content.fill_rect(1, 1, content.size.width - 2, content.size.height - 3, background1);
@@ -441,36 +493,36 @@ auto ThemePlasma::draw_button(Bitmap &content, bool has_focus, bool is_default, 
 auto ThemePlasma::draw_checkbox(Bitmap &content, bool has_focus, bool is_enabled, bool is_checked,
                                 ButtonStates state, const std::string &text, CheckboxShape shape)
     -> void {
-    auto background_color = ThemePlasma::window_background_color;
-    auto foreground_color = ThemePlasma::text_color;
+    auto background_color = colors.window_background;
+    auto foreground_color = colors.text_color;
     auto checkbox_size = content.size.height;
-    auto checkbox_color = ThemePlasma::border_hover;
-    auto checkbox_border = ThemePlasma::border_disabled;
+    auto checkbox_color = colors.frame_hover_color1;
+    auto checkbox_border = colors.frame_disabled_color1;
 
     switch (state) {
     case ButtonStates::ClickedInside:
-        checkbox_color = ThemePlasma::border_disabled;
-        checkbox_border = ThemePlasma::border_hover;
+        checkbox_color = colors.frame_disabled_color1;
+        checkbox_border = colors.frame_normal_color1;
         is_checked = true;
         break;
     case ButtonStates::ClickedOutside:
-        checkbox_border = ThemePlasma::border_hover;
-        checkbox_color = has_focus ? ThemePlasma::border_disabled : ThemePlasma::border_hover;
+        checkbox_border = colors.frame_hover_color1;
+        checkbox_color = has_focus ? colors.frame_disabled_color1 : colors.frame_hover_color1;
 
         break;
     case ButtonStates::Hovered:
         if (is_enabled) {
-            checkbox_border = ThemePlasma::border_hover;
+            checkbox_border = colors.frame_hover_color1;
         }
         break;
     case ButtonStates::Normal:
-        checkbox_border = has_focus ? ThemePlasma::border_hover : ThemePlasma::border_disabled;
-        checkbox_color = has_focus ? ThemePlasma::border_hover : ThemePlasma::border_disabled;
+        checkbox_border = has_focus ? colors.frame_hover_color1 : colors.frame_disabled_color1;
+        checkbox_color = has_focus ? colors.frame_hover_color1 : colors.frame_disabled_color1;
         break;
     }
 
     if (!is_enabled) {
-        checkbox_color = ThemePlasma::text_color_disabled;
+        checkbox_color = colors.text_color_disabled;
     }
 
     content.fill(background_color);
@@ -489,12 +541,13 @@ auto ThemePlasma::draw_checkbox(Bitmap &content, bool has_focus, bool is_enabled
             if (is_checked) {
                 if (is_enabled) {
                     content.fill_circle(m, m, checkbox_size / 2 - padding,
-                                        ThemePlasma::button_selected_background);
-                    content.draw_circle(m, m, checkbox_size / 2 - padding, ThemePlasma::border_hover);
+                                        colors.button_selected_background);
+                    content.draw_circle(m, m, checkbox_size / 2 - padding,
+                                        colors.frame_hover_color1);
                 } else {
-                    content.fill_circle(m, m, checkbox_size / 2 - padding,
-                                        checkbox_border);
-                    content.draw_circle(m, m, checkbox_size / 2 - padding, ThemePlasma::text_color_disabled);
+                    content.fill_circle(m, m, checkbox_size / 2 - padding, checkbox_border);
+                    content.draw_circle(m, m, checkbox_size / 2 - padding,
+                                        colors.text_color_disabled);
                 }
             } else {
                 content.draw_circle(m, m, checkbox_size / 2 - padding, checkbox_border);
@@ -516,19 +569,20 @@ auto ThemePlasma::draw_checkbox(Bitmap &content, bool has_focus, bool is_enabled
             break;
         case CheckboxShape::RadioButton:
             if (is_checked) {
-                content.fill_circle(m, m, 4, ThemePlasma::text_color);
+                content.fill_circle(m, m, 4, colors.button_selected_text);
             }
             break;
         }
     }
-    content.write_fixed({checkbox_size + 5, 5}, text, is_enabled ? foreground_color : text_color_disabled);
+    content.write_fixed({checkbox_size + 5, 5}, text,
+                        is_enabled ? foreground_color : colors.text_color_disabled);
 }
 
 auto ThemePlasma::draw_input_background(Bitmap &content, const bool has_focus) -> void {
-    auto line1 = has_focus ? ThemePlasma::button_selected_border : ThemePlasma::border_active;
-    auto line2 = has_focus ? ThemePlasma::button_selected_border : ThemePlasma::border_active;
-    auto line3 = has_focus ? ThemePlasma::button_selected_border : ThemePlasma::border_active;
-    auto line4 = has_focus ? ThemePlasma::button_selected_border : ThemePlasma::border_active;
+    auto line1 = has_focus ? colors.frame_hover_color1 : colors.frame_normal_color1;
+    auto line2 = has_focus ? colors.frame_hover_color1 : colors.frame_normal_color1;
+    auto line3 = has_focus ? colors.frame_hover_color1 : colors.frame_normal_color1;
+    auto line4 = has_focus ? colors.frame_hover_color1 : colors.frame_normal_color1;
     auto background = 0x00FFFFFF;
     content.draw_rectangle(0, 0, content.size.width, content.size.height, line1, line2);
     content.draw_rectangle(1, 1, content.size.width - 2, content.size.height - 2, line3, line4);

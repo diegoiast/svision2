@@ -11,7 +11,30 @@
 #include <buttonstates.h>
 #include <checkboxshape.h>
 
+struct ColorStyle {
+    int32_t window_background = 0;
+    int32_t input_background_normal = 0;
+    int32_t input_background_hover = 0;
+    int32_t input_background_disabled = 0;
+    int32_t frame_normal_color1 = 0;
+    int32_t frame_normal_color2 = 0;
+    int32_t frame_hover_color1 = 0;
+    int32_t frame_hover_color2 = 0;
+    int32_t frame_disabled_color1 = 0;
+    int32_t frame_disabled_color2 = 0;
+    int32_t button_background_1 = 0;
+    int32_t button_background_2 = 0;
+    int32_t button_selected_background = 0;
+    int32_t button_selected_text = 0;
+    int32_t text_color = 0;
+    int32_t text_color_disabled = 0;
+    int32_t text_selection_color = 0;
+    int32_t text_selection_background = 0;
+};
+
 struct Theme {
+    ColorStyle colors = {};
+
     virtual auto init() -> void = 0;
     virtual auto draw_widget_background(Bitmap &content) -> void = 0;
     virtual auto draw_window_background(Bitmap &content) -> void = 0;
@@ -88,24 +111,14 @@ struct ThemeVision : Theme {
 };
 
 struct ThemePlasma : Theme {
-    static constexpr auto window_background_color = 0xeff0f1;
-    static constexpr auto border_active = 0xbbbcbd;
-    static constexpr auto border_hover = 0x3daee9;
-    static constexpr auto border_disabled = 0xd1d2d3;
-    static constexpr auto border_shadow = 0xd1d2d3;
+    static auto get_light_colors() -> ColorStyle;
+    static auto get_dark_colors() -> ColorStyle;
 
-    static const int32_t text_color = 0x2b2e31;
-    static const int32_t text_color_disabled = 0x737577;
-
-    static const int32_t button_background_1 = 0xfcfcfc;
-    static const int32_t button_background_2 = 0xf5f5f5;
-    static const int32_t button_selected_background = 0xd6ecf8;
-    static const int32_t button_selected_border = 0x3daee9;
-    static const int32_t button_selected_text = 0x31373b;
+    ThemePlasma() { colors = get_light_colors(); }
 
     virtual auto init() -> void override{};
     virtual auto draw_widget_background(Bitmap &content) -> void override {
-        content.fill(window_background_color);
+        content.fill(colors.window_background);
     };
     virtual auto draw_window_background(Bitmap &content) -> void override;
     virtual auto draw_scrollbar_background(Bitmap &content) -> void override;
