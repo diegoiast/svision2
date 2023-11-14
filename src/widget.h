@@ -42,7 +42,7 @@ struct Widget {
     WidgetCollection widgets;
     std::shared_ptr<Theme> theme;
 
-    // TODO this should be a shared pointer
+    // TODO this should be a weak pointer
     PlatformWindow *window = nullptr;
     Widget *parent = nullptr;
 
