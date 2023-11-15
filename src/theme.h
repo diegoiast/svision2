@@ -51,6 +51,7 @@ struct Theme {
 
 // A windows 9x look and feel based theme
 struct ThemeRedmond : Theme {
+    /*
     static const int32_t background_color = 0xc0c0c0;
     static const int32_t background_color_hover = 0xc8c8c8;
     static const int32_t background_input = 0xFFFFFF;
@@ -62,10 +63,15 @@ struct ThemeRedmond : Theme {
 
     static const int32_t text_color = 0x000000;
     static const int32_t text_color_disabled = 0x606060;
+*/
+    static auto get_light_colors() -> ColorStyle;
+    static auto get_dark_colors() -> ColorStyle;
+
+    ThemeRedmond() { colors = get_light_colors(); }
 
     virtual auto init() -> void override{};
     virtual auto draw_widget_background(Bitmap &content) -> void override {
-        content.fill(background_color);
+        content.fill(colors.window_background);
     };
     virtual auto draw_window_background(Bitmap &content) -> void override;
     virtual auto draw_scrollbar_background(Bitmap &content) -> void override;
@@ -93,6 +99,11 @@ struct ThemeVision : Theme {
     static const int32_t button_border_hover = MakeColor(0, 120, 215);
     static const int32_t button_background_hover = MakeColor(229, 241, 251);
     static const int32_t button_background_click = MakeColor(204, 208, 247);
+
+    static auto get_light_colors() -> ColorStyle;
+    static auto get_dark_colors() -> ColorStyle;
+
+    ThemeVision() { colors = get_light_colors(); }
 
     virtual auto init() -> void override{};
     virtual auto draw_widget_background(Bitmap &content) -> void override {
