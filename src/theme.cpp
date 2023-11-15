@@ -227,7 +227,26 @@ auto ThemeRedmond::draw_frame(Bitmap &content, Position position, Size size, boo
 }
 
 auto ThemeVision::get_light_colors() -> ColorStyle {
-    ColorStyle colors;
+    auto colors = ColorStyle();
+    colors.window_background = MakeColor(240, 240, 240);
+    colors.input_background_normal = MakeColor(245, 245, 245);
+    colors.input_background_hover = MakeColor(255, 255, 255);
+    colors.input_background_disabled = colors.input_background_normal;
+    colors.frame_normal_color1 = MakeColor(173, 173, 173);
+    colors.frame_normal_color2 = MakeColor(173, 173, 173);
+    colors.frame_hover_color1 = MakeColor(0, 120, 215);
+    colors.frame_hover_color2 = MakeColor(0, 120, 215);
+    colors.frame_disabled_color1 = MakeColor(128, 128, 128);
+    colors.frame_disabled_color2 = MakeColor(128, 128, 128);
+    colors.button_background_1 = MakeColor(225, 225, 225);
+    colors.button_background_2 = colors.button_background_1;
+    colors.button_selected_background = MakeColor(0, 120, 215);
+    //    colors.button_selected_border = 0x3daee9; // todo - needed?
+    colors.button_selected_text = MakeColor(255, 255, 255);
+    colors.text_color = MakeColor(0, 0, 0);
+    colors.text_color_disabled = MakeColor(130, 130, 130);
+    colors.text_selection_color = MakeColor(255, 255, 255);
+    colors.text_selection_background = MakeColor(0, 0, 20);
     return colors;
 }
 
@@ -237,15 +256,14 @@ auto ThemeVision::get_dark_colors() -> ColorStyle {
 }
 
 auto ThemeVision::draw_window_background(Bitmap &content) -> void {
-    content.fill_rect(0, 0, content.size.width, content.size.height,
-                      ThemeVision::window_background_color);
+    content.fill_rect(0, 0, content.size.width, content.size.height, colors.window_background);
 }
 
 auto ThemeVision::draw_scrollbar_background(Bitmap &content) -> void {
     content.fill_rect(1, 1, content.size.width - 1, content.size.height - 1,
-                      ThemeVision::window_background_color);
+                      colors.window_background);
     content.draw_rectangle(0, 0, content.size.width, content.size.height,
-                           ThemeVision::button_border, ThemeVision::button_border);
+                           colors.frame_normal_color1, colors.frame_normal_color2);
 }
 
 auto ThemeVision::draw_button(Bitmap &content, bool has_focus, bool is_default, bool is_enabled,
@@ -253,34 +271,36 @@ auto ThemeVision::draw_button(Bitmap &content, bool has_focus, bool is_default, 
 
     auto text_padding = 5;
 
-    auto background = ThemeVision::button_background;
-    auto border = ThemeVision::button_border;
-    auto color = ThemeVision::text_color;
+    auto background = colors.button_background_1;
+    auto border = colors.frame_normal_color1;
+    auto color = colors.text_color;
     auto double_border = false;
+
+    auto button_background_hover = colors.button_background_1;
 
     switch (state) {
     case ButtonStates::Normal:
-        border = ThemeVision::button_border;
+        border = colors.frame_normal_color1;
         if (has_focus) {
-            background = ThemeVision::button_background_hover;
+            background = button_background_hover;
         } else {
-            background = ThemeVision::button_background;
+            background = colors.button_background_1;
             if (is_default) {
-                border = ThemeVision::button_border_hover;
+                border = colors.frame_hover_color1;
             }
         }
         break;
     case ButtonStates::Hovered:
-        background = ThemeVision::button_background_hover;
-        border = ThemeVision::button_border_hover;
+        background = colors.button_background_1;
+        border = button_background_hover;
         break;
     case ButtonStates::ClickedInside:
-        background = ThemeVision::button_background_click;
-        border = ThemeVision::button_border_hover;
+        background = colors.button_background_1;
+        border = button_background_hover;
         break;
     case ButtonStates::ClickedOutside:
-        background = ThemeVision::button_background;
-        border = ThemeVision::button_border_hover;
+        background = colors.button_background_1;
+        border = button_background_hover;
         break;
     default:
         break;
@@ -299,9 +319,10 @@ auto ThemeVision::draw_button(Bitmap &content, bool has_focus, bool is_default, 
     }
     if (has_focus) {
         auto padding = 3;
+        // TODO - missinf frame focus color
         content.draw_rectangle(padding, padding, content.size.width - padding * 2,
-                               content.size.height - padding * 2, ThemeVision::focus_color,
-                               ThemeVision::focus_color);
+                               content.size.height - padding * 2, colors.frame_hover_color1,
+                               colors.frame_hover_color1);
     }
 
     auto text_size = Bitmap::text_size(text) + text_padding;
@@ -314,22 +335,20 @@ auto ThemeVision::draw_button(Bitmap &content, bool has_focus, bool is_default, 
 auto ThemeVision::draw_checkbox(Bitmap &content, bool has_focus, bool is_enabled, bool is_checked,
                                 ButtonStates state, const std::string &text, CheckboxShape shape)
     -> void {
-    auto background_color = ThemeVision::window_background_color;
-    auto foreground_color = ThemeVision::text_color;
+    auto background_color = colors.window_background;
     auto checkbox_size = content.size.height;
-    auto checkbox_color = ThemeVision::button_border_hover;
+    auto checkbox_color = colors.frame_hover_color1;
 
     switch (state) {
     case ButtonStates::ClickedInside:
-        checkbox_color = ThemeVision::button_border_hover;
+        checkbox_color = colors.frame_hover_color1;
         is_checked = true;
         break;
     case ButtonStates::ClickedOutside:
         if (is_checked) {
-            checkbox_color = ThemeVision::button_border_hover;
+            checkbox_color = colors.frame_hover_color1;
         } else {
-            // TODO - missing disabled color?
-            checkbox_color = ThemeVision::button_border;
+            checkbox_color = colors.frame_disabled_color1;
         }
         break;
     case ButtonStates::Hovered:
@@ -348,11 +367,11 @@ auto ThemeVision::draw_checkbox(Bitmap &content, bool has_focus, bool is_enabled
         switch (shape) {
         case CheckboxShape::Checkbox:
             content.draw_rounded_rectangle(p.x, p.y, w.width, w.height, 1,
-                                           ThemeVision::button_border_hover,
-                                           ThemeVision::button_border_hover);
+                                           colors.frame_hover_color1, colors.frame_hover_color2);
             break;
         case CheckboxShape::RadioButton:
-            content.draw_circle(m, m, checkbox_size / 2 - padding, is_enabled ? checkbox_color : ThemeVision::text_color_disabled);
+            content.draw_circle(m, m, checkbox_size / 2 - padding,
+                                is_enabled ? checkbox_color : colors.text_color_disabled);
             break;
         }
     }
@@ -373,20 +392,24 @@ auto ThemeVision::draw_checkbox(Bitmap &content, bool has_focus, bool is_enabled
         if (is_checked) {
             auto padding = 5;
             auto m = checkbox_size / 2;
-            content.fill_circle(m, m, checkbox_size / 2 - padding, is_enabled ? checkbox_color : ThemeVision::text_color_disabled);
+            content.fill_circle(m, m, checkbox_size / 2 - padding,
+                                is_enabled ? checkbox_color : colors.text_color_disabled);
         }
         break;
     }
 
-    content.write_fixed({checkbox_size + 5, 5}, text, is_enabled?  foreground_color : ThemeVision::text_color_disabled );
+    content.write_fixed({checkbox_size + 5, 5}, text,
+                        is_enabled ? colors.text_color : colors.text_color_disabled);
 }
 
 auto ThemeVision::draw_input_background(Bitmap &content, const bool has_focus) -> void {
-    auto line1 = ThemeVision::button_border_hover;
-    auto line2 = ThemeVision::button_border_hover;
-    auto line3 = ThemeVision::button_border_hover;
-    auto line4 = ThemeVision::button_border_hover;
-    auto background = has_focus ? 0x00FFFFFF : ThemeVision::window_background_color;
+    auto line1 = colors.frame_hover_color1;
+    auto line2 = colors.frame_hover_color1;
+    auto line3 = colors.frame_hover_color2;
+    auto line4 = colors.frame_hover_color2;
+
+    // TODO - input background focus is missing
+    auto background = has_focus ? colors.input_background_hover : colors.input_background_normal;
 
     content.draw_rectangle(0, 0, content.size.width, content.size.height, line1, line2);
     content.draw_rectangle(1, 1, content.size.width - 2, content.size.height - 2, line3, line4);

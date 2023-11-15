@@ -89,17 +89,6 @@ struct ThemeRedmond : Theme {
 };
 
 struct ThemeVision : Theme {
-    static const int32_t window_background_color = MakeColor(240, 240, 240);
-    static const int32_t button_background = MakeColor(225, 225, 225);
-    static const int32_t button_border = MakeColor(173, 173, 173);
-    static const int32_t text_color = MakeColor(0, 0, 0);
-    static const int32_t text_color_disabled = MakeColor(130,130, 130);
-    static const int32_t focus_color = MakeColor(80, 80, 80);
-
-    static const int32_t button_border_hover = MakeColor(0, 120, 215);
-    static const int32_t button_background_hover = MakeColor(229, 241, 251);
-    static const int32_t button_background_click = MakeColor(204, 208, 247);
-
     static auto get_light_colors() -> ColorStyle;
     static auto get_dark_colors() -> ColorStyle;
 
@@ -107,7 +96,7 @@ struct ThemeVision : Theme {
 
     virtual auto init() -> void override{};
     virtual auto draw_widget_background(Bitmap &content) -> void override {
-        content.fill(window_background_color);
+        content.fill(colors.window_background);
     };
     virtual auto draw_window_background(Bitmap &content) -> void override;
     virtual auto draw_scrollbar_background(Bitmap &content) -> void override;
