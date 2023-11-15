@@ -29,14 +29,12 @@ auto TextField::draw() -> void {
     auto selection_width = (selection.end - selection.start) - display_from;
     selection_width *= 8;
 
-    /*
-     * TODO - unmanaged color writing in a widget
+    // TODO - unmanaged color writing in a widget
+    // TODO handle partial selection
     content.fill_rect(padding_start - 1, padding_vertical - 1, selection_width + 1,
                       content.size.height - padding_vertical - 2,
-                      ThemePlasma::button_selected_background);
-*/
-    // TODO handle partial selection
-    content.write_fixed(Position{padding_start, center_y}, display_text, 0);
+                      theme->colors.text_selection_background);
+    content.write_fixed(Position{padding_start, center_y}, display_text, theme->colors.text_color);
 
     if (this->cursor_on && this->has_focus) {
         auto position_x = padding_start + (cursor_position - display_from) * 8;
