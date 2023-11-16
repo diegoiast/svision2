@@ -451,9 +451,9 @@ auto ThemePlasma::get_light_colors(int32_t accent) -> ColorStyle {
     colors.window_background = background;
 
     colors.frame_normal_color1 = 0xbbbcbd;
-    colors.frame_normal_color2 = 0xbbbcbd;
-    colors.frame_normal_color3 = 0xbbbcbd;
-    colors.frame_normal_color4 = 0xbbbcbd;
+    colors.frame_normal_color2 = colors.frame_normal_color1;
+    colors.frame_normal_color3 = colors.frame_normal_color1;
+    colors.frame_normal_color4 = colors.frame_normal_color1;
 
     colors.frame_hover_color1 = accent;
     colors.frame_hover_color2 = colors.frame_hover_color1;
@@ -470,17 +470,15 @@ auto ThemePlasma::get_light_colors(int32_t accent) -> ColorStyle {
     colors.frame_disabled_color3 = colors.frame_disabled_color1;
     colors.frame_disabled_color4 = colors.frame_disabled_color1;
 
-    colors.input_background_normal = 0xffffff;
-    colors.input_background_hover = 0x0;
-    colors.input_background_disabled = 0x0;
-    colors.input_background_selected = 0x0;
+    colors.input_background_normal = Darker(0xffffff, 0.002);
+    colors.input_background_hover = 0xffffff;
+    colors.input_background_disabled = disabled;
+    colors.input_background_selected = 0xffffff;
 
-    colors.button_background_1 = 0xfcfcfc;
-    colors.button_background_2 = 0xf5f5f5;
-    colors.button_selected_background = Lighter(accent);
-    colors.button_selected_background = accent;
+    colors.button_background_1 = Lighter(background);
+    colors.button_background_2 = Lighter(background, 0.05);
+    colors.button_selected_background = Darker(colors.button_background_1);
     colors.button_selected_text = 0x31373b;
-    //    colors.button_selected_border = accent; // todo - needed?
 
     colors.text_color = 0x2b2e31;
     colors.text_color_disabled = disabled;
@@ -560,13 +558,6 @@ auto ThemePlasma::draw_button(Bitmap &content, bool has_focus, bool is_default, 
 
     switch (state) {
     case ButtonStates::Normal:
-        if (has_focus) {
-            background1 = colors.button_selected_background;
-            background2 = colors.button_selected_background;
-        } else {
-            background1 = colors.button_background_1;
-            background2 = colors.button_background_2;
-        }
         break;
     case ButtonStates::Hovered:
         if (is_enabled) {
@@ -719,5 +710,5 @@ auto ThemePlasma::draw_input_background(Bitmap &content, const bool has_focus) -
     draw_frame(content, {0, 0}, content.size, has_focus ? FrameStyles::Hover : FrameStyles::Normal,
                FrameSize::SingleFrame);
     content.fill_rect(1, 1, content.size.width - 2, content.size.height - 2,
-                      colors.input_background_normal);
+                      has_focus ? colors.input_background_hover : colors.input_background_normal);
 }
