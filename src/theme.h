@@ -53,11 +53,13 @@ struct ColorStyle {
 
 // I wanted to use "None" - but this is already defined in X11
 enum class FrameStyles { NoFrame, Normal, Reversed, Disabled, Hover };
+enum class FrameSize { SingleFrame, DoubleFrame, TrippleFrame };
 
 struct Theme {
     ColorStyle colors = {};
 
-    auto draw_frame(Bitmap &content, Position p, Size s, FrameStyles style) -> void;
+    auto draw_frame(Bitmap &content, Position position, Size size, FrameStyles style,
+                    FrameSize frame_size) -> void;
 
     virtual auto init() -> void = 0;
     virtual auto draw_widget_background(Bitmap &content) -> void = 0;
