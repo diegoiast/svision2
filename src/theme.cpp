@@ -7,25 +7,74 @@
 
 #include "theme.h"
 
+auto Theme::draw_frame(Bitmap &content, Position position, Size size, FrameStyles style) -> void {
+    switch (style) {
+    case FrameStyles::Normal:
+        content.draw_rectangle(position.x, position.y, size.width, size.height,
+                               colors.frame_normal_color1, colors.frame_normal_color2);
+        content.draw_rectangle(1, 1, size.width - 2, size.height - 2, colors.frame_normal_color3,
+                               colors.frame_normal_color4);
+        break;
+    case FrameStyles::Reversed:
+        content.draw_rectangle(position.x, position.y, size.width, size.height,
+                               colors.frame_normal_color2, colors.frame_normal_color1);
+        content.draw_rectangle(1, 1, size.width - 2, size.height - 2, colors.frame_normal_color1,
+                               colors.frame_normal_color2);
+        break;
+    case FrameStyles::Disabled:
+        content.draw_rectangle(position.x, position.y, size.width, size.height,
+                               colors.frame_disabled_color1, colors.frame_disabled_color2);
+        content.draw_rectangle(1, 1, size.width - 2, size.height - 2, colors.frame_disabled_color3,
+                               colors.frame_disabled_color4);
+        break;
+    case FrameStyles::Hover:
+        content.draw_rectangle(position.x, position.y, size.width, size.height,
+                               colors.frame_hover_color1, colors.frame_hover_color2);
+        content.draw_rectangle(1, 1, size.width - 2, size.height - 2, colors.frame_hover_color3,
+                               colors.frame_hover_color4);
+        break;
+    case FrameStyles::NoFrame:
+        break;
+    }
+}
+
 auto ThemeRedmond::get_light_colors() -> ColorStyle {
     auto colors = ColorStyle();
     colors.window_background = 0xc0c0c0;
-    colors.input_background_normal = 0xffffff;
-    colors.input_background_hover = 0xffffff; // todo - is this needed at all?
-    colors.input_background_disabled = colors.input_background_normal;
+
     colors.frame_normal_color1 = 0xFFFFFF;
-    colors.frame_normal_color2 = 0x808080;
-    colors.frame_hover_color1 = 0xFFFFFF;
-    colors.frame_hover_color2 = 0x808080;
+    colors.frame_normal_color2 = 0x000000;
+    colors.frame_normal_color3 = 0xFFFFFF;
+    colors.frame_normal_color4 = 0x808080;
+
+    colors.frame_hover_color1 = colors.frame_normal_color1;
+    colors.frame_hover_color2 = colors.frame_normal_color2;
+    colors.frame_hover_color3 = colors.frame_normal_color3;
+    colors.frame_hover_color4 = colors.frame_normal_color4;
+
+    colors.frame_selected_color1 = colors.frame_normal_color1;
+    colors.frame_selected_color2 = colors.frame_normal_color2;
+    colors.frame_selected_color3 = colors.frame_normal_color3;
+    colors.frame_selected_color4 = colors.frame_normal_color4;
+
     colors.frame_disabled_color1 = 0xd1d2d3;
     colors.frame_disabled_color2 = 0xd1d2d3;
+    colors.frame_disabled_color3 = 0xd1d2d3;
+    colors.frame_disabled_color4 = 0xd1d2d3;
+
+    colors.input_background_normal = 0xffffff;
+    colors.input_background_hover = colors.input_background_normal;
+    colors.input_background_disabled = colors.window_background;
+    colors.input_background_selected = colors.input_background_normal;
+
     colors.button_background_1 = colors.window_background;
     colors.button_background_2 = colors.window_background;
     colors.button_selected_background = 0xc8c8c8;
-    //    colors.button_selected_border = 0x3daee9; // todo - needed?
     colors.button_selected_text = 0xFFFFFF;
+
     colors.text_color = 0x000000;
     colors.text_color_disabled = 0x606060;
+
     colors.text_selection_color = 0xFFFFFF;
     colors.text_selection_background = 0x000080;
     return colors;
@@ -63,21 +112,22 @@ auto ThemeRedmond::draw_button(Bitmap &content, bool has_focus, bool is_default,
     auto background_color = 0;
     auto shadow_offset = 0;
     auto text_offset = 0;
+    auto topleft = Position{0, 0};
 
     switch (state) {
     case ButtonStates::Normal:
         if (is_enabled) {
-            draw_frame(content, {0, 0}, content.size, true);
+            draw_frame(content, topleft, content.size, FrameStyles::Normal);
         } else {
-            draw_frame(content, {0, 0}, content.size, true);
+            draw_frame(content, topleft, content.size, FrameStyles::Disabled);
         }
         background_color = colors.window_background;
         break;
     case ButtonStates::Hovered:
         if (is_enabled) {
-            draw_frame(content, {0, 0}, content.size, true);
+            draw_frame(content, topleft, content.size, FrameStyles::Hover);
         } else {
-            draw_frame(content, {0, 0}, content.size, true);
+            draw_frame(content, topleft, content.size, FrameStyles::Disabled);
         }
         // TODO - are we missing a color in the theme?
         //        background_color = ThemeRedmond::background_color_hover;
@@ -85,22 +135,19 @@ auto ThemeRedmond::draw_button(Bitmap &content, bool has_focus, bool is_default,
         break;
     case ButtonStates::ClickedInside:
         if (is_enabled) {
-            draw_frame(content, {0, 0}, content.size, false);
+            draw_frame(content, topleft, content.size, FrameStyles::Reversed);
         } else {
-            draw_frame(content, {0, 0}, content.size, false);
+            draw_frame(content, topleft, content.size, FrameStyles::Disabled);
         }
-        // TODO - are we missing a color in the theme?
-        //        background_color = ThemeRedmond::background_color_hover;
-        background_color = colors.button_selected_background;
+        background_color = colors.button_background_1;
         shadow_offset = is_default ? 2 : 1;
         break;
     case ButtonStates::ClickedOutside:
+        background_color = colors.window_background;
         if (is_enabled) {
-            draw_frame(content, {0, 0}, content.size, true);
-            background_color = colors.window_background;
+            draw_frame(content, topleft, content.size, FrameStyles::Normal);
         } else {
-            draw_frame(content, {0, 0}, content.size, false);
-            background_color = colors.window_background;
+            draw_frame(content, topleft, content.size, FrameStyles::Disabled);
         }
         shadow_offset = 0;
         break;
@@ -113,9 +160,8 @@ auto ThemeRedmond::draw_button(Bitmap &content, bool has_focus, bool is_default,
     } else {
         auto the_width = content.size.width;
         auto the_height = content.size.height;
-        // TODO - missing color?
-        auto line_color4 = colors.frame_hover_color2;
-        content.draw_rectangle(2, 2, the_width - 4, the_height - 4, line_color4, line_color4);
+        content.draw_rectangle(2, 2, the_width - 4, the_height - 4, colors.frame_normal_color4,
+                               colors.frame_normal_color4);
         content.fill_rect(3, 3, content.size.width - 6, content.size.height - 6, background_color);
     }
 
@@ -167,7 +213,7 @@ auto ThemeRedmond::draw_checkbox(Bitmap &content, bool has_focus, bool is_enable
     case CheckboxShape::Checkbox:
         content.fill_rect(padding, padding, checkbox_size - padding * 2,
                           checkbox_size - padding * 2, background_color);
-        draw_frame(content, {0, 0}, {checkbox_size, checkbox_size}, false);
+        draw_frame(content, {0, 0}, {checkbox_size, checkbox_size}, FrameStyles::Normal);
         break;
     case CheckboxShape::RadioButton:
         content.fill_circle(m, m, checkbox_size / 2 - padding, background_color);
@@ -204,26 +250,9 @@ auto ThemeRedmond::draw_checkbox(Bitmap &content, bool has_focus, bool is_enable
 }
 
 auto ThemeRedmond::draw_input_background(Bitmap &content, const bool has_focus) -> void {
-    draw_frame(content, {0, 0}, content.size, false);
-    auto background = has_focus ? colors.input_background_hover : colors.input_background_disabled;
+    draw_frame(content, {0, 0}, content.size, FrameStyles::Reversed);
+    auto background = has_focus ? colors.input_background_selected : colors.input_background_normal;
     content.fill_rect(1, 1, content.size.width - 2, content.size.height - 2, background);
-}
-
-auto ThemeRedmond::draw_frame(Bitmap &content, Position position, Size size, bool elevated)
-    -> void {
-    if (elevated) {
-        content.draw_rectangle(0, 0, size.width, size.height, colors.frame_normal_color1,
-                               colors.frame_normal_color1);
-
-        // missing colors
-        content.draw_rectangle(1, 1, size.width - 2, size.height - 2, colors.frame_normal_color2,
-                               colors.frame_normal_color1);
-    } else {
-        content.draw_rectangle(0, 0, size.width, size.height, colors.frame_normal_color1,
-                               colors.frame_normal_color1);
-        content.draw_rectangle(1, 1, size.width - 2, size.height - 2, colors.frame_normal_color1,
-                               colors.frame_normal_color1);
-    }
 }
 
 auto ThemeVision::get_light_colors() -> ColorStyle {

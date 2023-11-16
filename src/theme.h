@@ -13,27 +13,51 @@
 
 struct ColorStyle {
     int32_t window_background = 0;
-    int32_t input_background_normal = 0;
-    int32_t input_background_hover = 0;
-    int32_t input_background_disabled = 0;
+
     int32_t frame_normal_color1 = 0;
     int32_t frame_normal_color2 = 0;
+    int32_t frame_normal_color3 = 0;
+    int32_t frame_normal_color4 = 0;
+
     int32_t frame_hover_color1 = 0;
     int32_t frame_hover_color2 = 0;
+    int32_t frame_hover_color3 = 0;
+    int32_t frame_hover_color4 = 0;
+
+    int32_t frame_selected_color1 = 0;
+    int32_t frame_selected_color2 = 0;
+    int32_t frame_selected_color3 = 0;
+    int32_t frame_selected_color4 = 0;
+
     int32_t frame_disabled_color1 = 0;
     int32_t frame_disabled_color2 = 0;
+    int32_t frame_disabled_color3 = 0;
+    int32_t frame_disabled_color4 = 0;
+
+    int32_t input_background_normal = 0;
+    int32_t input_background_hover = 0;
+    int32_t input_background_selected = 0;
+    int32_t input_background_disabled = 0;
+
     int32_t button_background_1 = 0;
     int32_t button_background_2 = 0;
     int32_t button_selected_background = 0;
     int32_t button_selected_text = 0;
+
     int32_t text_color = 0;
     int32_t text_color_disabled = 0;
+
     int32_t text_selection_color = 0;
     int32_t text_selection_background = 0;
 };
 
+// I wanted to use "None" - but this is already defined in X11
+enum class FrameStyles { NoFrame, Normal, Reversed, Disabled, Hover };
+
 struct Theme {
     ColorStyle colors = {};
+
+    auto draw_frame(Bitmap &content, Position p, Size s, FrameStyles style) -> void;
 
     virtual auto init() -> void = 0;
     virtual auto draw_widget_background(Bitmap &content) -> void = 0;
@@ -44,6 +68,8 @@ struct Theme {
     virtual auto draw_checkbox(Bitmap &content, bool has_focus, bool is_enabled, bool is_checked,
                                ButtonStates state, const std::string &text, CheckboxShape shape)
         -> void = 0;
+
+    // TODO - missing disabled state
     virtual auto draw_input_background(Bitmap &content, const bool has_focus) -> void = 0;
     virtual auto needs_frame_for_focus() const -> bool = 0;
     virtual auto scrollbar_size() const -> int = 0;
@@ -51,19 +77,6 @@ struct Theme {
 
 // A windows 9x look and feel based theme
 struct ThemeRedmond : Theme {
-    /*
-    static const int32_t background_color = 0xc0c0c0;
-    static const int32_t background_color_hover = 0xc8c8c8;
-    static const int32_t background_input = 0xFFFFFF;
-    static const int32_t line_color1 = 0xFFFFFF;
-    static const int32_t line_color2 = 0x000000;
-
-    static const int32_t line_color3 = 0xFFFFFF;
-    static const int32_t line_color4 = 0x808080;
-
-    static const int32_t text_color = 0x000000;
-    static const int32_t text_color_disabled = 0x606060;
-*/
     static auto get_light_colors() -> ColorStyle;
     static auto get_dark_colors() -> ColorStyle;
 
@@ -84,8 +97,6 @@ struct ThemeRedmond : Theme {
     virtual auto needs_frame_for_focus() const -> bool override { return true; };
     virtual auto scrollbar_size() const -> int override { return 24; };
 
-  protected:
-    auto draw_frame(Bitmap &content, Position position, Size size, bool elevated) -> void;
 };
 
 struct ThemeVision : Theme {
