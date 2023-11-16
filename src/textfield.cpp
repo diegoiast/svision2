@@ -31,9 +31,11 @@ auto TextField::draw() -> void {
 
     // TODO - unmanaged color writing in a widget
     // TODO handle partial selection
-    content.fill_rect(padding_start - 1, padding_vertical - 1, selection_width + 1,
-                      content.size.height - padding_vertical - 2,
-                      theme->colors.text_selection_background);
+    if (selection_width != 0) {
+        content.fill_rect(padding_start - 1, padding_vertical - 1, selection_width + 1,
+                          content.size.height - padding_vertical - 2,
+                          theme->colors.text_selection_background);
+    }
     content.write_fixed(Position{padding_start, center_y}, display_text, theme->colors.text_color);
 
     if (this->cursor_on && this->has_focus) {
