@@ -290,10 +290,10 @@ auto ThemeVision::get_light_colors(int32_t accent) -> ColorStyle {
     colors.frame_disabled_color3 = colors.frame_disabled_color1;
     colors.frame_disabled_color4 = colors.frame_disabled_color1;
 
-    colors.input_background_normal = MakeColor(245, 245, 245);
-    colors.input_background_hover = MakeColor(255, 255, 255);
+    colors.input_background_normal = MakeColor(255, 255, 255);
+    colors.input_background_hover = Lighter(accent);
     colors.input_background_disabled = colors.input_background_normal;
-    colors.input_background_selected = colors.input_background_normal;
+    colors.input_background_selected = accent;
 
     colors.button_background_1 = MakeColor(225, 225, 225);
     colors.button_background_2 = MakeColor(225, 225, 225);
@@ -327,7 +327,9 @@ void ThemeRedmond::draw_listview_item(Bitmap &content, const std::string &text,
                                       const ItemStatus status, bool is_hover) {
     auto text_color = status.is_active ? colors.text_selection_color : colors.text_color;
     auto background_color =
-        status.is_active ? ThemePlasma::selection_background : ThemePlasma::input_background;
+        status.is_active ? colors.input_background_selected : colors.input_background_normal;
+    if (is_hover)
+        background_color = colors.input_background_hover;
     content.fill(background_color);
     content.write_fixed(Position{5, 5}, text, text_color);
 }
@@ -490,9 +492,9 @@ auto ThemePlasma::get_light_colors(int32_t accent) -> ColorStyle {
     colors.frame_disabled_color4 = colors.frame_disabled_color1;
 
     colors.input_background_normal = Darker(0xffffff, 0.002);
-    colors.input_background_hover = 0xffffff;
+    colors.input_background_hover = Lighter(accent);
     colors.input_background_disabled = disabled;
-    colors.input_background_selected = 0xffffff;
+    colors.input_background_selected = accent;
 
     colors.button_background_1 = Lighter(background);
     colors.button_background_2 = Lighter(background, 0.05);
@@ -565,7 +567,9 @@ void ThemeVision::draw_listview_item(Bitmap &content, const std::string &text,
                                      const ItemStatus status, bool is_hover) {
     auto text_color = status.is_active ? colors.text_selection_color : colors.text_color;
     auto background_color =
-        status.is_active ? ThemePlasma::selection_background : ThemePlasma::input_background;
+        status.is_active ? colors.input_background_selected : colors.input_background_normal;
+    if (is_hover)
+        background_color = colors.input_background_hover;
     content.fill(background_color);
     content.write_fixed(Position{5, 5}, text, text_color);
 }
@@ -674,7 +678,7 @@ auto ThemePlasma::draw_checkbox(Bitmap &content, bool has_focus, bool is_enabled
         break;
     case ButtonStates::ClickedOutside:
         checkbox_border = colors.frame_hover_color1;
-        checkbox_color = has_focus ? colors.frame_disabled_color1 : colors.frame_hover_color1;
+        checkbox_color = has_focus ? colors.frame_hover_color1 : colors.frame_normal_color1;
 
         break;
     case ButtonStates::Hovered:
@@ -683,8 +687,8 @@ auto ThemePlasma::draw_checkbox(Bitmap &content, bool has_focus, bool is_enabled
         }
         break;
     case ButtonStates::Normal:
-        checkbox_border = has_focus ? colors.frame_hover_color1 : colors.frame_disabled_color1;
-        checkbox_color = has_focus ? colors.frame_hover_color1 : colors.frame_disabled_color1;
+        checkbox_border = has_focus ? colors.frame_hover_color1 : colors.frame_normal_color1;
+        checkbox_color = has_focus ? colors.frame_hover_color1 : colors.frame_normal_color1;
         break;
     }
 
@@ -732,11 +736,11 @@ auto ThemePlasma::draw_checkbox(Bitmap &content, bool has_focus, bool is_enabled
 
         switch (shape) {
         case CheckboxShape::Checkbox:
-            content.fill_rect(p.x, p.y, w.width, w.height, inner_color);
+            content.fill_rect(p.x, p.y, w.width, w.height, checkbox_border);
             break;
         case CheckboxShape::RadioButton:
             if (is_checked) {
-                content.fill_circle(m, m, 4, colors.button_selected_text);
+                content.fill_circle(m, m, 4, checkbox_border);
             }
             break;
         }
@@ -767,10 +771,9 @@ void ThemePlasma::draw_listview_item(Bitmap &content, const std::string &text,
 
     auto text_color = status.is_active ? colors.text_selection_color : colors.text_color;
     auto background_color =
-        is_hover ? colors.input_background_hover : colors.input_background_normal;
-    if (status.is_active) {
-        background_color = ThemePlasma::selection_background;
-    }
+        status.is_active ? colors.input_background_selected : colors.input_background_normal;
+    if (is_hover)
+        background_color = colors.input_background_hover;
 
     content.fill(background_color);
     content.write_fixed(Position{5, 5}, text, text_color);

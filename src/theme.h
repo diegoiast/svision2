@@ -90,9 +90,6 @@ struct ThemeRedmond : Theme {
 
     ThemeRedmond() { colors = get_light_colors(); }
 
-    static const int32_t selection_background = 0x2a5faa;
-    static const int32_t input_background = MakeColor(0xff, 0xff, 0xff);
-
     virtual auto init() -> void override{};
     virtual auto draw_widget_background(Bitmap &content) -> void override {
         content.fill(colors.window_background);
@@ -122,10 +119,6 @@ struct ThemeVision : Theme {
 
     ThemeVision(int32_t accent = DefaultAccentLight) { colors = get_light_colors(accent); }
 
-    static const int32_t selection_background = MakeColor(0, 120, 215);
-    static const int32_t selection_foreground = MakeColor(0xff, 0xff, 0xff);
-    static const int32_t input_background = MakeColor(0xff, 0xff, 0xff);
-
     virtual auto init() -> void override{};
     virtual auto draw_widget_background(Bitmap &content) -> void override {
         content.fill(colors.window_background);
@@ -153,10 +146,6 @@ struct ThemePlasma : Theme {
     static auto get_dark_colors(int32_t accent = DefaultAccentLight) -> ColorStyle;
 
     ThemePlasma(int32_t accent = DefaultAccentLight) { colors = get_light_colors(accent); }
-
-    static const int32_t selection_background_hover = 0xe0e0e0;
-    static const int32_t selection_background = 0x3daee9;
-    static const int32_t input_background = MakeColor(0xff, 0xff, 0xff);
 
     virtual auto init() -> void override{};
     virtual auto draw_widget_background(Bitmap &content) -> void override {
