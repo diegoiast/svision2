@@ -125,10 +125,11 @@ struct ThemeVision : Theme {
 };
 
 struct ThemePlasma : Theme {
-    static auto get_light_colors() -> ColorStyle;
-    static auto get_dark_colors() -> ColorStyle;
+    static constexpr int32_t DefaultAccentLight = 0x3daee9;
+    static auto get_light_colors(int32_t accent = DefaultAccentLight) -> ColorStyle;
+    static auto get_dark_colors(int32_t accent = DefaultAccentLight) -> ColorStyle;
 
-    ThemePlasma() { colors = get_light_colors(); }
+    ThemePlasma(int32_t accent = DefaultAccentLight) { colors = get_light_colors(accent); }
 
     virtual auto init() -> void override{};
     virtual auto draw_widget_background(Bitmap &content) -> void override {

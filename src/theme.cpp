@@ -441,29 +441,34 @@ auto ThemeVision::draw_input_background(Bitmap &content, const bool has_focus) -
     content.fill_rect(1, 1, content.size.width - 2, content.size.height - 2, background);
 }
 
-auto ThemePlasma::get_light_colors() -> ColorStyle {
+// static constexpr int32_t DefaultAccentLight = 0x3daee9;
+
+auto ThemePlasma::get_light_colors(int32_t accent) -> ColorStyle {
+    auto background = 0xeff0f1;
+    auto disabled = 0x737577;
+
     auto colors = ColorStyle();
-    colors.window_background = 0xeff0f1;
+    colors.window_background = background;
 
     colors.frame_normal_color1 = 0xbbbcbd;
     colors.frame_normal_color2 = 0xbbbcbd;
     colors.frame_normal_color3 = 0xbbbcbd;
     colors.frame_normal_color4 = 0xbbbcbd;
 
-    colors.frame_hover_color1 = 0x3daee9;
-    colors.frame_hover_color2 = 0x3daee9;
-    colors.frame_hover_color3 = 0x3daee9;
-    colors.frame_hover_color4 = 0x3daee9;
+    colors.frame_hover_color1 = accent;
+    colors.frame_hover_color2 = colors.frame_hover_color1;
+    colors.frame_hover_color3 = colors.frame_hover_color1;
+    colors.frame_hover_color4 = colors.frame_hover_color1;
 
-    colors.frame_selected_color1 = 0x3daee9;
-    colors.frame_selected_color2 = 0x3daee9;
-    colors.frame_selected_color3 = 0x3daee9;
-    colors.frame_selected_color4 = 0x3daee9;
+    colors.frame_selected_color1 = accent;
+    colors.frame_selected_color2 = colors.frame_selected_color1;
+    colors.frame_selected_color3 = colors.frame_selected_color1;
+    colors.frame_selected_color4 = colors.frame_selected_color1;
 
-    colors.frame_disabled_color1 = 0xd1d2d3;
-    colors.frame_disabled_color2 = 0xd1d2d3;
-    colors.frame_disabled_color3 = 0xd1d2d3;
-    colors.frame_disabled_color4 = 0xd1d2d3;
+    colors.frame_disabled_color1 = disabled;
+    colors.frame_disabled_color2 = colors.frame_disabled_color1;
+    colors.frame_disabled_color3 = colors.frame_disabled_color1;
+    colors.frame_disabled_color4 = colors.frame_disabled_color1;
 
     colors.input_background_normal = 0xffffff;
     colors.input_background_hover = 0x0;
@@ -471,20 +476,21 @@ auto ThemePlasma::get_light_colors() -> ColorStyle {
     colors.input_background_selected = 0x0;
 
     colors.button_background_1 = 0xfcfcfc;
-    colors.button_background_2 = 0xf5f5f5;    
-    colors.button_selected_background = 0xd6ecf8;
+    colors.button_background_2 = 0xf5f5f5;
+    colors.button_selected_background = Lighter(accent);
+    colors.button_selected_background = accent;
     colors.button_selected_text = 0x31373b;
-    //    colors.button_selected_border = 0x3daee9; // todo - needed?
+    //    colors.button_selected_border = accent; // todo - needed?
 
     colors.text_color = 0x2b2e31;
-    colors.text_color_disabled = 0x737577;
+    colors.text_color_disabled = disabled;
 
     colors.text_selection_color = 0xffffff;
-    colors.text_selection_background = 0x3daee9;
+    colors.text_selection_background = accent;
     return colors;
 }
 
-auto ThemePlasma::get_dark_colors() -> ColorStyle {
+auto ThemePlasma::get_dark_colors(int32_t accent) -> ColorStyle {
     auto colors = ColorStyle();
     colors.window_background = 0xeff0f1;
 
