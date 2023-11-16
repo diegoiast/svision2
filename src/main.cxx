@@ -105,7 +105,8 @@ int main() {
     int timer_count = 0;
     auto platform = ThePlatform();
     platform.init();
-    //    platform.default_theme = std::make_shared<ThemeVision>();
+    //    platform.default_theme = std::make_shared<ThemeVision>(0x00ff00);
+    platform.default_theme = std::make_shared<ThemeVision>();
     //    platform.default_theme = std::make_shared<ThemeRedmond>();
 
     Timer t1(500, true, [&timer_count]() {
@@ -113,9 +114,9 @@ int main() {
         //        spdlog::info("timer");
     });
 
-    auto w2 = platform.open_window(300, 300, 640, 480, "test 2");
-    w2->content.background_color = 0x00FF00;
-    platform.show_window(w2);
+    //    auto w2 = platform.open_window(300, 300, 640, 480, "test 2");
+    //    w2->content.background_color = 0x00FF00;
+    //    platform.show_window(w2);
 
     auto w1 = platform.open_window(100, 100, 640, 480, "test 1");
     w1->add_new<Label>(Position{10, 10}, Size{100, 20}, "Hello world!");

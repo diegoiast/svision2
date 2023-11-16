@@ -262,31 +262,53 @@ auto ThemeRedmond::draw_input_background(Bitmap &content, const bool has_focus) 
     content.fill_rect(1, 1, content.size.width - 2, content.size.height - 2, background);
 }
 
-auto ThemeVision::get_light_colors() -> ColorStyle {
+auto ThemeVision::get_light_colors(int32_t accent) -> ColorStyle {
+    // https://learn.microsoft.com/en-us/windows/apps/design/signature-experiences/color
+    auto background = MakeColor(240, 240, 240);
+    auto disabled = MakeColor(130, 130, 130);
+
     auto colors = ColorStyle();
-    colors.window_background = MakeColor(240, 240, 240);
+    colors.window_background = background;
+
+    colors.frame_normal_color1 = MakeColor(173, 173, 173);
+    colors.frame_normal_color2 = colors.frame_normal_color1;
+    colors.frame_normal_color3 = colors.frame_normal_color1;
+    colors.frame_normal_color4 = colors.frame_normal_color1;
+
+    colors.frame_hover_color1 = (accent);
+    colors.frame_hover_color2 = colors.frame_hover_color1;
+    colors.frame_hover_color3 = colors.frame_hover_color1;
+    colors.frame_hover_color4 = colors.frame_hover_color1;
+
+    colors.frame_selected_color1 = (accent);
+    colors.frame_selected_color2 = colors.frame_selected_color1;
+    colors.frame_selected_color3 = colors.frame_selected_color1;
+    colors.frame_selected_color4 = colors.frame_selected_color1;
+
+    colors.frame_disabled_color1 = disabled;
+    colors.frame_disabled_color2 = colors.frame_disabled_color1;
+    colors.frame_disabled_color3 = colors.frame_disabled_color1;
+    colors.frame_disabled_color4 = colors.frame_disabled_color1;
+
     colors.input_background_normal = MakeColor(245, 245, 245);
     colors.input_background_hover = MakeColor(255, 255, 255);
     colors.input_background_disabled = colors.input_background_normal;
-    colors.frame_normal_color1 = MakeColor(173, 173, 173);
-    colors.frame_normal_color2 = MakeColor(173, 173, 173);
-    colors.frame_hover_color1 = MakeColor(0, 120, 215);
-    colors.frame_hover_color2 = MakeColor(0, 120, 215);
-    colors.frame_disabled_color1 = MakeColor(128, 128, 128);
-    colors.frame_disabled_color2 = MakeColor(128, 128, 128);
+    colors.input_background_selected = colors.input_background_normal;
+
     colors.button_background_1 = MakeColor(225, 225, 225);
-    colors.button_background_2 = colors.button_background_1;
-    colors.button_selected_background = MakeColor(0, 120, 215);
-    //    colors.button_selected_border = 0x3daee9; // todo - needed?
+    colors.button_background_2 = MakeColor(225, 225, 225);
+    colors.button_selected_background = accent;
     colors.button_selected_text = MakeColor(255, 255, 255);
+
     colors.text_color = MakeColor(0, 0, 0);
-    colors.text_color_disabled = MakeColor(130, 130, 130);
+    colors.text_color_disabled = disabled;
+
     colors.text_selection_color = MakeColor(255, 255, 255);
-    colors.text_selection_background = MakeColor(0, 0, 20);
+    colors.text_selection_background = accent;
     return colors;
 }
 
-auto ThemeVision::get_dark_colors() -> ColorStyle {
+auto ThemeVision::get_dark_colors(int32_t accent) -> ColorStyle {
     ColorStyle colors;
     return colors;
 }
@@ -296,10 +318,9 @@ auto ThemeVision::draw_window_background(Bitmap &content) -> void {
 }
 
 auto ThemeVision::draw_scrollbar_background(Bitmap &content) -> void {
+    draw_frame(content, {0, 0}, content.size, FrameStyles::Normal, FrameSize::SingleFrame);
     content.fill_rect(1, 1, content.size.width - 1, content.size.height - 1,
                       colors.window_background);
-    content.draw_rectangle(0, 0, content.size.width, content.size.height,
-                           colors.frame_normal_color1, colors.frame_normal_color2);
 }
 
 auto ThemeVision::draw_button(Bitmap &content, bool has_focus, bool is_default, bool is_enabled,
@@ -308,58 +329,33 @@ auto ThemeVision::draw_button(Bitmap &content, bool has_focus, bool is_default, 
     auto text_padding = 5;
 
     auto background = colors.button_background_1;
-    auto border = colors.frame_normal_color1;
     auto color = colors.text_color;
-    auto double_border = false;
-
-    auto button_background_hover = colors.button_background_1;
+    auto frame = FrameStyles::Normal;
 
     switch (state) {
     case ButtonStates::Normal:
-        border = colors.frame_normal_color1;
-        if (has_focus) {
-            background = button_background_hover;
-        } else {
-            background = colors.button_background_1;
-            if (is_default) {
-                border = colors.frame_hover_color1;
-            }
-        }
         break;
     case ButtonStates::Hovered:
-        background = colors.button_background_1;
-        border = button_background_hover;
+        frame = FrameStyles::Hover;
         break;
     case ButtonStates::ClickedInside:
-        background = colors.button_background_1;
-        border = button_background_hover;
+        color = colors.button_selected_text;
+        background = colors.button_selected_background;
         break;
     case ButtonStates::ClickedOutside:
-        background = colors.button_background_1;
-        border = button_background_hover;
-        break;
-    default:
         break;
     }
 
-    double_border |= is_default;
     if (has_focus) {
-        double_border = false;
+        color = colors.button_selected_text;
+        background = colors.button_selected_background;
+        draw_frame(content, {0, 0}, content.size, FrameStyles::Hover,
+                   is_default ? FrameSize::DoubleFrame : FrameSize::SingleFrame);
+    } else {
+        draw_frame(content, {0, 0}, content.size, frame,
+                   is_default ? FrameSize::DoubleFrame : FrameSize::SingleFrame);
     }
-
-    content.draw_rectangle(0, 0, content.size.width, content.size.height, border, border);
     content.fill_rect(1, 1, content.size.width - 2, content.size.height - 2, background);
-    if (double_border) {
-        content.draw_rectangle(1, 1, content.size.width - 2, content.size.height - 2, border,
-                               border);
-    }
-    if (has_focus) {
-        auto padding = 3;
-        // TODO - missinf frame focus color
-        content.draw_rectangle(padding, padding, content.size.width - padding * 2,
-                               content.size.height - padding * 2, colors.frame_hover_color1,
-                               colors.frame_hover_color1);
-    }
 
     auto text_size = Bitmap::text_size(text) + text_padding;
     auto text_position = Position{((content.size.width - text_size.width) / 2) + text_padding,
@@ -439,16 +435,9 @@ auto ThemeVision::draw_checkbox(Bitmap &content, bool has_focus, bool is_enabled
 }
 
 auto ThemeVision::draw_input_background(Bitmap &content, const bool has_focus) -> void {
-    auto line1 = colors.frame_hover_color1;
-    auto line2 = colors.frame_hover_color1;
-    auto line3 = colors.frame_hover_color2;
-    auto line4 = colors.frame_hover_color2;
-
-    // TODO - input background focus is missing
     auto background = has_focus ? colors.input_background_hover : colors.input_background_normal;
-
-    content.draw_rectangle(0, 0, content.size.width, content.size.height, line1, line2);
-    content.draw_rectangle(1, 1, content.size.width - 2, content.size.height - 2, line3, line4);
+    auto frame = has_focus ? FrameStyles::Hover : FrameStyles::Normal;
+    draw_frame(content, {0, 0}, content.size, frame, FrameSize::SingleFrame);
     content.fill_rect(1, 1, content.size.width - 2, content.size.height - 2, background);
 }
 
