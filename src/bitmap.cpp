@@ -14,40 +14,83 @@
 #include <cmath>
 #include <spdlog/spdlog.h>
 
-auto Darker(uint32_t color, double percentage) -> uint32_t {
-    auto r = GetRed(color);
-    auto g = GetGreen(color);
-    auto b = GetBlue(color);
+auto rgbToHSL(const uint32_t rgb) -> HSL {
+    // Normalize RGB values
+    double normR = GetRed(rgb) / 255.0;
+    double normG = GetGreen(rgb) / 255.0;
+    double normB = GetBlue(rgb) / 255.0;
 
-    r = int(r - r * percentage);
-    if (r < 0)
-        r = 0;
-    g = int(g - g * percentage);
-    if (g < 0)
-        g = 0;
-    b = int(b - b * percentage);
-    if (b < 0)
+    double cmax = fmax(fmax(normR, normG), normB);
+    double cmin = fmin(fmin(normR, normG), normB);
+    double delta = cmax - cmin;
+    HSL hsl;
+
+    if (delta == 0) {
+        hsl.h = 0.0; // Undefined, but we set it to 0
+    } else if (cmax == normR) {
+        hsl.h = 60.0 * fmod(((normG - normB) / delta), 6);
+    } else if (cmax == normG) {
+        hsl.h = 60.0 * (((normB - normR) / delta) + 2);
+    } else if (cmax == normB) {
+        hsl.h = 60.0 * (((normR - normG) / delta) + 4);
+    }
+
+    hsl.l = 0.5 * (cmax + cmin);
+
+    if (delta != 0) {
+        hsl.s = delta / (1 - fabs(2 * hsl.l - 1));
+    }
+
+    return hsl;
+}
+
+auto hslToRGB(const HSL &hsl) -> int32_t {
+    double c = (1 - fabs(2 * hsl.l - 1)) * hsl.s;
+    double x = c * (1 - fabs(fmod(hsl.h / 60.0, 2) - 1));
+    double m = hsl.l - 0.5 * c;
+
+    double r, g, b;
+    if (hsl.h < 60) {
+        r = c;
+        g = x;
         b = 0;
+    } else if (hsl.h < 120) {
+        r = x;
+        g = c;
+        b = 0;
+    } else if (hsl.h < 180) {
+        r = 0;
+        g = c;
+        b = x;
+    } else if (hsl.h < 240) {
+        r = 0;
+        g = x;
+        b = c;
+    } else if (hsl.h < 300) {
+        r = x;
+        g = 0;
+        b = c;
+    } else {
+        r = c;
+        g = 0;
+        b = x;
+    }
 
-    return MakeColor(r, g, b);
+    return MakeColor((r + m) * 255.0, (g + m) * 255.0, (b + m) * 255.0);
+}
+
+auto Darker(uint32_t color, double percentage) -> uint32_t {
+    auto hsl = rgbToHSL(color);
+    hsl.l -= percentage;
+    hsl.l = fmax(0.0f, fmax(0.0f, hsl.l));
+    return hslToRGB(hsl);
 }
 
 auto Lighter(uint32_t color, double percentage) -> uint32_t {
-    auto r = GetRed(color);
-    auto g = GetGreen(color);
-    auto b = GetBlue(color);
-
-    r = int(r + r * percentage);
-    if (r > 255)
-        r = 255;
-    g = int(g + g * percentage);
-    if (g > 255)
-        g = 255;
-    b = int(b + b * percentage);
-    if (b > 255)
-        b = 255;
-
-    return MakeColor(r, g, b);
+    auto hsl = rgbToHSL(color);
+    hsl.l += percentage;
+    hsl.l = fmin(1.0f, fmax(0.0f, hsl.l));
+    return hslToRGB(hsl);
 }
 
 auto Bitmap::resize(int width, int height) -> void {

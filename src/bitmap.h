@@ -13,6 +13,16 @@
 
 #include <sizepoint.h>
 
+struct HSL {
+    double h = 0.0;
+    double s = 0.0;
+    double l = 0.0;
+};
+
+auto rgbToHSL(const uint32_t rgb) -> HSL;
+
+auto hslToRGB(const HSL &hsl) -> int32_t;
+
 auto constexpr inline MakeColor(uint8_t r, uint8_t g, uint8_t b) -> uint32_t {
     return r << 16 | g << 8 | b;
 }
