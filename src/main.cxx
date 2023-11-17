@@ -110,7 +110,7 @@ int main() {
     //    platform.default_theme = std::make_shared<ThemeVision>();
     //    platform.default_theme = std::make_shared<ThemeRedmond>();
     //    platform.default_theme = std::make_shared<ThemePlasma>(0xff6737);
-    platform.default_theme = std::make_shared<ThemePlasma>();
+    //    platform.default_theme = std::make_shared<ThemePlasma>();
 
     Timer t1(500, true, [&timer_count]() {
         timer_count++;

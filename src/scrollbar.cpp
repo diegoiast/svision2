@@ -51,10 +51,19 @@ auto ScrollBar::draw() -> void {
 
     if (is_horizontal) {
         auto offset = down_button->content.size.width + thumb_position;
-        content.fill_rect(offset, 0, thumb_size, content.size.height, 0xa0a020);
+        content.fill_rect(offset, 0, thumb_size, content.size.height,
+                          theme->colors.button_background_1);
+        content.draw_rectangle(offset, 0, thumb_size, content.size.height,
+                               theme->colors.frame_normal_color1,
+                               theme->colors.frame_normal_color2);
+
     } else {
         auto offset = down_button->content.size.height + thumb_position;
-        content.fill_rect(0, offset, content.size.width, thumb_size, 0x20a0a0);
+        content.fill_rect(0, offset, content.size.width, thumb_size,
+                          theme->colors.button_background_1);
+        content.draw_rectangle(0, offset, content.size.width, thumb_size,
+                               theme->colors.frame_normal_color1,
+                               theme->colors.frame_normal_color2);
     }
 }
 
