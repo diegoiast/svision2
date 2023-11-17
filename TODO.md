@@ -3,7 +3,7 @@
 Random list of things to be implemented on this library
 
 1. Widgets
-    1. List view
+    1. ~~List view~~
     2. Combo box
     3. StackWidget
     4. TabView
@@ -33,13 +33,13 @@ Random list of things to be implemented on this library
 2. Infrastructure
     1. Mouse drag
     2. Mouse wheel support
-    3. DONE: ~~~`widget::add<Widget>.. (constructor )` (is this possible at all?)~~~
+    3. DONE: ~~`widget::add<Widget>.. (constructor )` (is this possible at all?)~~
     4. All *getters* should return a reference
     5. All *callbacks* should have a reference to the widget as first argument
     6. Override functions for the library, callbacks for the consumers of the API
     7. Theme:
         1. `Widget::on_theme_changed()` - modify implicit widget sizes, color
-        2. Rip of color form theme, into color style.
+        2. ~~Rip of color form theme, into color style.~~
         3. Make the frame part of a widget theme - so you can choose frame per widget
         3. Add GTK based theme
         4. Add Aqua (old OSX) theme
