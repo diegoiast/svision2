@@ -1193,10 +1193,10 @@ static int X11_KEYCODES[] = {
     0xff3e, 0x0000,    // PreviousCandidate
     0xff3f, 0x0000,    // Hangul_Special
     0xff50, 0x0002,    // Home
-    0xff51, 0x0018,    // Left
-    0xff52, 0x0011,    // Up
-    0xff53, 0x0013,    // Right
-    0xff54, 0x0012,    // Down
+    0xff51, (int) KeyCodes::ArrowLeft,    // Left
+    0xff52, (int) KeyCodes::ArrowUp,    // Up
+    0xff53, (int) KeyCodes::ArrowRight,    // Right
+    0xff54, (int) KeyCodes::ArrowDown,    // Down
     0xff55, (int) KeyCodes::PageUp,    // Prior
     0xff56, (int) KeyCodes::PageDown,    // Next
     0xff57, 0x0005,    // End
