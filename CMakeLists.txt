@@ -44,6 +44,8 @@ set(SVISION_SOURCES
     src/button.h
     src/buttonstates.cpp
     src/buttonstates.h
+    src/combobox.cpp
+    src/combobox.h
     src/checkbox.cpp
     src/checkbox.h
     src/checkboxshape.h
