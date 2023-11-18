@@ -119,7 +119,6 @@ struct PlatformWindow {
     template <typename T> auto add(T widget) -> T {
         widgets.add(widget, this);
         widget->window = this;
-        widget->theme = theme;
         return widget;
     };
 
