@@ -51,10 +51,6 @@ struct ColorStyle {
     int32_t text_selection_background = 0;
 };
 
-// I wanted to use "None" - but this is already defined in X11
-enum class FrameStyles { NoFrame, Normal, Reversed, Disabled, Hover };
-enum class FrameSize { SingleFrame, DoubleFrame, TrippleFrame };
-
 struct Theme {
     ColorStyle colors = {};
 
@@ -62,7 +58,8 @@ struct Theme {
                     FrameSize frame_size) -> void;
 
     virtual auto init() -> void = 0;
-    virtual auto draw_widget_background(Bitmap &content) -> void = 0;
+    virtual auto draw_widget_background(Bitmap &content, const Frame &frame, bool has_focus)
+        -> void = 0;
     virtual auto draw_window_background(Bitmap &content) -> void = 0;
     virtual auto draw_scrollbar_background(Bitmap &content) -> void = 0;
     virtual auto draw_button(Bitmap &content, bool has_focus, bool is_default, bool is_enabled,
@@ -91,9 +88,8 @@ struct ThemeRedmond : Theme {
     ThemeRedmond() { colors = get_light_colors(); }
 
     virtual auto init() -> void override{};
-    virtual auto draw_widget_background(Bitmap &content) -> void override {
-        content.fill(colors.window_background);
-    };
+    virtual auto draw_widget_background(Bitmap &content, const Frame &frame, bool has_focus)
+        -> void override;
     virtual auto draw_window_background(Bitmap &content) -> void override;
     virtual auto draw_scrollbar_background(Bitmap &content) -> void override;
     virtual auto draw_button(Bitmap &content, bool has_focus, bool is_default, bool is_enabled,
@@ -120,7 +116,8 @@ struct ThemeVision : Theme {
     ThemeVision(int32_t accent = DefaultAccentLight) { colors = get_light_colors(accent); }
 
     virtual auto init() -> void override{};
-    virtual auto draw_widget_background(Bitmap &content) -> void override {
+    virtual auto draw_widget_background(Bitmap &content, const Frame &frame, bool has_focus)
+        -> void override {
         content.fill(colors.window_background);
     };
     virtual auto draw_window_background(Bitmap &content) -> void override;
@@ -148,9 +145,8 @@ struct ThemePlasma : Theme {
     ThemePlasma(int32_t accent = DefaultAccentLight) { colors = get_light_colors(accent); }
 
     virtual auto init() -> void override{};
-    virtual auto draw_widget_background(Bitmap &content) -> void override {
-        content.fill(colors.window_background);
-    };
+    virtual auto draw_widget_background(Bitmap &content, const Frame &frame, bool has_focus)
+        -> void override;
     virtual auto draw_window_background(Bitmap &content) -> void override;
     virtual auto draw_scrollbar_background(Bitmap &content) -> void override;
     virtual auto draw_button(Bitmap &content, bool has_focus, bool is_default, bool is_enabled,

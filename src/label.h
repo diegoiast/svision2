@@ -18,9 +18,7 @@ struct Label : public Widget {
 
     virtual auto draw() -> void override {
         auto color = 0;
-        if (draw_background) {
-            this->theme->draw_widget_background(this->content);
-        }
+        Widget::draw();
         this->content.write_fixed(Position{5, 5}, text, color);
     }
 };

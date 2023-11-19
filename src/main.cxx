@@ -122,7 +122,8 @@ int main() {
     //    plat  form.show_window(w2);
 
     auto w1 = platform.open_window(100, 100, 640, 480, "test 1");
-    w1->add_new<Label>(Position{10, 10}, Size{100, 20}, "Hello world!");
+    w1->add_new<Label>(Position{10, 10}, Size{100, 20}, "Hello world!")->frame = {
+        FrameStyles::Normal, FrameSize::SingleFrame};
     w1->add_new<TextField>(Position{10, 35}, Size{165, 30});
 
     ;

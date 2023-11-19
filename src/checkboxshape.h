@@ -7,6 +7,10 @@
 
 #pragma once
 
+// I wanted to use "None" - but this is already defined in X11
+enum class FrameStyles { NoFrame, Normal, Reversed, Disabled, Hover };
+enum class FrameSize { NoFrame, SingleFrame, DoubleFrame, TrippleFrame };
+
 enum class CheckboxShape {
     Checkbox,
     RadioButton,
@@ -15,4 +19,9 @@ enum class CheckboxShape {
 struct ItemStatus {
     bool is_selected = false;
     bool is_active = false;
+};
+
+struct Frame {
+    FrameStyles style;
+    FrameSize size;
 };

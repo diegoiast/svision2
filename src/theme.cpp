@@ -9,6 +9,7 @@
 
 auto Theme::draw_frame(Bitmap &content, Position position, Size size, FrameStyles style,
                        FrameSize frame_size) -> void {
+
     switch (style) {
     case FrameStyles::Normal:
         switch (frame_size) {
@@ -21,27 +22,52 @@ auto Theme::draw_frame(Bitmap &content, Position position, Size size, FrameStyle
         case FrameSize::SingleFrame:
             content.draw_rectangle(position.x, position.y, size.width, size.height,
                                    colors.frame_normal_color1, colors.frame_normal_color2);
-        default:
+        case FrameSize::NoFrame:
             break;
         }
         break;
     case FrameStyles::Reversed:
-        content.draw_rectangle(position.x, position.y, size.width, size.height,
-                               colors.frame_normal_color2, colors.frame_normal_color1);
-        content.draw_rectangle(1, 1, size.width - 2, size.height - 2, colors.frame_normal_color1,
-                               colors.frame_normal_color2);
+        switch (frame_size) {
+        case FrameSize::TrippleFrame:
+            // Not really supported
+        case FrameSize::DoubleFrame:
+            content.draw_rectangle(1, 1, size.width - 2, size.height - 2,
+                                   colors.frame_normal_color1, colors.frame_normal_color2);
+        case FrameSize::SingleFrame:
+            content.draw_rectangle(position.x, position.y, size.width, size.height,
+                                   colors.frame_normal_color2, colors.frame_normal_color1);
+        case FrameSize::NoFrame:
+            break;
+        }
         break;
     case FrameStyles::Disabled:
-        content.draw_rectangle(position.x, position.y, size.width, size.height,
-                               colors.frame_disabled_color1, colors.frame_disabled_color2);
-        content.draw_rectangle(1, 1, size.width - 2, size.height - 2, colors.frame_disabled_color3,
-                               colors.frame_disabled_color4);
+        switch (frame_size) {
+        case FrameSize::TrippleFrame:
+            // Not really supported
+        case FrameSize::DoubleFrame:
+            content.draw_rectangle(1, 1, size.width - 2, size.height - 2,
+                                   colors.frame_disabled_color3, colors.frame_disabled_color4);
+        case FrameSize::SingleFrame:
+            content.draw_rectangle(position.x, position.y, size.width, size.height,
+                                   colors.frame_disabled_color1, colors.frame_disabled_color2);
+        case FrameSize::NoFrame:
+            break;
+        }
         break;
     case FrameStyles::Hover:
-        content.draw_rectangle(position.x, position.y, size.width, size.height,
-                               colors.frame_hover_color1, colors.frame_hover_color2);
-        content.draw_rectangle(1, 1, size.width - 2, size.height - 2, colors.frame_hover_color3,
-                               colors.frame_hover_color4);
+        switch (frame_size) {
+        case FrameSize::TrippleFrame:
+            // Not really supported
+        case FrameSize::DoubleFrame:
+            content.draw_rectangle(1, 1, size.width - 2, size.height - 2, colors.frame_hover_color3,
+                                   colors.frame_hover_color4);
+        case FrameSize::SingleFrame:
+            content.draw_rectangle(position.x, position.y, size.width, size.height,
+                                   colors.frame_hover_color1, colors.frame_hover_color2);
+        case FrameSize::NoFrame:
+            break;
+        }
+
         break;
     case FrameStyles::NoFrame:
         break;
@@ -95,6 +121,14 @@ auto ThemeRedmond::get_dark_colors() -> ColorStyle {
     return colors;
 }
 
+auto ThemeRedmond::draw_widget_background(Bitmap &content, const Frame &frame, bool has_focus)
+    -> void {
+    content.fill(colors.window_background);
+    if (frame.style != FrameStyles::NoFrame) {
+        draw_frame(content, {0, 0}, content.size, frame.style, frame.size);
+    }
+}
+
 auto ThemeRedmond::draw_window_background(Bitmap &content) -> void {
     content.fill(colors.window_background);
 }
@@ -108,7 +142,6 @@ auto ThemeRedmond::draw_scrollbar_background(Bitmap &content) -> void {
             content.put_pixel(x, y, on ? on_color : off_color);
         }
     }
-
     // TODO - seems like we are missing a color in the theme
     auto line_color4 = 0x808080;
     content.draw_rectangle(0, 0, content.size.width, content.size.height, line_color4, line_color4);
@@ -457,8 +490,8 @@ auto ThemeVision::draw_checkbox(Bitmap &content, bool has_focus, bool is_enabled
 
 auto ThemeVision::draw_input_background(Bitmap &content, const bool has_focus) -> void {
     auto background = has_focus ? colors.input_background_hover : colors.input_background_normal;
-    auto frame = has_focus ? FrameStyles::Hover : FrameStyles::Normal;
-    draw_frame(content, {0, 0}, content.size, frame, FrameSize::SingleFrame);
+    //    auto frame = has_focus ? FrameStyles::Hover : FrameStyles::Normal;
+    //    draw_frame(content, {0, 0}, content.size, frame, FrameSize::SingleFrame);
     content.fill_rect(1, 1, content.size.width - 2, content.size.height - 2, background);
 }
 
@@ -574,20 +607,20 @@ void ThemeVision::draw_listview_item(Bitmap &content, const std::string &text,
     content.write_fixed(Position{5, 5}, text, text_color);
 }
 
+auto ThemePlasma::draw_widget_background(Bitmap &content, const Frame &frame, bool has_focus)
+    -> void {
+    content.fill(colors.window_background);
+    if (frame.style != FrameStyles::NoFrame) {
+        draw_frame(content, {0, 0}, content.size, frame.style, frame.size);
+    }
+}
+
 auto ThemePlasma::draw_window_background(Bitmap &content) -> void {
     content.fill_rect(0, 0, content.size.width, content.size.height, colors.window_background);
     content.line(0, 0, content.size.width - 1, 0, colors.frame_disabled_color1);
 }
 
 auto ThemePlasma::draw_scrollbar_background(Bitmap &content) -> void {
-    auto the_width = content.size.width;
-    auto the_height = content.size.height;
-    auto topleft = Position{0, 0};
-
-    content.fill_rect(0, 0, the_width, the_height, colors.window_background);
-    draw_frame(content, topleft, {the_width, the_height - 1}, FrameStyles::Normal,
-               FrameSize::SingleFrame);
-    content.line(0, the_height - 1, the_width, the_height - 1, colors.frame_disabled_color1);
 }
 
 auto ThemePlasma::draw_button(Bitmap &content, bool has_focus, bool is_default, bool is_enabled,
@@ -750,15 +783,15 @@ auto ThemePlasma::draw_checkbox(Bitmap &content, bool has_focus, bool is_enabled
 }
 
 auto ThemePlasma::draw_input_background(Bitmap &content, const bool has_focus) -> void {
-    draw_frame(content, {0, 0}, content.size, has_focus ? FrameStyles::Hover : FrameStyles::Normal,
-               FrameSize::SingleFrame);
     content.fill_rect(1, 1, content.size.width - 2, content.size.height - 2,
                       has_focus ? colors.input_background_hover : colors.input_background_normal);
 }
 
 auto ThemePlasma::draw_listview_background(Bitmap &content, const bool has_focus,
                                            const bool draw_background) -> void {
-    draw_frame(content, {0, 0}, content.size, has_focus ? FrameStyles::Hover : FrameStyles::Normal,
+    auto topleft = Position{1, 1};
+    auto s = Size{content.size.width - 2, content.size.height - 2};
+    draw_frame(content, topleft, s, has_focus ? FrameStyles::Hover : FrameStyles::Normal,
                FrameSize::SingleFrame);
     auto background = has_focus ? colors.input_background_selected : colors.input_background_normal;
     if (draw_background) {
