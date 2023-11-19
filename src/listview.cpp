@@ -1,6 +1,5 @@
 #include "listview.h"
 #include "scrollbar.h"
-#include "spdlog/spdlog.h"
 #include "theme.h"
 
 auto ListItemAdapter::get_widget(size_t) -> PWidget {
@@ -24,8 +23,12 @@ ListView::ListView(Position position, Size size) : Widget(position, size, 0) {
     position.y = 0;
     this->scrollbar = add_new<ScrollBar>(position, size.height, false);
     this->scrollbar->did_change = [this](auto *s, int value) { this->invalidate(); };
+
+    // We will complete redraw the background, the theme should only draw the frame
+    // and sub children.
     this->draw_background = false;
     this->can_focus = true;
+    this->frame = {FrameStyles::Reversed, FrameSize::SingleFrame};
 }
 
 auto ListView::draw() -> void {
@@ -35,7 +38,8 @@ auto ListView::draw() -> void {
     }
 
     auto first_widget = adapter->get_widget(0);
-    auto padding = 2;
+    //  TODO - get padding from frame - from, theme
+    auto padding = 1;
     auto item_height = (first_widget->content.size.height);
     auto widget_count = this->content.size.height / item_height + 1;
     auto first_item = scrollbar->value / item_height;
@@ -43,9 +47,8 @@ auto ListView::draw() -> void {
 
     for (auto i = 0; i < widget_count; i++) {
         auto position = Position{padding, padding + offset};
-        auto size =
-            Size{this->content.size.width - this->scrollbar->content.size.width - padding * 2 + 2,
-                 first_widget->content.size.height};
+        auto size = Size{this->content.size.width - this->scrollbar->content.size.width - padding,
+                         first_widget->content.size.height};
         auto status = ItemStatus{false, false};
         auto w = reserved_widgets[i];
         if (!w) {
@@ -68,10 +71,26 @@ auto ListView::draw() -> void {
         offset += item_height;
         first_item++;
     }
-    Widget::draw();
     get_theme()->draw_listview_background(content, has_focus, false);
+    Widget::draw();
 
-    content.draw(scrollbar->position, scrollbar->content);
+    auto frame_proxy = this->frame;
+    auto theme = get_theme();
+    if (can_focus && theme->modify_frame_on_hover()) {
+        // Setting hover frame works only on selectable widgets
+        if (frame_proxy.style == FrameStyles::Normal ||
+            frame_proxy.style == FrameStyles::Reversed) {
+            if (this->has_focus) {
+                // TODO - are we missing another frame style?
+                frame_proxy.style = FrameStyles::Hover;
+            } else if (this->mouse_over) {
+                frame_proxy.style = FrameStyles::Hover;
+            }
+        }
+    }
+    if (frame_proxy.style != FrameStyles::NoFrame) {
+        theme->draw_frame(content, {0, 0}, content.size, frame_proxy.style, frame_proxy.size);
+    }
 }
 
 EventPropagation ListView::on_mouse(const EventMouse &event) {
@@ -175,16 +194,15 @@ auto ListView::did_adapter_update() -> void {
     auto item_height = first_widget->content.size.height;
     auto widget_count = (this->content.size.height - 2) / item_height + 1;
 
-    auto k = adapter->get_count() - widget_count - 1;
+    auto k = adapter->get_count() - widget_count;
     if (k < 0)
         k = 0;
     if (adapter->get_count() < widget_count) {
         k = 0;
     }
 
-    // +2 - means the frame size
     // the speed is just to make wierd funkey updates
-    this->scrollbar->set_values(0, (k + 1) * item_height, 0, (item_height * 3) / 11);
+    this->scrollbar->set_values(0, k * item_height, 0, (item_height * 3) / 11);
 
     widget_count++;
     while (widget_count != 0) {

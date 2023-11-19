@@ -8,6 +8,7 @@
 #pragma once
 
 #include <bitmap.h>
+#include <checkboxshape.h>
 #include <events.h>
 
 #include <list>
@@ -41,6 +42,7 @@ struct Widget {
     Position position;
     WidgetCollection widgets;
     std::shared_ptr<Theme> theme;
+    Frame frame{FrameStyles::NoFrame, FrameSize::SingleFrame};
 
     // TODO this should be a weak pointer
     PlatformWindow *window = nullptr;

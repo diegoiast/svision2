@@ -38,7 +38,8 @@ ScrollBar::ScrollBar(Position position, int length, bool horizontal, int maximum
     this->down_button->on_button_click = [this]() { step_down(); };
     this->up_button->set_auto_repeat(500);
 
-    this->draw_background = false;
+    this->draw_background = true;
+    this->frame = {FrameStyles::Normal, FrameSize::SingleFrame};
     this->is_horizontal = horizontal;
     this->maximum = maximum;
     this->update_thumb_size();

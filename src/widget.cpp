@@ -96,10 +96,12 @@ auto WidgetCollection::on_mouse(const EventMouse &event) -> EventPropagation {
     }
     if (last_overed_widget != widget_under_mouse) {
         if (last_overed_widget) {
+            last_overed_widget->mouse_over = false;
             last_overed_widget->on_mouse_leave();
         }
         last_overed_widget = widget_under_mouse;
         if (last_overed_widget) {
+            last_overed_widget->mouse_over = true;
             last_overed_widget->on_mouse_enter();
         }
     }
@@ -139,6 +141,8 @@ auto WidgetCollection::on_mouse_press(const EventMouse &event, std::shared_ptr<W
         */
         last_overed_widget->on_mouse_leave();
         last_overed_widget->mouse_over = false;
+        last_overed_widget->needs_redraw = true;
+        last_overed_widget->invalidate();
         w->needs_redraw |= last_overed_widget->needs_redraw;
     }
     if (!w->mouse_over) {
@@ -307,7 +311,7 @@ auto Widget::invalidate() -> void {
 
 auto Widget::draw() -> void {
     if (draw_background) {
-        get_theme()->draw_widget_background(content);
+        get_theme()->draw_widget_background(content, has_focus);
     }
     for (auto w : widgets.widgets) {
         if (!w->is_visible()) {
@@ -319,17 +323,49 @@ auto Widget::draw() -> void {
         }
         content.draw(w->position, w->content);
     }
+
+    auto frame_proxy = this->frame;
+    auto theme = get_theme();
+    if (can_focus && theme->modify_frame_on_hover()) {
+        // Setting hover frame works only on selectable widgets
+        if (frame_proxy.style == FrameStyles::Normal ||
+            frame_proxy.style == FrameStyles::Reversed) {
+            if (this->has_focus) {
+                // TODO - are we missing another frame style?
+                frame_proxy.style = FrameStyles::Hover;
+            } else if (this->mouse_over) {
+                frame_proxy.style = FrameStyles::Hover;
+            }
+        }
+    }
+    if (frame_proxy.style != FrameStyles::NoFrame) {
+        theme->draw_frame(content, {0, 0}, content.size, frame_proxy.style, frame_proxy.size);
+    }
 }
 
 auto Widget::on_mouse(const EventMouse &event) -> EventPropagation {
     return widgets.on_mouse(event);
 }
 
-auto Widget::on_hover(const EventMouse &event) -> void{};
+auto Widget::on_hover(const EventMouse &event) -> void {
+    for (auto w : widgets.widgets) {
+        w->on_hover(event);
+    }
+};
 
-auto Widget::on_mouse_enter() -> void {}
+auto Widget::on_mouse_enter() -> void {
+    for (auto w : widgets.widgets) {
+        w->on_mouse_enter();
+    }
+    invalidate();
+}
 
-auto Widget::on_mouse_leave() -> void {}
+auto Widget::on_mouse_leave() -> void {
+    for (auto w : widgets.widgets) {
+        w->on_mouse_leave();
+    }
+    invalidate();
+}
 
 auto Widget::on_mouse_click(const EventMouse &event) -> EventPropagation {
     return EventPropagation::propagate;
