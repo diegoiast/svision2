@@ -75,15 +75,22 @@ auto ListView::draw() -> void {
     Widget::draw();
 
     auto frame_proxy = this->frame;
-    if (frame_proxy.style == FrameStyles::Normal || frame_proxy.style == FrameStyles::Reversed) {
-        if (this->has_focus) {
-            // TODO - are we missing another frame style?
-            frame_proxy.style = FrameStyles::Hover;
-        } else if (this->mouse_over) {
-            frame_proxy.style = FrameStyles::Hover;
+    auto theme = get_theme();
+    if (can_focus && theme->modify_frame_on_hover()) {
+        // Setting hover frame works only on selectable widgets
+        if (frame_proxy.style == FrameStyles::Normal ||
+            frame_proxy.style == FrameStyles::Reversed) {
+            if (this->has_focus) {
+                // TODO - are we missing another frame style?
+                frame_proxy.style = FrameStyles::Hover;
+            } else if (this->mouse_over) {
+                frame_proxy.style = FrameStyles::Hover;
+            }
         }
     }
-    theme->draw_frame(content, {0, 0}, content.size, frame_proxy.style, frame_proxy.size);
+    if (frame_proxy.style != FrameStyles::NoFrame) {
+        theme->draw_frame(content, {0, 0}, content.size, frame_proxy.style, frame_proxy.size);
+    }
 }
 
 EventPropagation ListView::on_mouse(const EventMouse &event) {

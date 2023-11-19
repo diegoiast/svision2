@@ -58,8 +58,7 @@ struct Theme {
                     FrameSize frame_size) -> void;
 
     virtual auto init() -> void = 0;
-    virtual auto draw_widget_background(Bitmap &content, const Frame &frame, bool has_focus)
-        -> void = 0;
+    virtual auto draw_widget_background(Bitmap &content, bool has_focus) -> void = 0;
     virtual auto draw_window_background(Bitmap &content) -> void = 0;
     virtual auto draw_scrollbar_background(Bitmap &content) -> void = 0;
     virtual auto draw_button(Bitmap &content, bool has_focus, bool is_default, bool is_enabled,
@@ -78,6 +77,8 @@ struct Theme {
 
     virtual auto needs_frame_for_focus() const -> bool = 0;
     virtual auto scrollbar_size() const -> int = 0;
+
+    virtual auto modify_frame_on_hover() const -> bool { return true; }
 };
 
 // A windows 9x look and feel based theme
@@ -88,8 +89,7 @@ struct ThemeRedmond : Theme {
     ThemeRedmond() { colors = get_light_colors(); }
 
     virtual auto init() -> void override{};
-    virtual auto draw_widget_background(Bitmap &content, const Frame &frame, bool has_focus)
-        -> void override;
+    virtual auto draw_widget_background(Bitmap &content, bool has_focus) -> void override;
     virtual auto draw_window_background(Bitmap &content) -> void override;
     virtual auto draw_scrollbar_background(Bitmap &content) -> void override;
     virtual auto draw_button(Bitmap &content, bool has_focus, bool is_default, bool is_enabled,
@@ -106,6 +106,7 @@ struct ThemeRedmond : Theme {
     virtual auto needs_frame_for_focus() const -> bool override { return true; };
     virtual auto scrollbar_size() const -> int override { return 24; };
 
+    virtual auto modify_frame_on_hover() const -> bool override { return false; }
 };
 
 struct ThemeVision : Theme {
@@ -116,10 +117,7 @@ struct ThemeVision : Theme {
     ThemeVision(int32_t accent = DefaultAccentLight) { colors = get_light_colors(accent); }
 
     virtual auto init() -> void override{};
-    virtual auto draw_widget_background(Bitmap &content, const Frame &frame, bool has_focus)
-        -> void override {
-        content.fill(colors.window_background);
-    };
+    virtual auto draw_widget_background(Bitmap &content, bool has_focus) -> void override;
     virtual auto draw_window_background(Bitmap &content) -> void override;
     virtual auto draw_scrollbar_background(Bitmap &content) -> void override;
     virtual auto draw_button(Bitmap &content, bool has_focus, bool is_default, bool is_enabled,
@@ -145,8 +143,7 @@ struct ThemePlasma : Theme {
     ThemePlasma(int32_t accent = DefaultAccentLight) { colors = get_light_colors(accent); }
 
     virtual auto init() -> void override{};
-    virtual auto draw_widget_background(Bitmap &content, const Frame &frame, bool has_focus)
-        -> void override;
+    virtual auto draw_widget_background(Bitmap &content, bool has_focus) -> void override;
     virtual auto draw_window_background(Bitmap &content) -> void override;
     virtual auto draw_scrollbar_background(Bitmap &content) -> void override;
     virtual auto draw_button(Bitmap &content, bool has_focus, bool is_default, bool is_enabled,

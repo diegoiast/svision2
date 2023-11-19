@@ -310,23 +310,8 @@ auto Widget::invalidate() -> void {
 }
 
 auto Widget::draw() -> void {
-    content.fill(0x00ff00);
     if (draw_background) {
-        auto frame_proxy = this->frame;
-
-        if (can_focus) {
-            // Setting hover frame works only on selectable widgets
-            if (frame_proxy.style == FrameStyles::Normal ||
-                frame_proxy.style == FrameStyles::Reversed) {
-                if (this->has_focus) {
-                    // TODO - are we missing another frame style?
-                    frame_proxy.style = FrameStyles::Hover;
-                } else if (this->mouse_over) {
-                    frame_proxy.style = FrameStyles::Hover;
-                }
-            }
-        }
-        get_theme()->draw_widget_background(content, frame_proxy, has_focus);
+        get_theme()->draw_widget_background(content, has_focus);
     }
     for (auto w : widgets.widgets) {
         if (!w->is_visible()) {
@@ -339,7 +324,23 @@ auto Widget::draw() -> void {
         content.draw(w->position, w->content);
     }
 
-    // TODO - draw frame here? instead of doing it in the theme?
+    auto frame_proxy = this->frame;
+    auto theme = get_theme();
+    if (can_focus && theme->modify_frame_on_hover()) {
+        // Setting hover frame works only on selectable widgets
+        if (frame_proxy.style == FrameStyles::Normal ||
+            frame_proxy.style == FrameStyles::Reversed) {
+            if (this->has_focus) {
+                // TODO - are we missing another frame style?
+                frame_proxy.style = FrameStyles::Hover;
+            } else if (this->mouse_over) {
+                frame_proxy.style = FrameStyles::Hover;
+            }
+        }
+    }
+    if (frame_proxy.style != FrameStyles::NoFrame) {
+        theme->draw_frame(content, {0, 0}, content.size, frame_proxy.style, frame_proxy.size);
+    }
 }
 
 auto Widget::on_mouse(const EventMouse &event) -> EventPropagation {

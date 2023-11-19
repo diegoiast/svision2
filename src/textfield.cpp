@@ -13,14 +13,15 @@ TextField::TextField(Position position, Size size) : Widget(position, size, 0) {
     };
     timer.initialize();
     this->can_focus = true;
+    this->draw_background = false;
     this->frame = {FrameStyles::Reversed, FrameSize::SingleFrame};
 }
 
 TextField::~TextField() { timer.stop(); }
 
 auto TextField::draw() -> void {
-    Widget::draw();
     theme->draw_input_background(content, has_focus);
+    Widget::draw();
 
     auto padding_vertical = 5;
     auto display_text_logical = (content.size.width - padding_start - padding_end) / 8;

@@ -76,11 +76,15 @@ auto Theme::draw_frame(Bitmap &content, Position position, Size size, FrameStyle
 
 auto ThemeRedmond::get_light_colors() -> ColorStyle {
     auto colors = ColorStyle();
+    auto constexpr white = 0xFFFFFF;
+    auto constexpr black = 0x000000;
+    auto constexpr blue = 0x303080;
+
     colors.window_background = 0xc0c0c0;
 
-    colors.frame_normal_color1 = 0xFFFFFF;
-    colors.frame_normal_color2 = 0x000000;
-    colors.frame_normal_color3 = 0xFFFFFF;
+    colors.frame_normal_color1 = white;
+    colors.frame_normal_color2 = black;
+    colors.frame_normal_color3 = white;
     colors.frame_normal_color4 = 0x808080;
 
     colors.frame_hover_color1 = colors.frame_normal_color1;
@@ -98,21 +102,21 @@ auto ThemeRedmond::get_light_colors() -> ColorStyle {
     colors.frame_disabled_color3 = 0xd1d2d3;
     colors.frame_disabled_color4 = 0xd1d2d3;
 
-    colors.input_background_normal = 0xffffff;
+    colors.input_background_normal = white;
+    colors.input_background_selected = white;
     colors.input_background_hover = colors.input_background_normal;
     colors.input_background_disabled = colors.window_background;
-    colors.input_background_selected = colors.input_background_normal;
 
     colors.button_background_1 = colors.window_background;
     colors.button_background_2 = colors.window_background;
     colors.button_selected_background = 0xc8c8c8;
-    colors.button_selected_text = 0xFFFFFF;
+    colors.button_selected_text = white;
 
-    colors.text_color = 0x000000;
+    colors.text_color = black;
     colors.text_color_disabled = 0x606060;
 
-    colors.text_selection_color = 0xFFFFFF;
-    colors.text_selection_background = 0x000080;
+    colors.text_selection_color = white;
+    colors.text_selection_background = blue;
     return colors;
 }
 
@@ -121,12 +125,8 @@ auto ThemeRedmond::get_dark_colors() -> ColorStyle {
     return colors;
 }
 
-auto ThemeRedmond::draw_widget_background(Bitmap &content, const Frame &frame, bool has_focus)
-    -> void {
+auto ThemeRedmond::draw_widget_background(Bitmap &content, bool has_focus) -> void {
     content.fill(colors.window_background);
-    if (frame.style != FrameStyles::NoFrame) {
-        draw_frame(content, {0, 0}, content.size, frame.style, frame.size);
-    }
 }
 
 auto ThemeRedmond::draw_window_background(Bitmap &content) -> void {
@@ -142,9 +142,9 @@ auto ThemeRedmond::draw_scrollbar_background(Bitmap &content) -> void {
             content.put_pixel(x, y, on ? on_color : off_color);
         }
     }
-    // TODO - seems like we are missing a color in the theme
-    auto line_color4 = 0x808080;
-    content.draw_rectangle(0, 0, content.size.width, content.size.height, line_color4, line_color4);
+    auto border_color = colors.frame_normal_color4;
+    content.draw_rectangle(0, 0, content.size.width, content.size.height, border_color,
+                           border_color);
 }
 
 auto ThemeRedmond::draw_button(Bitmap &content, bool has_focus, bool is_default, bool is_enabled,
@@ -290,7 +290,7 @@ auto ThemeRedmond::draw_checkbox(Bitmap &content, bool has_focus, bool is_enable
 }
 
 auto ThemeRedmond::draw_input_background(Bitmap &content, const bool has_focus) -> void {
-    draw_frame(content, {0, 0}, content.size, FrameStyles::Reversed, FrameSize::SingleFrame);
+    //    draw_frame(content, {0, 0}, content.size, FrameStyles::Reversed, FrameSize::SingleFrame);
     auto background = has_focus ? colors.input_background_selected : colors.input_background_normal;
     content.fill_rect(1, 1, content.size.width - 2, content.size.height - 2, background);
 }
@@ -324,7 +324,7 @@ auto ThemeVision::get_light_colors(int32_t accent) -> ColorStyle {
     colors.frame_disabled_color4 = colors.frame_disabled_color1;
 
     colors.input_background_normal = MakeColor(255, 255, 255);
-    colors.input_background_hover = Lighter(accent);
+    colors.input_background_hover = MakeColor(255, 255, 255);
     colors.input_background_disabled = colors.input_background_normal;
     colors.input_background_selected = accent;
 
@@ -360,15 +360,19 @@ void ThemeRedmond::draw_listview_item(Bitmap &content, const std::string &text,
                                       const ItemStatus status, bool is_hover) {
     auto text_color = status.is_active ? colors.text_selection_color : colors.text_color;
     auto background_color =
-        status.is_active ? colors.input_background_selected : colors.input_background_normal;
-    if (is_hover)
+        status.is_active ? colors.text_selection_background : colors.input_background_normal;
+    if (is_hover && !status.is_active)
         background_color = colors.input_background_hover;
     content.fill(background_color);
     content.write_fixed(Position{5, 5}, text, text_color);
 }
 
+auto ThemeVision::draw_widget_background(Bitmap &content, bool has_focus) -> void {
+    content.fill(colors.window_background);
+};
+
 auto ThemeVision::draw_window_background(Bitmap &content) -> void {
-    content.fill_rect(0, 0, content.size.width, content.size.height, colors.window_background);
+    content.fill(colors.window_background);
 }
 
 auto ThemeVision::draw_scrollbar_background(Bitmap &content) -> void {
@@ -381,7 +385,6 @@ auto ThemeVision::draw_button(Bitmap &content, bool has_focus, bool is_default, 
                               ButtonStates state, const std::string &text) -> void {
 
     auto text_padding = 5;
-
     auto background = colors.button_background_1;
     auto color = colors.text_color;
     auto frame = FrameStyles::Normal;
@@ -489,10 +492,11 @@ auto ThemeVision::draw_checkbox(Bitmap &content, bool has_focus, bool is_enabled
 }
 
 auto ThemeVision::draw_input_background(Bitmap &content, const bool has_focus) -> void {
+    // TODO - padding should be the framw size
+    auto padding = 1;
     auto background = has_focus ? colors.input_background_hover : colors.input_background_normal;
-    //    auto frame = has_focus ? FrameStyles::Hover : FrameStyles::Normal;
-    //    draw_frame(content, {0, 0}, content.size, frame, FrameSize::SingleFrame);
-    content.fill_rect(1, 1, content.size.width - 2, content.size.height - 2, background);
+    content.fill_rect(padding, padding, content.size.width - padding * 2,
+                      content.size.height - padding * 2, background);
 }
 
 // static constexpr int32_t DefaultAccentLight = 0x3daee9;
@@ -525,9 +529,9 @@ auto ThemePlasma::get_light_colors(int32_t accent) -> ColorStyle {
     colors.frame_disabled_color4 = colors.frame_disabled_color1;
 
     colors.input_background_normal = Darker(0xffffff, 0.002);
-    colors.input_background_hover = Lighter(accent);
+    colors.input_background_hover = 0xffffff;
     colors.input_background_disabled = disabled;
-    colors.input_background_selected = accent;
+    colors.input_background_selected = background;
 
     colors.button_background_1 = Lighter(background);
     colors.button_background_2 = Lighter(background, 0.05);
@@ -600,19 +604,15 @@ void ThemeVision::draw_listview_item(Bitmap &content, const std::string &text,
                                      const ItemStatus status, bool is_hover) {
     auto text_color = status.is_active ? colors.text_selection_color : colors.text_color;
     auto background_color =
-        status.is_active ? colors.input_background_selected : colors.input_background_normal;
-    if (is_hover)
+        status.is_active ? colors.text_selection_background : colors.input_background_normal;
+    if (is_hover && !status.is_active)
         background_color = colors.input_background_hover;
     content.fill(background_color);
     content.write_fixed(Position{5, 5}, text, text_color);
 }
 
-auto ThemePlasma::draw_widget_background(Bitmap &content, const Frame &frame, bool has_focus)
-    -> void {
+auto ThemePlasma::draw_widget_background(Bitmap &content, bool has_focus) -> void {
     content.fill(colors.window_background);
-    if (frame.style != FrameStyles::NoFrame) {
-        draw_frame(content, {0, 0}, content.size, frame.style, frame.size);
-    }
 }
 
 auto ThemePlasma::draw_window_background(Bitmap &content) -> void {
@@ -783,19 +783,24 @@ auto ThemePlasma::draw_checkbox(Bitmap &content, bool has_focus, bool is_enabled
 }
 
 auto ThemePlasma::draw_input_background(Bitmap &content, const bool has_focus) -> void {
-    content.fill_rect(1, 1, content.size.width - 2, content.size.height - 2,
-                      has_focus ? colors.input_background_hover : colors.input_background_normal);
+    // TODO - padding should be the framw size
+    auto padding = 1;
+    auto background = has_focus ? colors.input_background_hover : colors.input_background_normal;
+    content.fill_rect(padding, padding, content.size.width - padding * 2,
+                      content.size.height - padding * 2, background);
 }
 
 auto ThemePlasma::draw_listview_background(Bitmap &content, const bool has_focus,
                                            const bool draw_background) -> void {
-    auto topleft = Position{1, 1};
-    auto s = Size{content.size.width - 2, content.size.height - 2};
-    draw_frame(content, topleft, s, has_focus ? FrameStyles::Hover : FrameStyles::Normal,
+    auto padding = 1;
+    auto topleft = Position{padding, padding};
+    auto s = Size{content.size.width - padding * 2, content.size.height - padding * 2};
+    draw_frame(content, {0, 0}, content.size, has_focus ? FrameStyles::Hover : FrameStyles::Normal,
                FrameSize::SingleFrame);
     auto background = has_focus ? colors.input_background_selected : colors.input_background_normal;
     if (draw_background) {
-        content.fill_rect(1, 1, content.size.width - 2, content.size.height - 2, background);
+        content.fill_rect(1, 1, content.size.width - padding * 2, content.size.height - padding * 2,
+                          background);
     }
 }
 
@@ -804,8 +809,8 @@ void ThemePlasma::draw_listview_item(Bitmap &content, const std::string &text,
 
     auto text_color = status.is_active ? colors.text_selection_color : colors.text_color;
     auto background_color =
-        status.is_active ? colors.input_background_selected : colors.input_background_normal;
-    if (is_hover)
+        status.is_active ? colors.text_selection_background : colors.input_background_normal;
+    if (is_hover && !status.is_active)
         background_color = colors.input_background_hover;
 
     content.fill(background_color);
