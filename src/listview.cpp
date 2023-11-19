@@ -121,14 +121,14 @@ auto static ensure_item_in_viewport(ListView &l) {
 auto ListView::on_keyboard(const EventKeyboard &event) -> EventPropagation {
     auto result = EventPropagation::propagate;
     switch (event.key) {
-    case KeyCodes::ArrowUp:
+    case KeyCodes::ArrowDown:
         result = EventPropagation::handled;
         if (current_item < adapter->get_count() - 1)
             current_item++;
         ensure_item_in_viewport(*this);
         invalidate();
         break;
-    case KeyCodes::ArrowDown:
+    case KeyCodes::ArrowUp:
         result = EventPropagation::handled;
         if (current_item > 0)
             current_item--;
