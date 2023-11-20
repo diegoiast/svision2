@@ -49,6 +49,7 @@ struct ColorStyle {
 
     int32_t text_selection_color = 0;
     int32_t text_selection_background = 0;
+    int32_t text_selection_background_hover = 0;
 };
 
 struct Theme {
