@@ -117,6 +117,7 @@ auto ThemeRedmond::get_light_colors() -> ColorStyle {
 
     colors.text_selection_color = white;
     colors.text_selection_background = blue;
+    colors.text_selection_background_hover = white;
     return colors;
 }
 
@@ -338,6 +339,7 @@ auto ThemeVision::get_light_colors(int32_t accent) -> ColorStyle {
 
     colors.text_selection_color = MakeColor(255, 255, 255);
     colors.text_selection_background = accent;
+    colors.text_selection_background_hover = Lighter(accent);
     return colors;
 }
 
@@ -543,6 +545,7 @@ auto ThemePlasma::get_light_colors(int32_t accent) -> ColorStyle {
 
     colors.text_selection_color = 0xffffff;
     colors.text_selection_background = accent;
+    colors.text_selection_background_hover = Lighter(accent);
     return colors;
 }
 
@@ -606,7 +609,7 @@ void ThemeVision::draw_listview_item(Bitmap &content, const std::string &text,
     auto background_color =
         status.is_active ? colors.text_selection_background : colors.input_background_normal;
     if (is_hover && !status.is_active)
-        background_color = colors.input_background_hover;
+        background_color = colors.text_selection_background_hover;
     content.fill(background_color);
     content.write_fixed(Position{5, 5}, text, text_color);
 }
@@ -620,8 +623,7 @@ auto ThemePlasma::draw_window_background(Bitmap &content) -> void {
     content.line(0, 0, content.size.width - 1, 0, colors.frame_disabled_color1);
 }
 
-auto ThemePlasma::draw_scrollbar_background(Bitmap &content) -> void {
-}
+auto ThemePlasma::draw_scrollbar_background(Bitmap &content) -> void {}
 
 auto ThemePlasma::draw_button(Bitmap &content, bool has_focus, bool is_default, bool is_enabled,
                               ButtonStates state, const std::string &text) -> void {
@@ -799,8 +801,8 @@ auto ThemePlasma::draw_listview_background(Bitmap &content, const bool has_focus
                FrameSize::SingleFrame);
     auto background = has_focus ? colors.input_background_selected : colors.input_background_normal;
     if (draw_background) {
-        content.fill_rect(1, 1, content.size.width - padding * 2, content.size.height - padding * 2,
-                          background);
+        content.fill_rect(padding, padding, content.size.width - padding * 2,
+                          content.size.height - padding * 2, background);
     }
 }
 
@@ -811,7 +813,7 @@ void ThemePlasma::draw_listview_item(Bitmap &content, const std::string &text,
     auto background_color =
         status.is_active ? colors.text_selection_background : colors.input_background_normal;
     if (is_hover && !status.is_active)
-        background_color = colors.input_background_hover;
+        background_color = colors.text_selection_background_hover;
 
     content.fill(background_color);
     content.write_fixed(Position{5, 5}, text, text_color);
