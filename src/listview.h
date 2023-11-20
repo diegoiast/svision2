@@ -7,9 +7,11 @@
 
 #pragma once
 
-#include <checkboxshape.h>
+#include <functional>
 #include <string>
 #include <vector>
+
+#include <checkboxshape.h>
 #include <widget.h>
 
 class ScrollBar;
@@ -46,11 +48,10 @@ struct ListItemWidget : public Widget {
 };
 
 struct ListView : public Widget {
-    using LPWidget = std::list<std::shared_ptr<Widget>>;
-
     std::shared_ptr<ScrollBar> scrollbar = {};
     std::shared_ptr<ItemAdapter> adapter = {};
     std::vector<std::shared_ptr<Widget>> reserved_widgets = {};
+    std::function<void(ListView &, int)> on_item_selected;
     int current_item = 0;
 
     ListView(Position position, Size size);

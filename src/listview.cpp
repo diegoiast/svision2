@@ -113,6 +113,9 @@ EventPropagation ListView::on_mouse(const EventMouse &event) {
     auto clicked_item_offset = (event.y - offset - padding) / item_height;
     this->current_item = clicked_item_offset + first_item;
     invalidate();
+    if (on_item_selected) {
+        on_item_selected(*this, current_item);
+    }
     return EventPropagation::handled;
 }
 
@@ -146,6 +149,9 @@ auto ListView::on_keyboard(const EventKeyboard &event) -> EventPropagation {
             current_item++;
         ensure_item_in_viewport(*this);
         invalidate();
+        if (on_item_selected) {
+            on_item_selected(*this, current_item);
+        }
         break;
     case KeyCodes::ArrowUp:
         result = EventPropagation::handled;
@@ -153,18 +159,27 @@ auto ListView::on_keyboard(const EventKeyboard &event) -> EventPropagation {
             current_item--;
         ensure_item_in_viewport(*this);
         invalidate();
+        if (on_item_selected) {
+            on_item_selected(*this, current_item);
+        }
         break;
     case KeyCodes::Home:
         result = EventPropagation::handled;
         current_item = 0;
         ensure_item_in_viewport(*this);
         invalidate();
+        if (on_item_selected) {
+            on_item_selected(*this, current_item);
+        }
         break;
     case KeyCodes::End:
         result = EventPropagation::handled;
         current_item = adapter->get_count() - 1;
         ensure_item_in_viewport(*this);
         invalidate();
+        if (on_item_selected) {
+            on_item_selected(*this, current_item);
+        }
         break;
     case KeyCodes::PageDown:
         result = EventPropagation::handled;
@@ -173,6 +188,9 @@ auto ListView::on_keyboard(const EventKeyboard &event) -> EventPropagation {
             current_item = adapter->get_count() - 1;
         ensure_item_in_viewport(*this);
         invalidate();
+        if (on_item_selected) {
+            on_item_selected(*this, current_item);
+        }
         break;
     case KeyCodes::PageUp:
         result = EventPropagation::handled;
@@ -181,6 +199,9 @@ auto ListView::on_keyboard(const EventKeyboard &event) -> EventPropagation {
             current_item = 0;
         ensure_item_in_viewport(*this);
         invalidate();
+        if (on_item_selected) {
+            on_item_selected(*this, current_item);
+        }
         break;
     default:
         break;

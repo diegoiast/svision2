@@ -12,9 +12,10 @@
 
 #include <widget.h>
 
-class ScrollBar;
+class ListView;
 
 struct Combobox : Widget {
+    std::shared_ptr<ListView> popup_list = {};
     std::vector<std::string> strings;
     int selected_item;
 
@@ -25,4 +26,6 @@ struct Combobox : Widget {
     virtual auto on_mouse(const EventMouse &) -> EventPropagation override;
     virtual auto on_focus_change(bool new_state) -> void override;
     virtual auto on_keyboard(const EventKeyboard &) -> EventPropagation override;
+
+    auto show_popup() -> void;
 };

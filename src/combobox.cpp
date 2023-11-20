@@ -7,6 +7,7 @@
 
 #include "combobox.h"
 #include "button.h"
+#include "listview.h"
 #include "spdlog/spdlog.h"
 #include "theme.h"
 
@@ -20,10 +21,7 @@ Combobox::Combobox(Position position, int width, const std::vector<std::string> 
     this->content.resize({width, 20});
     auto s = Size{20, 20};
     auto p = Position{width - s.width, 0};
-    add_new<Button>(p, s, "*", false, []() {
-        spdlog::info("Should open the popout");
-        return;
-    });
+    add_new<Button>(p, s, "*", false, [this]() { show_popup(); });
 }
 
 auto Combobox::get_value() const -> std::string {
@@ -99,4 +97,25 @@ auto Combobox::on_keyboard(const EventKeyboard &event) -> EventPropagation {
     }
 
     return result;
+}
+auto Combobox::show_popup() -> void {
+    spdlog::info("Will show popup");
+    if (!popup_list) {
+        auto position = Position{this->position.x, this->position.y + this->content.size.height};
+        auto size = Size{this->content.size.width, 100};
+        popup_list = window->add_new<ListView>(position, size);
+        popup_list->adapter = std::make_shared<ListItemAdapter>(strings);
+        popup_list->on_item_selected = [this](auto listview, auto index) {
+            this->selected_item = index;
+            this->popup_list->hide();
+            this->invalidate();
+            //            this->window->invalidate();
+        };
+    } else {
+        if (popup_list->is_visible()) {
+            popup_list->hide();
+        } else {
+            popup_list->show();
+        }
+    }
 }
