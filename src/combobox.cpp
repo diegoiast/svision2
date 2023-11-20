@@ -13,8 +13,8 @@
 Combobox::Combobox(Position position, int width, const std::vector<std::string> strings)
     : Widget(position, {0, 0}, 0) {
     this->strings = strings;
-    this->draw_background = false;
     this->can_focus = true;
+    this->frame = {FrameStyles::Reversed, FrameSize::SingleFrame};
 
     // TODO - find a better size - according to the theme + font size
     this->content.resize({width, 20});
@@ -37,12 +37,11 @@ auto Combobox::get_value() const -> std::string {
 }
 
 auto Combobox::draw() -> void {
+    Widget::draw();
+
     auto theme = get_theme();
     auto padding = 5;
-
-    theme->draw_widget_background(content);
-    content.write_fixed({5, 5}, get_value(), theme->colors.text_color);
-    Widget::draw();
+    content.write_fixed({padding, padding}, get_value(), theme->colors.text_color);
 }
 
 auto Combobox::on_mouse(const EventMouse &event) -> EventPropagation {
