@@ -41,12 +41,22 @@ auto Combobox::draw() -> void {
 
     auto theme = get_theme();
     auto padding = 5;
-    content.write_fixed({padding, padding}, get_value(), theme->colors.text_color);
+    auto color = has_focus ? theme->colors.text_selection_color : theme->colors.text_color;
+    content.write_fixed({padding, padding}, get_value(), color);
 }
 
 auto Combobox::on_mouse(const EventMouse &event) -> EventPropagation {
     // TODO - do we need nything?
     return Widget::on_mouse(event);
+}
+
+auto Combobox::on_focus_change(bool new_state) -> void {
+    auto theme = get_theme();
+    if (new_state) {
+        this->content.background_color = theme->colors.text_selection_background;
+    } else {
+        this->content.background_color = theme->colors.window_background;
+    }
 }
 
 auto Combobox::on_keyboard(const EventKeyboard &event) -> EventPropagation {

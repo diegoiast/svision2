@@ -311,7 +311,11 @@ auto Widget::invalidate() -> void {
 
 auto Widget::draw() -> void {
     if (draw_background) {
-        get_theme()->draw_widget_background(content, has_focus);
+        if (content.background_color != 0) {
+            content.fill(content.background_color);
+        } else {
+            get_theme()->draw_widget_background(content, has_focus);
+        }
     }
     for (auto w : widgets.widgets) {
         if (!w->is_visible()) {
@@ -412,7 +416,7 @@ PlatformWindow::~PlatformWindow() { spdlog::info("Window done"); }
 
 auto PlatformWindow::draw() -> void {
     if (content.background_color != 0)
-        content.fill_rect(0, 0, content.size.width, content.size.height, content.background_color);
+        content.fill(content.background_color);
     else
         theme->draw_window_background(content);
 

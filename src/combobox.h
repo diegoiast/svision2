@@ -23,5 +23,6 @@ struct Combobox : Widget {
     auto get_item() const -> int { return selected_item; }
     virtual auto draw() -> void override;
     virtual auto on_mouse(const EventMouse &) -> EventPropagation override;
+    virtual auto on_focus_change(bool new_state) -> void override;
     virtual auto on_keyboard(const EventKeyboard &) -> EventPropagation override;
 };
