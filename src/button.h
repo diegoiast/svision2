@@ -26,7 +26,7 @@ struct Button : Widget {
     // TODO this part can be extracted into another helper class to be re-used.
     std::shared_ptr<Timer> click_timer;
     RepeatState repeat_state = RepeatState::Normal;
-    bool is_autorepeat;
+    bool is_autorepeat = false;
     int64_t autorepeat_millies = 500;
     int64_t autorepeat_start = autorepeat_millies;
 
