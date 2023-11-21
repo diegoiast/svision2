@@ -17,7 +17,7 @@ class ListView;
 struct Combobox : Widget {
     std::shared_ptr<ListView> popup_list = {};
     std::vector<std::string> strings;
-    int selected_item;
+    int selected_item = -1;
 
     Combobox(Position position, int width, const std::vector<std::string> strings);
     auto get_value() const -> std::string;
