@@ -8,7 +8,6 @@
 #include "combobox.h"
 #include "button.h"
 #include "listview.h"
-#include "spdlog/spdlog.h"
 #include "theme.h"
 
 Combobox::Combobox(Position position, int width, const std::vector<std::string> strings)
@@ -58,18 +57,15 @@ auto Combobox::on_focus_change(bool new_state) -> void {
 }
 
 auto Combobox::on_keyboard(const EventKeyboard &event) -> EventPropagation {
-    // TODO - down,up,home,end, pgup, pgdown
     auto result = EventPropagation::propagate;
     switch (event.key) {
     case KeyCodes::Enter:
-        spdlog::info("should open the list");
         break;
     case KeyCodes::ArrowUp:
         selected_item--;
         if (selected_item < 0) {
             selected_item = 0;
         }
-        spdlog::info("up - new value = {}", selected_item);
         result = EventPropagation::handled;
         invalidate();
         break;
@@ -79,7 +75,6 @@ auto Combobox::on_keyboard(const EventKeyboard &event) -> EventPropagation {
             selected_item = strings.size() - 1;
         }
         result = EventPropagation::handled;
-        spdlog::info("Down - new value = {}", selected_item);
         invalidate();
         break;
     case KeyCodes::Home:
@@ -99,17 +94,15 @@ auto Combobox::on_keyboard(const EventKeyboard &event) -> EventPropagation {
     return result;
 }
 auto Combobox::show_popup() -> void {
-    spdlog::info("Will show popup");
     if (!popup_list) {
         auto position = Position{this->position.x, this->position.y + this->content.size.height};
         auto size = Size{this->content.size.width, 100};
         popup_list = window->add_new<ListView>(position, size);
         popup_list->adapter = std::make_shared<ListItemAdapter>(strings);
         popup_list->on_item_selected = [this](auto listview, auto index) {
+            this->needs_redraw = true;
             this->selected_item = index;
             this->popup_list->hide();
-            this->invalidate();
-            //            this->window->invalidate();
         };
     } else {
         if (popup_list->is_visible()) {

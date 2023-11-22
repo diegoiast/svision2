@@ -89,7 +89,7 @@ struct Widget {
     friend class PlatformWindow;
     friend class WidgetCollection;
 
-  private:
+  protected:
     bool needs_redraw = true;
     bool is_widget_visible = true;
 };
