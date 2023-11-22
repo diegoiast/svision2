@@ -101,24 +101,8 @@ auto Bitmap::resize(int width, int height) -> void {
     // no need to reallocate if we have a widget with the same buffer size
     // for example 100x200 -> 200x100, or 10x50 -> 5x100 etc.
     if (width * height != this->size.width * this->size.height) {
-        auto new_buffer = new uint32_t[width * height];
-#if 0
-    auto xx = std::min(width, size.width);
-    auto yy = std::min(height, size.height);
-
-    // todo - instead of filling the whole buffer we could clean
-    // the right, and bottom dirty parts.
-    std::fill_n(new_buffer, width * height, background_color);
-    if (yy > 0 && xx > 0) {
-        for (auto y = 0; y < yy; y++) {
-            for (auto x = 0; x < xx; x++) {
-                new_buffer[(y * width) + x] = get_pixel(x, y);
-            }
-        }
-    }
-#endif
-        delete[] buf;
-        buf = new_buffer;
+        // TODO - should we copy old buffer to new one?
+        buffer.resize(width * height);
     }
     size.width = width;
     size.height = height;

@@ -133,9 +133,9 @@ auto PlatformX11::open_window(int x, int y, int width, int height, const std::st
     window->content.resize(width, height);
     window->theme = default_theme;
     window->platform = this;
-    window->x11_image =
-        XCreateImage(dpy, DefaultVisual(dpy, 0), 24, ZPixmap, 0, (char *)window->content.buf,
-                     window->content.size.width, window->content.size.height, 32, 0);
+    window->x11_image = XCreateImage(
+        dpy, DefaultVisual(dpy, 0), 24, ZPixmap, 0, (char *)window->content.buffer.data(),
+        window->content.size.width, window->content.size.height, 32, 0);
 
     windows[window->x11_window] = window;
     return window;
@@ -229,8 +229,9 @@ auto PlatformX11::main_loop() -> void {
                 //        byteperline or something.
                 XFree(target_window->x11_image);
                 target_window->x11_image = XCreateImage(
-                    dpy, DefaultVisual(dpy, 0), 24, ZPixmap, 0, (char *)target_window->content.buf,
-                    target_window->content.size.width, target_window->content.size.height, 32, 0);
+                    dpy, DefaultVisual(dpy, 0), 24, ZPixmap, 0,
+                    (char *)target_window->content.buffer.data(), target_window->content.size.width,
+                    target_window->content.size.height, 32, 0);
 
                 target_window->on_resize(event);
             }
