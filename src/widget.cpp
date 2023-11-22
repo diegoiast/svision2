@@ -44,7 +44,10 @@ auto WidgetCollection::add(std::shared_ptr<Widget> widget, PlatformWindow *windo
 auto WidgetCollection::on_mouse(const EventMouse &event) -> EventPropagation {
     auto widget_under_mouse = std::shared_ptr<Widget>();
     auto result = EventPropagation::propagate;
-    for (auto w : this->widgets) {
+
+    // TODO - this just traveses in reverse order,we need to order widgets by z-index instead
+    for (auto it = widgets.rbegin(); it != widgets.rend(); ++it) {
+        auto w = *it;
         if (!w->is_visible()) {
             continue;
         }
