@@ -37,7 +37,6 @@ auto WidgetCollection::add(std::shared_ptr<Widget> widget, PlatformWindow *windo
         }
         max_focus_index++;
     }
-    spdlog::info("New sub widget {}", fmt::ptr(widget.get()));
     return widget;
 }
 
@@ -303,12 +302,15 @@ Widget::Widget(Position position, Size size, uint32_t color) {
 Widget::~Widget() {}
 
 auto Widget::invalidate() -> void {
-    this->needs_redraw = true;
-    if (this->window) {
-        this->window->invalidate();
+    if (this->needs_redraw) {
+        return;
     }
-    if (this->parent) {
+    this->needs_redraw = true;
+    if (this->parent && !this->parent->needs_redraw) {
         this->parent->invalidate();
+    }
+    if (this->window && !this->window->needs_redraw) {
+        this->window->invalidate();
     }
 }
 

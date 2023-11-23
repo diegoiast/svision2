@@ -1,7 +1,6 @@
 #include "scrollbar.h"
 #include "theme.h"
 #include <button.h>
-#include <spdlog/spdlog.h>
 
 ScrollBar::ScrollBar(Position position, int length, bool horizontal, int maximum)
     : Widget(position, {}, 0) {
@@ -178,9 +177,6 @@ auto ScrollBar::update_thumb_size() -> void {
                          : std::max(minimum_thumb_size, available_size * (visible_range / range));
         thumb_range = available_size - thumb_size;
         thumb_position = range == 0 ? 0 : (value - minimum) * thumb_range / range;
-
-        spdlog::info("value={}, range={}, available_size={}, thumb_size={}, thumb_position={}",
-                     value, range, available_size, thumb_size, thumb_position);
     }
     // technically - `invalidate()` should be called, but it is called usually
     // right after this function

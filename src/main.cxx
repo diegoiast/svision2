@@ -45,13 +45,11 @@ struct DebugWidget : public Widget {
 
     auto on_mouse_enter() -> void {
         mouse_over = true;
-        spdlog::info("Widget: mouse entered!");
         invalidate();
     }
 
     auto on_mouse_leave() -> void {
         mouse_over = false;
-        spdlog::info("Widget: mouse leave!");
         invalidate();
     }
 
