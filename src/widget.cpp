@@ -299,12 +299,15 @@ Widget::Widget(Position position, Size size, uint32_t color) {
 Widget::~Widget() {}
 
 auto Widget::invalidate() -> void {
-    this->needs_redraw = true;
-    if (this->window) {
-        this->window->invalidate();
+    if (this->needs_redraw) {
+        return;
     }
-    if (this->parent) {
+    this->needs_redraw = true;
+    if (this->parent && !this->parent->needs_redraw) {
         this->parent->invalidate();
+    }
+    if (this->window && !this->window->needs_redraw) {
+        this->window->invalidate();
     }
 }
 
