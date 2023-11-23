@@ -37,7 +37,6 @@ auto WidgetCollection::add(std::shared_ptr<Widget> widget, PlatformWindow *windo
         }
         max_focus_index++;
     }
-    spdlog::info("New sub widget {}", fmt::ptr(widget.get()));
     return widget;
 }
 
