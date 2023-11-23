@@ -84,8 +84,13 @@ auto WidgetCollection::on_mouse(const EventMouse &event) -> EventPropagation {
                 break;
             }
             case MouseEvents::MouseMove: {
-                // TODO: is this the correct event?
-                auto b = on_mouse_press(event, w);
+                // TODO: are we missing an event? beeing sent?
+                if (event.pressed) {
+                    auto b = on_mouse_press(event, w);
+                    if (b == EventPropagation::handled) {
+                        result = EventPropagation::handled;
+                    }
+                }
                 break;
             }
             case MouseEvents::Unknown:
@@ -148,8 +153,8 @@ auto WidgetCollection::on_mouse_press(const EventMouse &event, std::shared_ptr<W
         w->needs_redraw |= last_overed_widget->needs_redraw;
     }
     if (!w->mouse_over) {
-        w->on_mouse_enter();
         w->mouse_over = true;
+        w->on_mouse_enter();
     }
     if (event.type == MouseEvents::MouseMove) {
         w->on_hover(local_event);
