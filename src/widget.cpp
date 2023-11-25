@@ -29,7 +29,6 @@ auto WidgetCollection::add(std::shared_ptr<Widget> widget, PlatformWindow *windo
     widget->window = window;
     if (widget->focus_index < 0) {
         if (window) {
-            // FIXME - this seems wierd, should I be manipulating window's internals...?
             widget->focus_index = max_focus_index;
             widget->theme = window->theme;
         } else {
@@ -44,7 +43,7 @@ auto WidgetCollection::on_mouse(const EventMouse &event) -> EventPropagation {
     auto widget_under_mouse = std::shared_ptr<Widget>();
     auto result = EventPropagation::propagate;
 
-    // TODO - this just traveses in reverse order,we need to order widgets by z-index instead
+    // TODO - this just traverses in reverse order, we need to order widgets by z-index instead
     for (auto it = widgets.rbegin(); it != widgets.rend(); ++it) {
         auto w = *it;
         if (!w->is_visible()) {
@@ -291,9 +290,11 @@ auto WidgetCollection::focus_widget(std::shared_ptr<Widget> widget) -> void {
     spdlog::info("widget {} got focus", widget->focus_index);
     widget->on_focus_change(true);
     widget->has_focus = true;
+    widget->is_widget_visible = true;
+    widget->needs_redraw = true;
     // TODO - we had this code - is it needed? probably not
     // last_focus_index = widget->focus_index;
-    focused_widget = widget;
+    this->focused_widget = widget;
 }
 
 Widget::Widget(Position position, Size size, uint32_t color) {

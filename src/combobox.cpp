@@ -93,6 +93,7 @@ auto Combobox::on_keyboard(const EventKeyboard &event) -> EventPropagation {
 
     return result;
 }
+
 auto Combobox::show_popup() -> void {
     if (!popup_list) {
         auto position = Position{this->position.x, this->position.y + this->content.size.height};
@@ -100,15 +101,15 @@ auto Combobox::show_popup() -> void {
         popup_list = window->add_new<ListView>(position, size);
         popup_list->adapter = std::make_shared<ListItemAdapter>(strings);
         popup_list->on_item_selected = [this](auto listview, auto index) {
-            this->needs_redraw = true;
             this->selected_item = index;
             this->popup_list->hide();
         };
+        window->focus_widget(popup_list);
     } else {
         if (popup_list->is_visible()) {
             popup_list->hide();
         } else {
-            popup_list->show();
+            window->focus_widget(popup_list);
         }
     }
 }
