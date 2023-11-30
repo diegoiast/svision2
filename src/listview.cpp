@@ -148,43 +148,38 @@ auto ListView::on_keyboard(const EventKeyboard &event) -> EventPropagation {
         result = EventPropagation::handled;
         if (this->current_item < adapter->get_count() - 1)
             this->current_item++;
-        ensure_item_in_viewport(*this);
         break;
     case KeyCodes::ArrowUp:
         result = EventPropagation::handled;
         if (this->current_item > 0)
             this->current_item--;
-        ensure_item_in_viewport(*this);
         break;
     case KeyCodes::Home:
         result = EventPropagation::handled;
         this->current_item = 0;
-        ensure_item_in_viewport(*this);
         break;
     case KeyCodes::End:
         result = EventPropagation::handled;
         this->current_item = adapter->get_count() - 1;
-        ensure_item_in_viewport(*this);
         break;
     case KeyCodes::PageDown:
         result = EventPropagation::handled;
         this->current_item += adapter->get_count() / 5;
         if (this->current_item >= adapter->get_count())
             this->current_item = adapter->get_count() - 1;
-        ensure_item_in_viewport(*this);
         break;
     case KeyCodes::PageUp:
         result = EventPropagation::handled;
         this->current_item -= adapter->get_count() / 5;
         if (this->current_item < 0)
             this->current_item = 0;
-        ensure_item_in_viewport(*this);
         break;
     default:
         break;
     }
 
     if (old_item != this->current_item) {
+        ensure_item_in_viewport(*this);
         invalidate();
         if (this->on_item_selected) {
             this->on_item_selected(*this, current_item);
