@@ -93,12 +93,12 @@ auto ListView::draw() -> void {
     }
 }
 
-EventPropagation ListView::on_mouse(const EventMouse &event) {
+EventPropagation ListView::on_mouse_click(const EventMouse &event) {
     if (!event.pressed) {
         return Widget::on_mouse(event);
     }
 
-    auto p = Widget::on_mouse(event);
+    auto p = Widget::on_mouse_click(event);
     if (p == EventPropagation::handled) {
         return p;
     }
