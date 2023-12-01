@@ -156,21 +156,12 @@ auto WidgetCollection::on_mouse_press(const EventMouse &event, std::shared_ptr<W
         w->on_hover(local_event);
         result = EventPropagation::handled;
     } else {
+        if (!w->has_focus && w->window) {
+            w->window->focus_widget(w);
+        }
         result = w->on_mouse_click(local_event);
     }
     last_overed_widget = w;
-
-    if (event.type == MouseEvents::Press) {
-        if (!w->has_focus) {
-            w->invalidate();
-
-            if (!w->parent) {
-                // TODO - how should we handle this on sub widgets?
-                // ask window for focus - only for op level widgets
-                w->window->focus_widget(w);
-            }
-        }
-    }
     return result;
 }
 

@@ -102,10 +102,9 @@ auto Combobox::show_popup() -> void {
         popup_list->adapter = std::make_shared<ListItemAdapter>(strings);
         popup_list->on_item_selected = [this](auto listview, auto index) {
             this->selected_item = index;
-            this->invalidate();
+            this->needs_redraw = true;
             this->popup_list->hide();
-            // TODO: this is not working yet
-            //            window->focus_widget(shared_from_this());
+            window->focus_widget(shared_from_this());
         };
         popup_list->hide();
     }
