@@ -20,6 +20,46 @@
 
 #include "platformx11-keycodes.h"
 
+const char *x11_event_type_names[]{
+    "???",
+    "???",
+    "KeyPress",         // 2
+    "KeyRelease",       // 3
+    "ButtonPress",      // 4
+    "ButtonRelease",    // 5
+    "MotionNotify",     // 6
+    "EnterNotify",      // 7
+    "LeaveNotify",      // 8
+    "FocusIn",          // 9
+    "FocusOut",         // 10
+    "KeymapNotify",     // 11
+    "Expose",           // 12
+    "GraphicsExpose",   // 13
+    "NoExpose",         // 14
+    "VisibilityNotify", // 15
+    "CreateNotify",     // 16
+    "DestroyNotify",    // 17
+    "UnmapNotify",      // 18
+    "MapNotify",        // 19
+    "MapRequest",       // 20
+    "ReparentNotify",   // 21
+    "ConfigureNotify",  // 22
+    "ConfigureRequest", // 23
+    "GravityNotify",    // 24
+    "ResizeRequest",    // 25
+    "CirculateNotify",  // 26
+    "CirculateRequest", // 27
+    "PropertyNotify",   // 28
+    "SelectionClear",   // 29
+    "SelectionRequest", // 30
+    "SelectionNotify",  // 31
+    "ColormapNotify",   // 32
+    "ClientMessage",    // 33
+    "MappingNotify",    // 34
+    "GenericEvent",     // 35
+    "LASTEvent",        // 36
+};
+
 auto convert_x11_key_event(XEvent &ev, Display *dpy) -> EventKeyboard {
     auto event = EventKeyboard();
     char buf[20];
@@ -104,6 +144,7 @@ auto PlatformX11::init() -> void {
 
     // TODO - detect GTK and use a GTK theme
     default_theme = std::make_shared<ThemePlasma>();
+    //    spdlog::set_level(spdlog::level::debug);
     spdlog::info("PlatformX11 initialized");
 }
 
@@ -133,9 +174,9 @@ auto PlatformX11::open_window(int x, int y, int width, int height, const std::st
     window->content.resize(width, height);
     window->theme = default_theme;
     window->platform = this;
-    window->x11_image =
-        XCreateImage(dpy, DefaultVisual(dpy, 0), 24, ZPixmap, 0, (char *)window->content.buf,
-                     window->content.size.width, window->content.size.height, 32, 0);
+    window->x11_image = XCreateImage(
+        dpy, DefaultVisual(dpy, 0), 24, ZPixmap, 0, (char *)window->content.buffer.data(),
+        window->content.size.width, window->content.size.height, 32, 0);
 
     windows[window->x11_window] = window;
     return window;
@@ -143,12 +184,17 @@ auto PlatformX11::open_window(int x, int y, int width, int height, const std::st
 
 auto PlatformX11::show_window(std::shared_ptr<PlatformWindow> w) -> void {
     auto window = std::dynamic_pointer_cast<PlatformWindowX11>(w);
+    window->needs_redraw = true;
     XMapWindow(dpy, window->x11_window);
     XSync(dpy, window->x11_window);
 }
 
 auto PlatformX11::invalidate(PlatformWindow &window) -> void {
     auto windowX11 = static_cast<PlatformWindowX11 *>(&window);
+
+    if (window.needs_redraw) {
+        return;
+    }
 
     XEvent exppp;
     exppp.type = Expose;
@@ -172,10 +218,16 @@ auto PlatformX11::main_loop() -> void {
             continue;
         }
         target_window = windows.at(ev.xany.window);
-        spdlog::debug("Sending message {} to \"{}\"", ev.type, target_window->title);
+        spdlog::debug("Sending message {}({}) to \"{}\"", x11_event_type_names[ev.type], ev.type,
+                      target_window->title);
 
         switch (ev.type) {
         case Expose:
+            spdlog::info("Expose requested, selected widget is {}",
+                         target_window->widgets.focused_widget
+                             ? target_window->widgets.focused_widget->focus_index
+                             : -1);
+
             target_window->needs_redraw = true;
             break;
 
@@ -229,8 +281,9 @@ auto PlatformX11::main_loop() -> void {
                 //        byteperline or something.
                 XFree(target_window->x11_image);
                 target_window->x11_image = XCreateImage(
-                    dpy, DefaultVisual(dpy, 0), 24, ZPixmap, 0, (char *)target_window->content.buf,
-                    target_window->content.size.width, target_window->content.size.height, 32, 0);
+                    dpy, DefaultVisual(dpy, 0), 24, ZPixmap, 0,
+                    (char *)target_window->content.buffer.data(), target_window->content.size.width,
+                    target_window->content.size.height, 32, 0);
 
                 target_window->on_resize(event);
             }

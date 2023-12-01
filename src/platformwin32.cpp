@@ -160,10 +160,10 @@ struct PlatformWindowWin32 : public PlatformWindow {
 };
 
 static auto win32_paint_window(PlatformWindowWin32 *window) -> void {
-    if (window->content.buf == nullptr || window->content.size.height <= 0 ||
+    if (window->content.buffer.data() == nullptr || window->content.size.height <= 0 ||
         window->content.size.height <= 0) {
         spdlog::warn("win32_paint_window: Window has invalid size! ptr={}, size={}x{}",
-                     fmt::ptr(window->content.buf), window->content.size.width,
+                     fmt::ptr(window->content.buffer.data()), window->content.size.width,
                      window->content.size.height);
         return;
     }
@@ -182,7 +182,7 @@ static auto win32_paint_window(PlatformWindowWin32 *window) -> void {
     bi.bmiColors[0].rgbReserved = 0xff;
 
     SetDIBitsToDevice(memdc, 0, 0, window->content.size.width, window->content.size.height, 0, 0, 0,
-                      window->content.size.height, window->content.buf, (BITMAPINFO *)&bi,
+                      window->content.size.height, window->content.buffer.data(), (BITMAPINFO *)&bi,
                       DIB_RGB_COLORS);
     BitBlt(hdc, 0, 0, window->content.size.width, window->content.size.height, memdc, 0, 0,
            SRCCOPY);

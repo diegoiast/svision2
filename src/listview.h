@@ -7,9 +7,11 @@
 
 #pragma once
 
-#include <checkboxshape.h>
+#include <functional>
 #include <string>
 #include <vector>
+
+#include <checkboxshape.h>
 #include <widget.h>
 
 class ScrollBar;
@@ -41,21 +43,18 @@ struct ListItemWidget : public Widget {
     }
 
     virtual auto draw() -> void override;
-    virtual auto on_mouse_enter() -> void override { invalidate(); };
-    virtual auto on_mouse_leave() -> void override { invalidate(); };
 };
 
 struct ListView : public Widget {
-    using LPWidget = std::list<std::shared_ptr<Widget>>;
-
     std::shared_ptr<ScrollBar> scrollbar = {};
     std::shared_ptr<ItemAdapter> adapter = {};
     std::vector<std::shared_ptr<Widget>> reserved_widgets = {};
+    std::function<void(ListView &, int)> on_item_selected;
     int current_item = 0;
 
     ListView(Position position, Size size);
     virtual auto draw() -> void override;
-    virtual auto on_mouse(const EventMouse &event) -> EventPropagation override;
+    virtual auto on_mouse_click(const EventMouse &event) -> EventPropagation override;
     virtual auto on_keyboard(const EventKeyboard &) -> EventPropagation override;
 
     auto did_adapter_update() -> void;

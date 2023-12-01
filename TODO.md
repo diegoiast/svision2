@@ -4,7 +4,7 @@ Random list of things to be implemented on this library
 
 1. Widgets
     1. ~~List view~~
-    2. Combo box
+    2. ~~Combo box~~
     3. StackWidget
     4. TabView
     5. Toolbar

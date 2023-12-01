@@ -29,7 +29,6 @@ auto WidgetCollection::add(std::shared_ptr<Widget> widget, PlatformWindow *windo
     widget->window = window;
     if (widget->focus_index < 0) {
         if (window) {
-            // FIXME - this seems wierd, should I be manipulating window's internals...?
             widget->focus_index = max_focus_index;
             widget->theme = window->theme;
         } else {
@@ -43,7 +42,10 @@ auto WidgetCollection::add(std::shared_ptr<Widget> widget, PlatformWindow *windo
 auto WidgetCollection::on_mouse(const EventMouse &event) -> EventPropagation {
     auto widget_under_mouse = std::shared_ptr<Widget>();
     auto result = EventPropagation::propagate;
-    for (auto w : this->widgets) {
+
+    // TODO - this just traverses in reverse order, we need to order widgets by z-index instead
+    for (auto it = widgets.rbegin(); it != widgets.rend(); ++it) {
+        auto w = *it;
         if (!w->is_visible()) {
             continue;
         }
@@ -81,8 +83,11 @@ auto WidgetCollection::on_mouse(const EventMouse &event) -> EventPropagation {
                 break;
             }
             case MouseEvents::MouseMove: {
-                // TODO: is this the correct event?
+                // TODO: event name is bad, as this also handles mouse move
                 auto b = on_mouse_press(event, w);
+                if (b == EventPropagation::handled) {
+                    result = EventPropagation::handled;
+                }
                 break;
             }
             case MouseEvents::Unknown:
@@ -141,31 +146,22 @@ auto WidgetCollection::on_mouse_press(const EventMouse &event, std::shared_ptr<W
         last_overed_widget->on_mouse_leave();
         last_overed_widget->mouse_over = false;
         last_overed_widget->needs_redraw = true;
-        last_overed_widget->invalidate();
         w->needs_redraw |= last_overed_widget->needs_redraw;
     }
     if (!w->mouse_over) {
-        w->on_mouse_enter();
         w->mouse_over = true;
+        w->on_mouse_enter();
     }
     if (event.type == MouseEvents::MouseMove) {
         w->on_hover(local_event);
+        result = EventPropagation::handled;
     } else {
+        if (!w->has_focus && w->window) {
+            w->window->focus_widget(w);
+        }
         result = w->on_mouse_click(local_event);
     }
     last_overed_widget = w;
-
-    if (event.type == MouseEvents::Press) {
-        if (!w->has_focus) {
-            w->invalidate();
-
-            if (!w->parent) {
-                // TODO - how should we handle this on sub widgets?
-                // ask window for focus - only for op level widgets
-                w->window->focus_widget(w);
-            }
-        }
-    }
     return result;
 }
 
@@ -285,9 +281,11 @@ auto WidgetCollection::focus_widget(std::shared_ptr<Widget> widget) -> void {
     spdlog::info("widget {} got focus", widget->focus_index);
     widget->on_focus_change(true);
     widget->has_focus = true;
+    widget->is_widget_visible = true;
+    widget->needs_redraw = true;
     // TODO - we had this code - is it needed? probably not
     // last_focus_index = widget->focus_index;
-    focused_widget = widget;
+    this->focused_widget = widget;
 }
 
 Widget::Widget(Position position, Size size, uint32_t color) {
@@ -313,7 +311,11 @@ auto Widget::invalidate() -> void {
 
 auto Widget::draw() -> void {
     if (draw_background) {
-        get_theme()->draw_widget_background(content, has_focus);
+        if (content.background_color != 0) {
+            content.fill(content.background_color);
+        } else {
+            get_theme()->draw_widget_background(content, has_focus);
+        }
     }
     for (auto w : widgets.widgets) {
         if (!w->is_visible()) {
@@ -414,7 +416,7 @@ PlatformWindow::~PlatformWindow() { spdlog::info("Window done"); }
 
 auto PlatformWindow::draw() -> void {
     if (content.background_color != 0)
-        content.fill_rect(0, 0, content.size.width, content.size.height, content.background_color);
+        content.fill(content.background_color);
     else
         theme->draw_window_background(content);
 

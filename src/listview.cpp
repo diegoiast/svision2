@@ -93,12 +93,12 @@ auto ListView::draw() -> void {
     }
 }
 
-EventPropagation ListView::on_mouse(const EventMouse &event) {
+EventPropagation ListView::on_mouse_click(const EventMouse &event) {
     if (!event.pressed) {
         return Widget::on_mouse(event);
     }
 
-    auto p = Widget::on_mouse(event);
+    auto p = Widget::on_mouse_click(event);
     if (p == EventPropagation::handled) {
         return p;
     }
@@ -113,6 +113,9 @@ EventPropagation ListView::on_mouse(const EventMouse &event) {
     auto clicked_item_offset = (event.y - offset - padding) / item_height;
     this->current_item = clicked_item_offset + first_item;
     invalidate();
+    if (this->on_item_selected) {
+        this->on_item_selected(*this, current_item);
+    }
     return EventPropagation::handled;
 }
 
@@ -139,51 +142,48 @@ auto static ensure_item_in_viewport(ListView &l) {
 
 auto ListView::on_keyboard(const EventKeyboard &event) -> EventPropagation {
     auto result = EventPropagation::propagate;
+    auto old_item = current_item;
     switch (event.key) {
     case KeyCodes::ArrowDown:
         result = EventPropagation::handled;
-        if (current_item < adapter->get_count() - 1)
-            current_item++;
-        ensure_item_in_viewport(*this);
-        invalidate();
+        if (this->current_item < adapter->get_count() - 1)
+            this->current_item++;
         break;
     case KeyCodes::ArrowUp:
         result = EventPropagation::handled;
-        if (current_item > 0)
-            current_item--;
-        ensure_item_in_viewport(*this);
-        invalidate();
+        if (this->current_item > 0)
+            this->current_item--;
         break;
     case KeyCodes::Home:
         result = EventPropagation::handled;
-        current_item = 0;
-        ensure_item_in_viewport(*this);
-        invalidate();
+        this->current_item = 0;
         break;
     case KeyCodes::End:
         result = EventPropagation::handled;
-        current_item = adapter->get_count() - 1;
-        ensure_item_in_viewport(*this);
-        invalidate();
+        this->current_item = adapter->get_count() - 1;
         break;
     case KeyCodes::PageDown:
         result = EventPropagation::handled;
-        current_item += adapter->get_count() / 5;
-        if (current_item >= adapter->get_count())
-            current_item = adapter->get_count() - 1;
-        ensure_item_in_viewport(*this);
-        invalidate();
+        this->current_item += adapter->get_count() / 5;
+        if (this->current_item >= adapter->get_count())
+            this->current_item = adapter->get_count() - 1;
         break;
     case KeyCodes::PageUp:
         result = EventPropagation::handled;
-        current_item -= adapter->get_count() / 5;
-        if (current_item < 0)
-            current_item = 0;
-        ensure_item_in_viewport(*this);
-        invalidate();
+        this->current_item -= adapter->get_count() / 5;
+        if (this->current_item < 0)
+            this->current_item = 0;
         break;
     default:
         break;
+    }
+
+    if (old_item != this->current_item) {
+        ensure_item_in_viewport(*this);
+        invalidate();
+        if (this->on_item_selected) {
+            this->on_item_selected(*this, current_item);
+        }
     }
     return result;
 }

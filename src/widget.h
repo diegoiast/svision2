@@ -37,7 +37,7 @@ struct WidgetCollection {
     auto focus_widget(std::shared_ptr<Widget> widget) -> void;
 };
 
-struct Widget {
+struct Widget : public std::enable_shared_from_this<Widget> {
     Bitmap content;
     Position position;
     WidgetCollection widgets;
@@ -89,7 +89,7 @@ struct Widget {
     friend class PlatformWindow;
     friend class WidgetCollection;
 
-  private:
+  protected:
     bool needs_redraw = true;
     bool is_widget_visible = true;
 };
@@ -105,9 +105,26 @@ struct PlatformWindow {
 
     virtual ~PlatformWindow();
 
-    auto focus_next_widget() -> void { widgets.focus_next_widget(); }
-    auto focus_previous_widget() -> void { widgets.focus_previous_widget(); }
-    auto focus_widget(std::shared_ptr<Widget> widget) -> void { widgets.focus_widget(widget); }
+    auto focus_next_widget() -> void {
+        auto l = widgets.focused_widget;
+        widgets.focus_next_widget();
+        if (l != widgets.focused_widget)
+            invalidate();
+    }
+
+    auto focus_previous_widget() -> void {
+        auto l = widgets.focused_widget;
+        widgets.focus_previous_widget();
+        if (l != widgets.focused_widget)
+            invalidate();
+    }
+
+    auto focus_widget(std::shared_ptr<Widget> widget) -> void {
+        auto l = widgets.focused_widget;
+        widgets.focus_widget(widget);
+        if (l != widgets.focused_widget)
+            invalidate();
+    }
 
     virtual auto draw() -> void;
     virtual auto on_keyboard(const EventKeyboard &) -> void;
@@ -120,7 +137,6 @@ struct PlatformWindow {
     // TODO - make sure this T derieves from `Widget`
     template <typename T> auto add(T widget) -> T {
         widgets.add(widget, this);
-        widget->window = this;
         return widget;
     };
 

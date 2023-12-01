@@ -15,6 +15,7 @@
 
 #include <button.h>
 #include <checkbox.h>
+#include <combobox.h>
 #include <label.h>
 #include <listview.h>
 #include <radiobuttongroup.h>
@@ -166,6 +167,14 @@ int main() {
     cb->set_checked(EventPropagation::handled);
 
     w1->add_new<ScrollBar>(Position{615, 00}, 480, false)->set_values(100, 200, 200, 5);
+
+    w1->add_new<Combobox>(Position{10, 280}, 200,
+                          std::vector<std::string>{
+                              "Spring",
+                              "Summer",
+                              "Autumn/Fall",
+                              "Winter",
+                          });
 
     std::shared_ptr<ScrollBar> scroll;
     std::shared_ptr<Spinbox> spin;

@@ -10,6 +10,7 @@
 #include <cassert>
 #include <cmath>
 #include <string>
+#include <vector>
 
 #include <sizepoint.h>
 
@@ -85,35 +86,34 @@ auto Darker(uint32_t color, double percentage = 0.1) -> uint32_t;
 
 struct Bitmap {
     uint32_t background_color = 0;
-    uint32_t *buf = 0;
+    //    uint32_t *buf = 0;
+    std::vector<uint32_t> buffer;
     Size size = {0, 0};
 
-    virtual ~Bitmap() { delete[] buf; }
+    virtual ~Bitmap() {}
 
     auto inline put_pixel(int x, int y, uint32_t color) -> void {
-        assert(buf);
         if (x < 0 || x >= size.width)
             return;
         if (y < 0 || y >= size.height)
             return;
-        buf[(y * size.width) + x] = color;
+        buffer[(y * size.width) + x] = color;
     }
+
     auto inline get_pixel(int x, int y) const -> uint32_t {
-        assert(buf);
         if (x >= size.width)
             return 0;
         if (y >= size.height)
             return 0;
-        return buf[(y * size.width) + x];
+        return buffer[(y * size.width) + x];
     }
 
     auto resize(int width, int height) -> void;
     auto resize(Size size) -> void { resize(size.width, size.height); }
 
     auto fill(uint32_t color) -> void {
-        assert(buf);
         for (auto i = 0; i < size.width * size.height; i++) {
-            buf[i] = color;
+            buffer[i] = color;
         }
     }
     auto fill_rect(int x, int y, int w, int h, uint32_t color) -> void;
