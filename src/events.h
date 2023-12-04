@@ -21,24 +21,27 @@ enum class MouseEvents {
     MouseMove,
 };
 
+// When possible - keys match the corresponding unicode.
 enum class KeyCodes {
     Unknown = 0x00,
-    Escape = 0x01,
+    Home = 0x02,
+    End = 0x05,
+
+    Backspace = 0x0008,
     Tab = 0x09,
     Return = 0x0a,
     Enter = 0x0d,
-    ArrowLeft = 0x18,
-    ArrowRight = 0x13,
-    ArrowUp = 0x012,
     ArrowDown = 0x011,
-    Home = 0x02,
-    End = 0x05,
+    ArrowUp = 0x012,
+    ArrowRight = 0x13,
+    ArrowLeft = 0x18,
+    Escape = 0x001b,
+    Space = ' ',
+
     Delete = 0x007F,
-    Backspace = 0x0008,
     Insert = 0x007E,
     PageDown = 0xff55,
     PageUp = 0xff56,
-    Space = ' ',
     ShiftLeft = 0xffe1,
     ShiftRight = 0xffe2,
     ControlLeft = 0xffe3,
