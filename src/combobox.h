@@ -14,8 +14,10 @@
 
 class ListView;
 
+class ComboboxList;
+
 struct Combobox : Widget {
-    std::shared_ptr<ListView> popup_list = {};
+    std::shared_ptr<ComboboxList> popup_list = {};
     std::vector<std::string> strings;
     int selected_item = -1;
 

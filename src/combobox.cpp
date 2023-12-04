@@ -94,14 +94,47 @@ auto Combobox::on_keyboard(const EventKeyboard &event) -> EventPropagation {
     return result;
 }
 
+struct ComboboxList : ListView {
+    std::function<void(ComboboxList &)> on_abort;
+
+    ComboboxList(Position position, Size size) : ListView(position, size) {
+        this->read_external_mouse_events = true;
+    }
+
+    virtual auto on_mouse_click(const EventMouse &event) -> EventPropagation {
+        if (event.is_local) {
+            return ListView::on_mouse_click(event);
+        }
+        if (on_abort) {
+            on_abort(*this);
+        }
+        return EventPropagation::handled;
+    }
+
+    virtual auto on_keyboard(const EventKeyboard &event) -> EventPropagation {
+        if (event.key == KeyCodes::Escape) {
+            if (on_abort) {
+                on_abort(*this);
+            }
+            return EventPropagation::handled;
+        }
+        return ListView::on_keyboard(event);
+    }
+};
+
 auto Combobox::show_popup() -> void {
     if (!popup_list) {
         auto position = Position{this->position.x, this->position.y + this->content.size.height};
         auto size = Size{this->content.size.width, 100};
-        popup_list = window->add_new<ListView>(position, size);
+        popup_list = window->add_new<ComboboxList>(position, size);
         popup_list->adapter = std::make_shared<ListItemAdapter>(strings);
-        popup_list->on_item_selected = [this](auto listview, auto index) {
+        popup_list->on_item_selected = [this](auto &listview, auto index) {
             this->selected_item = index;
+            this->needs_redraw = true;
+            this->popup_list->hide();
+            window->focus_widget(shared_from_this());
+        };
+        popup_list->on_abort = [this](auto &listview) {
             this->needs_redraw = true;
             this->popup_list->hide();
             window->focus_widget(shared_from_this());
