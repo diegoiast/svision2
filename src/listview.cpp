@@ -114,7 +114,7 @@ EventPropagation ListView::on_mouse_click(const EventMouse &event) {
     this->current_item = clicked_item_offset + first_item;
     invalidate();
     if (this->on_item_selected) {
-        this->on_item_selected(*this, current_item);
+        this->on_item_selected(*this, current_item, SelectionReason::Mouse);
     }
     return EventPropagation::handled;
 }
@@ -182,7 +182,11 @@ auto ListView::on_keyboard(const EventKeyboard &event) -> EventPropagation {
         ensure_item_in_viewport(*this);
         invalidate();
         if (this->on_item_selected) {
-            this->on_item_selected(*this, current_item);
+            this->on_item_selected(*this, current_item, SelectionReason::KeyboardMove);
+        }
+    } else if (event.key == KeyCodes::Enter) {
+        if (this->on_item_selected) {
+            this->on_item_selected(*this, current_item, SelectionReason::Keyboard);
         }
     }
     return result;
@@ -216,7 +220,7 @@ auto ListView::did_adapter_update() -> void {
         this->reserved_widgets.push_back(b);
         widget_count--;
     }
-    this->invalidate();
+    this->invalidate(); 
 }
 
 auto ListItemWidget::draw() -> void {

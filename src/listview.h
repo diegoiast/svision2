@@ -46,10 +46,16 @@ struct ListItemWidget : public Widget {
 };
 
 struct ListView : public Widget {
+    enum class SelectionReason {
+        Mouse,
+        Keyboard,
+        KeyboardMove,
+    };
+
     std::shared_ptr<ScrollBar> scrollbar = {};
     std::shared_ptr<ItemAdapter> adapter = {};
     std::vector<std::shared_ptr<Widget>> reserved_widgets = {};
-    std::function<void(ListView &, int)> on_item_selected;
+    std::function<void(ListView &, int, SelectionReason)> on_item_selected;
     int current_item = 0;
 
     ListView(Position position, Size size);

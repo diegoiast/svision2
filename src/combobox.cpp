@@ -128,11 +128,14 @@ auto Combobox::show_popup() -> void {
         auto size = Size{this->content.size.width, 100};
         popup_list = window->add_new<ComboboxList>(position, size);
         popup_list->adapter = std::make_shared<ListItemAdapter>(strings);
-        popup_list->on_item_selected = [this](auto &listview, auto index) {
+        popup_list->on_item_selected = [this](auto &listview, auto index, auto reason) {
             this->selected_item = index;
             this->needs_redraw = true;
-            this->popup_list->hide();
-            window->focus_widget(shared_from_this());
+            if (reason == ListView::SelectionReason::Mouse ||
+                reason == ListView::SelectionReason::Keyboard) {
+                this->popup_list->hide();
+                window->focus_widget(shared_from_this());
+            }
         };
         popup_list->on_abort = [this](auto &listview) {
             this->needs_redraw = true;
