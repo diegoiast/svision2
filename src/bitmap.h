@@ -111,11 +111,7 @@ struct Bitmap {
     auto resize(int width, int height) -> void;
     auto resize(Size size) -> void { resize(size.width, size.height); }
 
-    auto fill(uint32_t color) -> void {
-        for (auto i = 0; i < size.width * size.height; i++) {
-            buffer[i] = color;
-        }
-    }
+    auto fill(uint32_t color) -> void { std::fill(buffer.begin(), buffer.end(), color); }
     auto fill_rect(int x, int y, int w, int h, uint32_t color) -> void;
     auto fill_rect_gradient(int x, int y, int w, int h, uint32_t color1, uint32_t color2) -> void;
     auto fill_circle(int x, int y, int r, uint32_t colo) -> void;

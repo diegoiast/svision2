@@ -629,7 +629,7 @@ auto ThemePlasma::draw_widget_background(Bitmap &content, bool has_focus) -> voi
 }
 
 auto ThemePlasma::draw_window_background(Bitmap &content) -> void {
-    content.fill_rect(0, 0, content.size.width, content.size.height, colors.window_background);
+    content.fill(colors.window_background);
     content.line(0, 0, content.size.width - 1, 0, colors.frame_disabled_color1);
 }
 
