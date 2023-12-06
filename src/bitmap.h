@@ -134,8 +134,4 @@ struct Bitmap {
 
     auto fill(int x, int y, uint32_t old, uint32_t color) -> void;
     auto draw(Position position, const Bitmap &other) -> void;
-    auto write_fixed(Position, const std::string &str, const uint32_t color) -> void;
-    auto write_fixed_char(Position, char c, const uint32_t color) -> void;
-
-    static auto text_size(const std::string &str) -> Size;
 };

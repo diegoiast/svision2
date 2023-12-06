@@ -17,8 +17,13 @@ struct Label : public Widget {
     Label(Position pp, Size size, std::string text) : Widget(pp, size, 0) { this->text = text; }
 
     virtual auto draw() -> void override {
-        auto color = 0;
         Widget::draw();
-        this->content.write_fixed(Position{5, 5}, text, color);
+
+        auto theme = get_theme();
+        auto color = theme->colors.text_color;
+        auto text_padding = 5;
+        auto text_size = theme->font.text_size(text);
+        auto centered = content.size.centered(text_size, text_padding);
+        theme->font.write(content, centered, text, color);
     }
 };

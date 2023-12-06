@@ -49,6 +49,8 @@ set(SVISION_SOURCES
     src/checkbox.cpp
     src/checkbox.h
     src/checkboxshape.h
+    src/fontprovider.cpp
+    src/fontprovider.h
     src/label.cpp
     src/label.h
     src/listview.cpp

@@ -378,31 +378,3 @@ auto Bitmap::draw(Position position, const Bitmap &other) -> void {
         }
     }
 }
-auto Bitmap::write_fixed(Position position, const std::string &str, const uint32_t color) -> void {
-    for (auto c : str) {
-        write_fixed_char(position, c, color);
-        position.x += 8;
-    }
-}
-
-auto Bitmap::write_fixed_char(Position position, char c, const uint32_t color) -> void {
-    // const unsigned char *font = ATIx550_8x16_bin;
-    const unsigned char *font = IBM_VGA_8x16_bin;
-
-    for (auto y = 0; y < 16; y++) {
-        unsigned char line = font[16 * (unsigned char)c + y];
-        for (auto x = 0; x < 8; x++) {
-            auto xx = 8 - x;
-            if (get_bit(line, xx)) {
-                put_pixel(position.x + x, position.y + y, color);
-            }
-        }
-    }
-}
-
-auto Bitmap::text_size(const std::string &str) -> Size {
-    auto size = Size();
-    size.height = 16;
-    size.width = str.length() * 8;
-    return size;
-}

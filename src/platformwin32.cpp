@@ -294,7 +294,8 @@ auto PlatformWin32::init() -> void {
     wc.lpszClassName = WINDOW_CLASS_NAME;
     RegisterClassExW(&wc);
 
-    default_theme = std::make_shared<ThemeVision>();
+    this->default_font = std::make_shared<FontProviderFixed>();
+    default_theme = std::make_shared<ThemeVision>(*this->default_font);
     spdlog::info("PlatformWin32 initialized");
 }
 
