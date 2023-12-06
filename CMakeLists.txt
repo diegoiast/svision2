@@ -31,6 +31,7 @@ conan_cmake_run(CONANFILE conanfile.txt
 
 find_package(fmt CONFIG REQUIRED)
 find_package(spdlog CONFIG REQUIRED)
+find_package(freetype CONFIG REQUIRED)
 find_package(Catch2 3 REQUIRED)
 
 create_resources("src/*.bin"  "fontdos.h")
@@ -51,6 +52,8 @@ set(SVISION_SOURCES
     src/checkboxshape.h
     src/fontprovider.cpp
     src/fontprovider.h
+    src/fontproviderfreetype.cpp
+    src/fontproviderfreetype.h
     src/label.cpp
     src/label.h
     src/listview.cpp
@@ -92,6 +95,7 @@ add_library(svision2 ${SVISION_SOURCES})
 
 target_link_libraries(svision2 PUBLIC 
     spdlog::spdlog $<$<BOOL:${MINGW}>:ws2_32>
+    freetype
     ${SVISION_PLATFORM_LIBS})
 target_include_directories(svision2 PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src")
 target_compile_features(svision2 PUBLIC cxx_std_17)
