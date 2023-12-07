@@ -28,6 +28,44 @@ FontProviderFreetype::FontProviderFreetype() {
     initialized = true;
 }
 
+// Function to extract one Unicode code point from a UTF-8 string_view
+// Returns the extracted Unicode code point and updates the iterator
+int32_t extractUnicodeCharacter(std::string_view::const_iterator &it,
+                                const std::string_view::const_iterator &end) {
+    int32_t unicodeChar = 0;
+    size_t bytesRead = 0;
+
+    // Decode the Unicode character
+    char32_t firstByte = static_cast<unsigned char>(*it);
+    if (firstByte <= 0x7F) {
+        unicodeChar = firstByte;
+        bytesRead = 1;
+    } else if ((firstByte & 0xE0) == 0xC0) {
+        unicodeChar = (firstByte & 0x1F) << 6;
+        unicodeChar |= (static_cast<unsigned char>(*(it + 1)) & 0x3F);
+        bytesRead = 2;
+    } else if ((firstByte & 0xF0) == 0xE0) {
+        unicodeChar = (firstByte & 0x0F) << 12;
+        unicodeChar |= (static_cast<unsigned char>(*(it + 1)) & 0x3F) << 6;
+        unicodeChar |= (static_cast<unsigned char>(*(it + 2)) & 0x3F);
+        bytesRead = 3;
+    } else if ((firstByte & 0xF8) == 0xF0) {
+        unicodeChar = (firstByte & 0x07) << 18;
+        unicodeChar |= (static_cast<unsigned char>(*(it + 1)) & 0x3F) << 12;
+        unicodeChar |= (static_cast<unsigned char>(*(it + 2)) & 0x3F) << 6;
+        unicodeChar |= (static_cast<unsigned char>(*(it + 3)) & 0x3F);
+        bytesRead = 4;
+    } else {
+        // Handle invalid UTF-8 encoding
+        //        std::cerr << "Invalid UTF-8 encoding\n";
+    }
+
+    // Update the iterator
+    it += bytesRead;
+
+    return unicodeChar;
+}
+
 auto FontProviderFreetype ::write(Bitmap &bitmap, Position position, const std::string_view text,
                                   const uint32_t color) -> void {
     if (!initialized) {
@@ -42,18 +80,12 @@ auto FontProviderFreetype ::write(Bitmap &bitmap, Position position, const std::
     int baseline = face->size->metrics.ascender; // Get the baseline offset
     int capline = face->size->metrics.height;    // Get the capline offset
 
-    while (strPos < text.length()) {
-        size_t charPos = strPos + 1;
-        while (charPos < text.length() && (text[charPos] & 0xC0) == 0x0) {
-            charPos++;
-        }
+    auto it = text.begin();
+    const auto end = text.end();
 
-        auto utf8Char = text.substr(strPos, charPos - strPos);
-        strPos = charPos;
-
-        char ccc = utf8Char[0];
-        auto index = ccc;
-        auto error = FT_Load_Char(face, index, FT_LOAD_RENDER | FT_LOAD_TARGET_NORMAL);
+    while (it != end) {
+        int32_t code_point = extractUnicodeCharacter(it, end);
+        auto error = FT_Load_Char(face, code_point, FT_LOAD_RENDER | FT_LOAD_TARGET_NORMAL);
         if (error) {
             //            spdlog::error("Freetype: Error rendering glyph: {}\n",
             //            FT_Error_String(error));
@@ -68,7 +100,7 @@ auto FontProviderFreetype ::write(Bitmap &bitmap, Position position, const std::
         //        slot->bitmap.width,
         //                              slot->bitmap.rows, 0x00ff00, 0x00ff00);
 
-        spdlog::info("Base line for {} is at {}", ccc, slot->bitmap_top);
+        //        spdlog::info("Base line for {} is at {}", code_point, slot->bitmap_top);
         auto yyy = (penY + slot->bitmap.rows * 64 - slot->bitmap_top) / 64;
         auto dy = baseline - slot->bitmap.rows * 64;
         yyy += dy / 64;
@@ -135,6 +167,6 @@ auto FontProviderFreetype::text_size(const std::string_view text) -> Size {
     // Calculate total text height
     text_height = ascender_pixels + descender_pixels;
 
-    spdlog::info("Size for {} is {}x{}", text, penX, penY);
+    spdlog::info("Size for {} is {}x{}", text, text_width, text_height);
     return {text_width, text_height};
 }
