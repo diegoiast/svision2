@@ -23,8 +23,6 @@ struct FontProviderFreetype : FontProvider {
     FT_Face face;
     bool initialized = false;
     const std::string_view font_file = "/usr/share/fonts/truetype/freefont/FreeSans.ttf";
-    //    const std::string_view font_file =
-    //    "/usr/share/fonts/truetype/droid/DroidSansFallbackFull.ttf"; const std::string_view
-    //    font_file = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf";
-    const int fontSize = 12;
+    //    const std::string_view font_file = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf";
+    const int fontSize = 14;
 };

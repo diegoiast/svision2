@@ -14,6 +14,7 @@
 #include <spdlog/spdlog.h>
 
 #include "events.h"
+#include "fontproviderfreetype.h"
 #include "platformx11.h"
 #include "theme.h"
 #include "widget.h"
@@ -144,7 +145,7 @@ auto PlatformX11::init() -> void {
     }
 
     // TODO - detect GTK and use a GTK theme
-    this->default_font = std::make_shared<FontProviderFixed>();
+    this->default_font = std::make_shared<FontProviderFreetype>();
     default_theme = std::make_shared<ThemePlasma>(*this->default_font);
     //    spdlog::set_level(spdlog::level::debug);
     spdlog::info("PlatformX11 initialized");

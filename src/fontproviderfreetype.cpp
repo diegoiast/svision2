@@ -38,8 +38,8 @@ auto FontProviderFreetype ::write(Bitmap &bitmap, Position position, const std::
     //    FT_Set_Char_Size(face, 0, fontSize * 64, 70, 70);
 
     size_t strPos = 0;
-    int penX = position.x;
-    int penY = position.y;
+    int penX = position.x * 64;
+    int penY = position.y * 64;
 
     while (strPos < text.length()) {
         size_t charPos = strPos + 1;
@@ -63,18 +63,18 @@ auto FontProviderFreetype ::write(Bitmap &bitmap, Position position, const std::
         FT_GlyphSlot slot = face->glyph;
         for (int y = 0; y < slot->bitmap.rows; y++) {
             for (int x = 0; x < slot->bitmap.width; x++) {
-                int pixelX = penX + x;
-                int pixelY = penY + y + slot->metrics.vertBearingY * 0;
+                int pixelX = penX + x * 64;
+                int pixelY = penY + y * 64 + slot->metrics.vertBearingY;
 
                 uint32_t glyphColor = slot->bitmap.buffer[y * slot->bitmap.width + x];
-                if (glyphColor >= 126) {
-                    bitmap.put_pixel(pixelX, pixelY, color);
+                if (glyphColor > 127) {
+                    bitmap.put_pixel(pixelX / 64, pixelY / 64, color);
                 }
             }
         }
 
-        penX += slot->advance.x / 64;
-        penY += slot->advance.y / 64;
+        penX += slot->advance.x;
+        penY += slot->advance.y;
     }
 }
 
