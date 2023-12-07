@@ -35,11 +35,12 @@ auto FontProviderFreetype ::write(Bitmap &bitmap, Position position, const std::
     };
 
     FT_Set_Pixel_Sizes(face, 0, fontSize);
-    //    FT_Set_Char_Size(face, 0, fontSize * 64, 70, 70);
 
     size_t strPos = 0;
     int penX = position.x * 64;
     int penY = position.y * 64;
+    int baseline = face->size->metrics.ascender; // Get the baseline offset
+    int capline = face->size->metrics.height;    // Get the capline offset
 
     while (strPos < text.length()) {
         size_t charPos = strPos + 1;
@@ -51,7 +52,6 @@ auto FontProviderFreetype ::write(Bitmap &bitmap, Position position, const std::
         strPos = charPos;
 
         char ccc = utf8Char[0];
-        //        auto index = FT_Get_Char_Index(face, ccc);
         auto index = ccc;
         auto error = FT_Load_Char(face, index, FT_LOAD_RENDER | FT_LOAD_TARGET_NORMAL);
         if (error) {
@@ -61,13 +61,26 @@ auto FontProviderFreetype ::write(Bitmap &bitmap, Position position, const std::
         }
 
         FT_GlyphSlot slot = face->glyph;
+
+        // https://stackoverflow.com/questions/62374506/how-do-i-align-glyphs-along-the-baseline-with-freetype
+        // https://freetype.org/freetype2/docs/tutorial/step2.html
+        //        bitmap.draw_rectangle(penX / 64, (penY + slot->bitmap_top) / 64,
+        //        slot->bitmap.width,
+        //                              slot->bitmap.rows, 0x00ff00, 0x00ff00);
+
+        spdlog::info("Base line for {} is at {}", ccc, slot->bitmap_top);
+        auto yyy = (penY + slot->bitmap.rows * 64 - slot->bitmap_top) / 64;
+        auto dy = baseline - slot->bitmap.rows * 64;
+        yyy += dy / 64;
+        bitmap.line(penX / 64, yyy, penX / 64 + slot->bitmap.width, yyy, 0xff00ff);
+
         for (int y = 0; y < slot->bitmap.rows; y++) {
             for (int x = 0; x < slot->bitmap.width; x++) {
-                int pixelX = penX + x * 64;
-                int pixelY = penY + y * 64 + slot->metrics.vertBearingY;
+                int pixelX = penX + x * 64 + slot->bitmap_left;
+                int pixelY = penY + y * 64 - slot->bitmap_top + dy;
 
                 uint32_t glyphColor = slot->bitmap.buffer[y * slot->bitmap.width + x];
-                if (glyphColor > 127) {
+                if (glyphColor >= 127) {
                     bitmap.put_pixel(pixelX / 64, pixelY / 64, color);
                 }
             }
@@ -88,6 +101,9 @@ auto FontProviderFreetype::text_size(const std::string_view text) -> Size {
     size_t strPos = 0;
     long penX = 0;
     long penY = 0;
+    auto text_width = 0;
+    auto text_height = 0;
+    auto point_size = face->size->metrics.x_ppem;
 
     while (strPos < text.length()) {
         size_t charPos = strPos + 1;
@@ -108,8 +124,17 @@ auto FontProviderFreetype::text_size(const std::string_view text) -> Size {
 
         penX += slot->advance.x >> 6;
         penY += slot->advance.y >> 6;
+
+        text_width += (int)((slot->advance.x * point_size) / face->units_per_EM);
     }
 
+    // Get and convert ascender and descender values
+    int ascender_pixels = (int)((face->size->metrics.ascender * point_size) / face->units_per_EM);
+    int descender_pixels = (int)((face->size->metrics.descender * point_size) / face->units_per_EM);
+
+    // Calculate total text height
+    text_height = ascender_pixels + descender_pixels;
+
     spdlog::info("Size for {} is {}x{}", text, penX, penY);
-    return {(int)penX, int(penY)};
+    return {text_width, text_height};
 }
