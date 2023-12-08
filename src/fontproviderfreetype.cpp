@@ -73,15 +73,14 @@ auto FontProviderFreetype ::write(Bitmap &bitmap, Position position, const std::
     };
 
     FT_Set_Pixel_Sizes(face, 0, fontSize);
-
-    size_t strPos = 0;
-    int penX = position.x * 64;
-    int penY = position.y * 64;
-
+    auto strPos = 0;
+    auto penX = position.x * 64;
+    auto penY = position.y * 64;
     auto it = text.begin();
     const auto end = text.end();
+
     while (it != end) {
-        int32_t code_point = extractUnicodeCharacter(it, end);
+        auto code_point = extractUnicodeCharacter(it, end);
         auto error = FT_Load_Char(face, code_point, FT_LOAD_RENDER | FT_LOAD_TARGET_NORMAL);
         if (error) {
             //            spdlog::error("Freetype: Error rendering glyph: {}\n",
@@ -89,24 +88,20 @@ auto FontProviderFreetype ::write(Bitmap &bitmap, Position position, const std::
             continue;
         }
 
-        FT_GlyphSlot slot = face->glyph;
-
         // https://stackoverflow.com/questions/62374506/how-do-i-align-glyphs-along-the-baseline-with-freetype
         // https://freetype.org/freetype2/docs/tutorial/step2.html
         // https://kevinboone.me/fbtextdemo.html?i=2
-        int bbox_ymax = face->bbox.yMax;
-        int glyph_width = face->glyph->metrics.width;
-        int advance = face->glyph->metrics.horiAdvance;
-        int x_off = (advance - glyph_width) / 2;
-        int y_off = bbox_ymax - face->glyph->metrics.horiBearingY;
-
+        auto slot = face->glyph;
+        auto bbox_ymax = face->bbox.yMax;
+        auto glyph_width = face->glyph->metrics.width;
+        auto advance = face->glyph->metrics.horiAdvance;
+        auto x_off = (advance - glyph_width) / 2;
+        auto y_off = bbox_ymax - face->glyph->metrics.horiBearingY;
         for (int y = 0; y < slot->bitmap.rows; y++) {
-            int pixelY = penY + y * 64 + y_off;
-
-            for (int x = 0; x < slot->bitmap.width; x++) {
-                int pixelX = penX + x * 64 + x_off;
-                uint32_t glyphColor = slot->bitmap.buffer[y * slot->bitmap.width + x];
-
+            auto pixelY = penY + y * 64 + y_off;
+            for (auto x = 0; x < slot->bitmap.width; x++) {
+                auto pixelX = penX + x * 64 + x_off;
+                auto glyphColor = slot->bitmap.buffer[y * slot->bitmap.width + x];
                 bitmap.blend_pixel(pixelX / 64, pixelY / 64, color, glyphColor);
                 /*
                 if (glyphColor >= 127) {
@@ -115,7 +110,6 @@ auto FontProviderFreetype ::write(Bitmap &bitmap, Position position, const std::
                 */
             }
         }
-
         penX += slot->advance.x;
         penY += slot->advance.y;
     }
