@@ -72,14 +72,14 @@ auto FontProviderFreetype ::write(Bitmap &bitmap, Position position, const std::
         return;
     };
 
+    FT_Set_Pixel_Sizes(face, 0, fontSize);
     if (debug_render) {
         auto s = text_size(text);
-        auto yyy = position.y + (face->bbox.yMax >> 6);
+        auto yyy = position.y + (face->bbox.yMax + face->bbox.yMin) >> 6;
         bitmap.draw_rectangle(position.x, position.y, s.width, s.height, 0x00ff00, 0x00ff00);
         bitmap.line(position.x, yyy, position.x + s.width, yyy, 0xff8080);
     }
 
-    FT_Set_Pixel_Sizes(face, 0, fontSize);
     auto strPos = 0;
     auto penX = position.x * 64;
     auto penY = position.y * 64;
@@ -99,11 +99,11 @@ auto FontProviderFreetype ::write(Bitmap &bitmap, Position position, const std::
         // https://freetype.org/freetype2/docs/tutorial/step2.html
         // https://kevinboone.me/fbtextdemo.html?i=2
         auto slot = face->glyph;
-        auto bbox_ymax = face->bbox.yMax;
+        auto bbox_ymax = face->bbox.yMax + face->bbox.yMin;
         auto glyph_width = face->glyph->metrics.width;
         auto advance = face->glyph->metrics.horiAdvance;
         auto x_off = (advance - glyph_width) / 2;
-        auto y_off = bbox_ymax - face->glyph->metrics.horiBearingY;
+        auto y_off = bbox_ymax - face->glyph->metrics.horiBearingY + face->bbox.yMin;
         for (int y = 0; y < slot->bitmap.rows; y++) {
             auto pixelY = penY + y * 64 + y_off;
             for (auto x = 0; x < slot->bitmap.width; x++) {
@@ -150,6 +150,8 @@ auto FontProviderFreetype::text_size(const std::string_view text) -> Size {
         penY += slot->advance.y;
     }
 
-    spdlog::info("Size for {} is {}x{} (peny={})", text, penX, penY + face->bbox.yMax, penY);
-    return {penX / 64, (penY + face->bbox.yMax - face->bbox.yMin) / 64};
+    spdlog::info("Size for {}({}) is {}x{} (bbox.yMax={}, bbox.ymin={})", text, text.size() > 0 ? (int)text[0] : -1,
+        penX / 64, penY + face->bbox.yMax/64, 
+        face->bbox.yMax >> 6, face->bbox.yMin >> 6);
+    return {penX / 64, (penY + face->bbox.yMax + face->bbox.yMin) / 64};
 }
