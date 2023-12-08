@@ -145,7 +145,7 @@ auto PlatformX11::init() -> void {
     }
 
     // TODO - detect GTK and use a GTK theme
-    this->default_font = std::make_shared<FontProviderFreetype>();
+    this->default_font = std::make_shared<FontProviderFreetype>(default_font_file);
     default_theme = std::make_shared<ThemePlasma>(*this->default_font);
     //    spdlog::set_level(spdlog::level::debug);
     spdlog::info("PlatformX11 initialized");

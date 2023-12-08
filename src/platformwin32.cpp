@@ -11,12 +11,13 @@
 #undef max
 
 #include <iostream>
+#include "spdlog/spdlog.h"
 
 #include "events.h"
 #include "platformwin32.h"
-#include "spdlog/spdlog.h"
 #include "theme.h"
 #include "widget.h"
+#include "fontproviderfreetype.h"
 
 
 int main(int arc, char *argv[]);
@@ -294,7 +295,7 @@ auto PlatformWin32::init() -> void {
     wc.lpszClassName = WINDOW_CLASS_NAME;
     RegisterClassExW(&wc);
 
-    this->default_font = std::make_shared<FontProviderFixed>();
+    this->default_font = std::make_shared<FontProviderFreetype>(default_font_file);
     default_theme = std::make_shared<ThemeVision>(*this->default_font);
     spdlog::info("PlatformWin32 initialized");
 }

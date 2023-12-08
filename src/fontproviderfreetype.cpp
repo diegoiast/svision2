@@ -11,15 +11,15 @@
 
 // #include <ft2build.h>
 
-FontProviderFreetype::FontProviderFreetype() {
+FontProviderFreetype::FontProviderFreetype(const std::string_view default_font) {
     if (FT_Init_FreeType(&library)) {
         spdlog::error("Freetype: Could not initialize");
         return;
     }
 
-    auto error = FT_New_Face(library, font_file.data(), 0, &face);
+    auto error = FT_New_Face(library, default_font.data(), 0, &face);
     if (error) {
-        spdlog::error("Freetype: Could not load font: {}, {}", font_file.data(),
+        spdlog::error("Freetype: Could not load font: {}, {}", default_font.data(),
                       FT_Error_String(error));
         FT_Done_FreeType(library);
         return;

@@ -19,6 +19,9 @@
 struct PlatformWindowX11;
 
 struct PlatformX11 : Platform {
+    //const std::string_view default_font_file = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf";
+    const std::string_view default_font_file = "/usr/share/fonts/truetype/freefont/FreeSans.ttf";
+
     std::map<Window, std::shared_ptr<PlatformWindowX11>> windows;
     Display *dpy = nullptr;
     int screen = -1;

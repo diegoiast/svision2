@@ -13,7 +13,7 @@
 #include <fontprovider.h>
 
 struct FontProviderFreetype : FontProvider {
-    explicit FontProviderFreetype();
+    explicit FontProviderFreetype(const std::string_view default_font);
 
     auto virtual write(Bitmap &, Position, const std::string_view, const uint32_t color)
         -> void override;
@@ -22,7 +22,5 @@ struct FontProviderFreetype : FontProvider {
     FT_Library library;
     FT_Face face;
     bool initialized = false;
-    const std::string_view font_file = "/usr/share/fonts/truetype/freefont/FreeSans.ttf";
-    //    const std::string_view font_file = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf";
     const int fontSize = 14;
 };
