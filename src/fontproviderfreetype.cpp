@@ -77,12 +77,9 @@ auto FontProviderFreetype ::write(Bitmap &bitmap, Position position, const std::
     size_t strPos = 0;
     int penX = position.x * 64;
     int penY = position.y * 64;
-    int baseline = face->size->metrics.ascender; // Get the baseline offset
-    int capline = face->size->metrics.height;    // Get the capline offset
 
     auto it = text.begin();
     const auto end = text.end();
-
     while (it != end) {
         int32_t code_point = extractUnicodeCharacter(it, end);
         auto error = FT_Load_Char(face, code_point, FT_LOAD_RENDER | FT_LOAD_TARGET_NORMAL);
@@ -96,26 +93,26 @@ auto FontProviderFreetype ::write(Bitmap &bitmap, Position position, const std::
 
         // https://stackoverflow.com/questions/62374506/how-do-i-align-glyphs-along-the-baseline-with-freetype
         // https://freetype.org/freetype2/docs/tutorial/step2.html
-        //        bitmap.draw_rectangle(penX / 64, (penY + slot->bitmap_top) / 64,
-        //        slot->bitmap.width,
-        //                              slot->bitmap.rows, 0x00ff00, 0x00ff00);
-
-        //        spdlog::info("Base line for {} is at {}", code_point, slot->bitmap_top);
-        auto yyy = (penY + slot->bitmap.rows * 64 - slot->bitmap_top) / 64;
-        auto dy = baseline - slot->bitmap.rows * 64;
-        yyy += dy / 64;
-        //        bitmap.line(penX / 64, yyy, penX / 64 + slot->bitmap.width, yyy, 0xff00ff);
+        // https://kevinboone.me/fbtextdemo.html?i=2
+        int bbox_ymax = face->bbox.yMax;
+        int glyph_width = face->glyph->metrics.width;
+        int advance = face->glyph->metrics.horiAdvance;
+        int x_off = (advance - glyph_width) / 2;
+        int y_off = bbox_ymax - face->glyph->metrics.horiBearingY;
 
         for (int y = 0; y < slot->bitmap.rows; y++) {
-            for (int x = 0; x < slot->bitmap.width; x++) {
-                int pixelX = penX + x * 64 + slot->bitmap_left;
-                int pixelY = penY + y * 64 - slot->bitmap_top + dy;
+            int pixelY = penY + y * 64 + y_off;
 
+            for (int x = 0; x < slot->bitmap.width; x++) {
+                int pixelX = penX + x * 64 + x_off;
                 uint32_t glyphColor = slot->bitmap.buffer[y * slot->bitmap.width + x];
+
                 bitmap.blend_pixel(pixelX / 64, pixelY / 64, color, glyphColor);
-                //                if (glyphColor >= 127) {
-                //                    bitmap.put_pixel(pixelX / 64, pixelY / 64, color);
-                //                }
+                /*
+                if (glyphColor >= 127) {
+                    bitmap.put_pixel(pixelX / 64, pixelY / 64, color);
+                }
+                */
             }
         }
 
