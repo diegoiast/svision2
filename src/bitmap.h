@@ -108,6 +108,8 @@ struct Bitmap {
         return buffer[(y * size.width) + x];
     }
 
+    auto blend_pixel(int x, int y, uint32_t color, uint8_t alpha) -> void;
+
     auto resize(int width, int height) -> void;
     auto resize(Size size) -> void { resize(size.width, size.height); }
 

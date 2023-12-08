@@ -104,7 +104,7 @@ auto FontProviderFreetype ::write(Bitmap &bitmap, Position position, const std::
         auto yyy = (penY + slot->bitmap.rows * 64 - slot->bitmap_top) / 64;
         auto dy = baseline - slot->bitmap.rows * 64;
         yyy += dy / 64;
-        bitmap.line(penX / 64, yyy, penX / 64 + slot->bitmap.width, yyy, 0xff00ff);
+        //        bitmap.line(penX / 64, yyy, penX / 64 + slot->bitmap.width, yyy, 0xff00ff);
 
         for (int y = 0; y < slot->bitmap.rows; y++) {
             for (int x = 0; x < slot->bitmap.width; x++) {
@@ -112,9 +112,10 @@ auto FontProviderFreetype ::write(Bitmap &bitmap, Position position, const std::
                 int pixelY = penY + y * 64 - slot->bitmap_top + dy;
 
                 uint32_t glyphColor = slot->bitmap.buffer[y * slot->bitmap.width + x];
-                if (glyphColor >= 127) {
-                    bitmap.put_pixel(pixelX / 64, pixelY / 64, color);
-                }
+                bitmap.blend_pixel(pixelX / 64, pixelY / 64, color, glyphColor);
+                //                if (glyphColor >= 127) {
+                //                    bitmap.put_pixel(pixelX / 64, pixelY / 64, color);
+                //                }
             }
         }
 

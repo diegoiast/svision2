@@ -93,6 +93,14 @@ auto Lighter(uint32_t color, double percentage) -> uint32_t {
     return hslToRGB(hsl);
 }
 
+auto Bitmap::blend_pixel(int x, int y, uint32_t color, uint8_t alpha) -> void {
+    auto color2 = get_pixel(x, y);
+    auto red = ((255 - alpha) * GetRed(color2) + alpha * GetRed(color)) / 255;
+    auto green = ((255 - alpha) * GetGreen(color2) + alpha * GetGreen(color)) / 255;
+    auto blue = ((255 - alpha) * GetBlue(color2) + alpha * GetBlue(color)) / 255;
+    put_pixel(x, y, MakeColor(red, green, blue));
+}
+
 auto Bitmap::resize(int width, int height) -> void {
     if (width == this->size.width && height == this->size.height) {
         return;
