@@ -23,4 +23,5 @@ struct FontProviderFreetype : FontProvider {
     FT_Face face;
     bool initialized = false;
     const int fontSize = 14;
+    bool debug_render = true;
 };

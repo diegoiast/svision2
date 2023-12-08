@@ -72,6 +72,13 @@ auto FontProviderFreetype ::write(Bitmap &bitmap, Position position, const std::
         return;
     };
 
+    if (debug_render) {
+        auto s = text_size(text);
+        auto yyy = position.y + (face->bbox.yMax >> 6);
+        bitmap.draw_rectangle(position.x, position.y, s.width, s.height, 0x00ff00, 0x00ff00);
+        bitmap.line(position.x, yyy, position.x + s.width, yyy, 0xff8080);
+    }
+
     FT_Set_Pixel_Sizes(face, 0, fontSize);
     auto strPos = 0;
     auto penX = position.x * 64;
@@ -122,43 +129,27 @@ auto FontProviderFreetype::text_size(const std::string_view text) -> Size {
 
     FT_Set_Pixel_Sizes(face, 0, fontSize);
 
-    size_t strPos = 0;
-    long penX = 0;
-    long penY = 0;
-    auto text_width = 0;
-    auto text_height = 0;
-    auto point_size = face->size->metrics.x_ppem;
+    auto strPos = 0;
+    auto penX = 0;
+    auto penY = 0;
+    auto it = text.begin();
+    const auto end = text.end();
 
-    while (strPos < text.length()) {
-        size_t charPos = strPos + 1;
-        while (charPos < text.length() && (text[charPos] & 0xC0) == 0x00) {
-            charPos++;
-        }
-
-        auto utf8Char = text.substr(strPos, charPos - strPos);
-        strPos = charPos;
-
-        if (FT_Load_Char(face, FT_Get_Char_Index(face, utf8Char[0]),
-                         FT_LOAD_RENDER | FT_LOAD_TARGET_MONO)) {
-            // on error?
+    while (it != end) {
+        auto code_point = extractUnicodeCharacter(it, end);
+        auto error = FT_Load_Char(face, code_point, FT_LOAD_RENDER | FT_LOAD_TARGET_NORMAL);
+        if (error) {
+            //            spdlog::error("Freetype: Error rendering glyph: {}\n",
+            //            FT_Error_String(error));
             continue;
         }
 
         FT_GlyphSlot slot = face->glyph;
 
-        penX += slot->advance.x >> 6;
-        penY += slot->advance.y >> 6;
-
-        text_width += (int)((slot->advance.x * point_size) / face->units_per_EM);
+        penX += slot->advance.x;
+        penY += slot->advance.y;
     }
 
-    // Get and convert ascender and descender values
-    int ascender_pixels = (int)((face->size->metrics.ascender * point_size) / face->units_per_EM);
-    int descender_pixels = (int)((face->size->metrics.descender * point_size) / face->units_per_EM);
-
-    // Calculate total text height
-    text_height = ascender_pixels + descender_pixels;
-
-    spdlog::info("Size for {} is {}x{}", text, text_width, text_height);
-    return {text_width, text_height};
+    spdlog::info("Size for {} is {}x{} (peny={})", text, penX, penY + face->bbox.yMax, penY);
+    return {penX / 64, (penY + face->bbox.yMax - face->bbox.yMin) / 64};
 }
