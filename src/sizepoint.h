@@ -10,8 +10,8 @@
 #include <cstdint>
 
 struct Position {
-    int x;
-    int y;
+    int x = 0;
+    int y = 0;
 
     auto inline operator+(const int delta) const -> Position {
         auto p = *this;
