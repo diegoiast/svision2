@@ -94,6 +94,15 @@ auto Lighter(uint32_t color, double percentage) -> uint32_t {
 }
 
 auto Bitmap::blend_pixel(int x, int y, uint32_t color, uint8_t alpha) -> void {
+    if (x < 0)
+        return;
+    if (y < 0)
+        return;
+    if (x >= size.width)
+        return;
+    if (y >= size.height)
+        return;
+
     auto color2 = get_pixel(x, y);
     auto red = ((255 - alpha) * GetRed(color2) + alpha * GetRed(color)) / 255;
     auto green = ((255 - alpha) * GetGreen(color2) + alpha * GetGreen(color)) / 255;
