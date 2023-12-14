@@ -8,6 +8,7 @@
 #include "fontproviderfreetype.h"
 #include "spdlog/spdlog.h"
 #include <algorithm>
+#include <string_view>
 
 // #include <ft2build.h>
 
@@ -66,21 +67,33 @@ int32_t extractUnicodeCharacter(std::string_view::const_iterator &it,
     return unicodeChar;
 }
 
-auto FontProviderFreetype ::write(Bitmap &bitmap, Position position, const std::string_view text,
-                                  const uint32_t color) -> void {
+static auto draw_glyph(Bitmap &bitmap, int x, int y, uint32_t color, FT_GlyphSlot slot) {
+    for (int dy = 0; dy < slot->bitmap.rows; dy++) {
+        for (auto dx = 0; dx < slot->bitmap.width; dx++) {
+            auto glyphColor = slot->bitmap.buffer[dy * slot->bitmap.width + dx];
+            bitmap.blend_pixel(x + dx, y + dy, color, glyphColor);
+        }
+    }
+}
+
+auto FontProviderFreetype::write(Bitmap &bitmap, Position position, const std::string_view text,
+                                 const uint32_t color) -> void {
     if (!initialized) {
         return;
     };
 
     FT_Set_Pixel_Sizes(face, 0, fontSize);
+    auto base_line = 0;
+    auto bbox_ymax = face->bbox.yMax + face->bbox.yMin;
+
+    auto text_bounds = text_size(text);
     if (debug_render) {
-        auto s = text_size(text);
-        auto yyy = position.y + (face->bbox.yMax + face->bbox.yMin) >> 6;
-        bitmap.draw_rectangle(position.x, position.y, s.width, s.height, 0x00ff00, 0x00ff00);
-        bitmap.line(position.x, yyy, position.x + s.width, yyy, 0xff8080);
+        bitmap.draw_rectangle(position.x, position.y, text_bounds.width, text_bounds.height,
+                              0x00ff00, 0x00ff00);
+        //        auto yyy = position.y - ((face->bbox.yMax + face->bbox.yMin) >> 6);
+        //        bitmap.line(position.x, yyy, position.x + text_bounds.width, yyy, 0xff8080);
     }
 
-    auto strPos = 0;
     auto penX = position.x * 64;
     auto penY = position.y * 64;
     auto it = text.begin();
@@ -98,27 +111,15 @@ auto FontProviderFreetype ::write(Bitmap &bitmap, Position position, const std::
         // https://stackoverflow.com/questions/62374506/how-do-i-align-glyphs-along-the-baseline-with-freetype
         // https://freetype.org/freetype2/docs/tutorial/step2.html
         // https://kevinboone.me/fbtextdemo.html?i=2
-        auto slot = face->glyph;
-        auto bbox_ymax = face->bbox.yMax + face->bbox.yMin;
-        auto glyph_width = face->glyph->metrics.width;
-        auto advance = face->glyph->metrics.horiAdvance;
-        auto x_off = (advance - glyph_width) / 2;
-        auto y_off = bbox_ymax - face->glyph->metrics.horiBearingY + face->bbox.yMin;
-        for (int y = 0; y < slot->bitmap.rows; y++) {
-            auto pixelY = penY + y * 64 + y_off;
-            for (auto x = 0; x < slot->bitmap.width; x++) {
-                auto pixelX = penX + x * 64 + x_off;
-                auto glyphColor = slot->bitmap.buffer[y * slot->bitmap.width + x];
-                bitmap.blend_pixel(pixelX / 64, pixelY / 64, color, glyphColor);
-                /*
-                if (glyphColor >= 127) {
-                    bitmap.put_pixel(pixelX / 64, pixelY / 64, color);
-                }
-                */
-            }
-        }
-        penX += slot->advance.x;
-        penY += slot->advance.y;
+
+        auto physicallStartX = (penX + face->glyph->bitmap_left) >> 6;
+        auto physicallStartY = (penY - face->glyph->bitmap_top) >> 6;
+        auto delta = text_bounds.height - face->glyph->bitmap_top;
+
+        draw_glyph(bitmap, physicallStartX, physicallStartY + delta, color, face->glyph);
+
+        penX += face->glyph->advance.x;
+        penY += face->glyph->advance.y;
     }
 }
 
@@ -139,19 +140,16 @@ auto FontProviderFreetype::text_size(const std::string_view text) -> Size {
         auto code_point = extractUnicodeCharacter(it, end);
         auto error = FT_Load_Char(face, code_point, FT_LOAD_RENDER | FT_LOAD_TARGET_NORMAL);
         if (error) {
-            //            spdlog::error("Freetype: Error rendering glyph: {}\n",
-            //            FT_Error_String(error));
             continue;
         }
 
         FT_GlyphSlot slot = face->glyph;
-
         penX += slot->advance.x;
         penY += slot->advance.y;
     }
 
-    spdlog::info("Size for {}({}) is {}x{} (bbox.yMax={}, bbox.ymin={})", text, text.size() > 0 ? (int)text[0] : -1,
-        penX / 64, penY + face->bbox.yMax/64, 
-        face->bbox.yMax >> 6, face->bbox.yMin >> 6);
-    return {penX / 64, (penY + face->bbox.yMax + face->bbox.yMin) / 64};
+    //    auto bbox_ymax = face->bbox.yMax + face->bbox.yMin;
+    auto bbox_ymax = face->size->metrics.height;
+    auto y_off = bbox_ymax - face->ascender - face->descender;
+    return {penX / 64, (int)((penY + bbox_ymax - y_off) / 64)};
 }
