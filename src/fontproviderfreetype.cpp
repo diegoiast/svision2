@@ -90,8 +90,8 @@ auto FontProviderFreetype::write(Bitmap &bitmap, Position position, const std::s
     if (debug_render) {
         bitmap.draw_rectangle(position.x, position.y, text_bounds.width, text_bounds.height,
                               0x00ff00, 0x00ff00);
-        //        auto yyy = position.y - ((face->bbox.yMax + face->bbox.yMin) >> 6);
-        //        bitmap.line(position.x, yyy, position.x + text_bounds.width, yyy, 0xff8080);
+        auto yyy = position.y + (face->size->metrics.ascender >> 6);
+        bitmap.line(position.x, yyy, position.x + text_bounds.width, yyy, 0xff8080);
     }
 
     auto penX = position.x * 64;
@@ -132,7 +132,7 @@ auto FontProviderFreetype::text_size(const std::string_view text) -> Size {
 
     auto strPos = 0;
     auto penX = 0;
-    auto penY = 0;
+    auto penY = (unsigned int)0;
     auto it = text.begin();
     const auto end = text.end();
 
@@ -148,8 +148,7 @@ auto FontProviderFreetype::text_size(const std::string_view text) -> Size {
         penY += slot->advance.y;
     }
 
-    //    auto bbox_ymax = face->bbox.yMax + face->bbox.yMin;
-    auto bbox_ymax = face->size->metrics.height;
-    auto y_off = bbox_ymax - face->ascender - face->descender;
-    return {penX / 64, (int)((penY + bbox_ymax - y_off) / 64)};
+    auto size_x = penX / 64;
+    auto size_y = (penY + face->size->metrics.height) / 64;
+    return {size_x, (int)size_y};
 }
