@@ -121,15 +121,15 @@ int main() {
     //    plat  form.show_window(w2);
 
     auto w1 = platform.open_window(100, 100, 640, 480, "test 1");
-    w1->add_new<Label>(Position{10, 10}, Size{100, 20}, "Hello world!")->frame = {
-        FrameStyles::Normal, FrameSize::SingleFrame};
+    w1->add_new<Label>(Position{10, 10}, Size{300, 20}, "test 1 - Hello world! glqi שלום עולם")
+        ->frame = {FrameStyles::Normal, FrameSize::SingleFrame};
     w1->add_new<TextField>(Position{10, 35}, Size{165, 30});
 
     ;
 
     auto ll = w1->add_new<ListView>(Position{10, 80}, Size{165, 100});
     ll->adapter = std::make_shared<ListItemAdapter>(std::vector<std::string>{
-        "Option 1",
+        "Option 1 (default)",
         "Option 2",
         "Option 3",
         "Option 4",
@@ -140,7 +140,7 @@ int main() {
         "Option 9",
         "Option 10",
         "Option 11",
-        "Option 12",
+        "Option 12 (last)",
     });
 
     auto rb = w1->add_new<RadioButtonGroup>(Position{400, 20}, 160,

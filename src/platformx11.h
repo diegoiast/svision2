@@ -18,9 +18,12 @@
 
 struct PlatformWindowX11;
 
+#define SVISION_X11_TTF_PATH "/usr/share/fonts/truetype/"
+#define SVISION_X11_TTF_FILENAME "freefont/FreeSans.ttf"
+// #define SVISION_X11_TTF_FILENAME "dejavu/DejaVuSans.ttf"
+
 struct PlatformX11 : Platform {
-    //const std::string_view default_font_file = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf";
-    const std::string_view default_font_file = "/usr/share/fonts/truetype/freefont/FreeSans.ttf";
+    const char *default_font_file = SVISION_X11_TTF_PATH SVISION_X11_TTF_FILENAME;
 
     std::map<Window, std::shared_ptr<PlatformWindowX11>> windows;
     Display *dpy = nullptr;
