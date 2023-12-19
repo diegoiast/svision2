@@ -30,7 +30,7 @@ auto WidgetCollection::add(std::shared_ptr<Widget> widget, PlatformWindow *windo
     if (widget->focus_index < 0) {
         if (window) {
             widget->focus_index = max_focus_index;
-            widget->theme = window->theme;
+            widget->theme = window->main_widget.theme;
         } else {
             widget->focus_index = max_focus_index;
         }
@@ -288,6 +288,11 @@ auto WidgetCollection::focus_widget(std::shared_ptr<Widget> widget) -> void {
     this->focused_widget = widget;
 }
 
+Widget::Widget() {
+    this->position = {};
+    this->content.background_color = 0;
+}
+
 Widget::Widget(Position position, Size size, uint32_t color) {
     this->position = position;
     this->content.background_color = color;
@@ -393,7 +398,7 @@ auto Widget::get_theme() -> std::shared_ptr<Theme> {
             return p->theme;
         p = p->parent;
     }
-    return window->theme;
+    return window->main_widget.theme;
 }
 
 auto Widget::show() -> void {
@@ -415,12 +420,12 @@ auto Widget::hide() -> void {
 PlatformWindow::~PlatformWindow() { spdlog::info("Window done"); }
 
 auto PlatformWindow::draw() -> void {
-    if (content.background_color != 0)
-        content.fill(content.background_color);
+    if (main_widget.content.background_color != 0)
+        main_widget.content.fill(main_widget.content.background_color);
     else
-        theme->draw_window_background(content);
+        main_widget.theme->draw_window_background(main_widget.content);
 
-    for (auto w : widgets.widgets) {
+    for (auto w : main_widget.widgets.widgets) {
         if (!w->is_visible()) {
             continue;
         }
@@ -429,14 +434,14 @@ auto PlatformWindow::draw() -> void {
             w->draw();
             w->needs_redraw = false;
         }
-        content.draw(w->position, w->content);
+        main_widget.content.draw(w->position, w->content);
 
         if (w->has_focus) {
-            if (theme->needs_frame_for_focus()) {
+            if (main_widget.theme->needs_frame_for_focus()) {
                 auto offset = 3;
                 auto p = w->position - offset;
                 auto s = w->content.size + offset * 2;
-                content.draw_rectangle(p.x, p.y, s.width, s.height, 0x808080, 0x808080);
+                main_widget.content.draw_rectangle(p.x, p.y, s.width, s.height, 0x808080, 0x808080);
             }
         }
     }
@@ -461,16 +466,18 @@ auto PlatformWindow::on_keyboard(const EventKeyboard &event) -> void {
                 focus_next_widget();
             break;
         default:
-            if (widgets.focused_widget) {
-                widgets.focused_widget->on_keyboard(event);
-                needs_redraw |= widgets.focused_widget->needs_redraw;
+            if (main_widget.widgets.focused_widget) {
+                main_widget.widgets.focused_widget->on_keyboard(event);
+                needs_redraw |= main_widget.widgets.focused_widget->needs_redraw;
             }
             break;
         }
     }
 }
 
-auto PlatformWindow::on_mouse(const EventMouse &event) -> void { widgets.on_mouse(event); }
+auto PlatformWindow::on_mouse(const EventMouse &event) -> void {
+    main_widget.widgets.on_mouse(event);
+}
 
 auto PlatformWindow::invalidate() -> void {
     assert(platform);
@@ -478,10 +485,10 @@ auto PlatformWindow::invalidate() -> void {
 };
 
 auto PlatformWindow::on_close() -> void {
-    for (auto w : widgets.widgets) {
+    for (auto w : main_widget.widgets.widgets) {
         if (w) {
             w->on_remove();
         }
     }
-    widgets.widgets.clear();
+    main_widget.widgets.widgets.clear();
 }

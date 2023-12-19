@@ -55,6 +55,7 @@ struct Widget : public std::enable_shared_from_this<Widget> {
     bool can_focus = false;
     int focus_index = -1;
 
+    Widget();
     Widget(Position pp, Size size, uint32_t color);
     virtual ~Widget();
 
@@ -96,9 +97,7 @@ struct Widget : public std::enable_shared_from_this<Widget> {
 
 struct PlatformWindow {
     std::string title;
-    Bitmap content;
-    WidgetCollection widgets;
-    std::shared_ptr<Theme> theme;
+    Widget main_widget;
 
     bool needs_redraw = false;
     Platform *platform = nullptr;
@@ -106,23 +105,23 @@ struct PlatformWindow {
     virtual ~PlatformWindow();
 
     auto focus_next_widget() -> void {
-        auto l = widgets.focused_widget;
-        widgets.focus_next_widget();
-        if (l != widgets.focused_widget)
+        auto l = main_widget.widgets.focused_widget;
+        main_widget.widgets.focus_next_widget();
+        if (l != main_widget.widgets.focused_widget)
             invalidate();
     }
 
     auto focus_previous_widget() -> void {
-        auto l = widgets.focused_widget;
-        widgets.focus_previous_widget();
-        if (l != widgets.focused_widget)
+        auto l = main_widget.widgets.focused_widget;
+        main_widget.widgets.focus_previous_widget();
+        if (l != main_widget.widgets.focused_widget)
             invalidate();
     }
 
     auto focus_widget(std::shared_ptr<Widget> widget) -> void {
-        auto l = widgets.focused_widget;
-        widgets.focus_widget(widget);
-        if (l != widgets.focused_widget)
+        auto l = main_widget.widgets.focused_widget;
+        main_widget.widgets.focus_widget(widget);
+        if (l != main_widget.widgets.focused_widget)
             invalidate();
     }
 
@@ -136,7 +135,7 @@ struct PlatformWindow {
 
     // TODO - make sure this T derieves from `Widget`
     template <typename T> auto add(T widget) -> T {
-        widgets.add(widget, this);
+        main_widget.widgets.add(widget, this);
         return widget;
     };
 

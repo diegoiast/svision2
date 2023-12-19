@@ -174,12 +174,13 @@ auto PlatformX11::open_window(int x, int y, int width, int height, const std::st
     wmDeleteMessage = XInternAtom(dpy, "WM_DELETE_WINDOW", False);
     XSetWMProtocols(dpy, window->x11_window, &wmDeleteMessage, 1);
 
-    window->content.resize(width, height);
-    window->theme = default_theme;
+    window->main_widget.content.resize(width, height);
+    window->main_widget.theme = default_theme;
     window->platform = this;
-    window->x11_image = XCreateImage(
-        dpy, DefaultVisual(dpy, 0), 24, ZPixmap, 0, (char *)window->content.buffer.data(),
-        window->content.size.width, window->content.size.height, 32, 0);
+    window->x11_image = XCreateImage(dpy, DefaultVisual(dpy, 0), 24, ZPixmap, 0,
+                                     (char *)window->main_widget.content.buffer.data(),
+                                     window->main_widget.content.size.width,
+                                     window->main_widget.content.size.height, 32, 0);
 
     windows[window->x11_window] = window;
     return window;
@@ -227,8 +228,8 @@ auto PlatformX11::main_loop() -> void {
         switch (ev.type) {
         case Expose:
             spdlog::info("Expose requested, selected widget is {}",
-                         target_window->widgets.focused_widget
-                             ? target_window->widgets.focused_widget->focus_index
+                         target_window->main_widget.widgets.focused_widget
+                             ? target_window->main_widget.widgets.focused_widget->focus_index
                              : -1);
 
             target_window->needs_redraw = true;
@@ -274,19 +275,20 @@ auto PlatformX11::main_loop() -> void {
 
         case ConfigureNotify: {
             auto event = convert_x11_configure_event(ev);
-            if (event.size != target_window->content.size) {
+            if (event.size != target_window->main_widget.content.size) {
                 spdlog::info("Resing window {} to {}x{}", target_window->title, event.size.width,
                              event.size.height);
-                target_window->content.resize(event.size.width, event.size.height);
+                target_window->main_widget.content.resize(event.size.width, event.size.height);
 
                 // TODO - How about I just modify the x11_image with the
                 //        needed values? I should modify only the width/height and
                 //        byteperline or something.
                 XFree(target_window->x11_image);
-                target_window->x11_image = XCreateImage(
-                    dpy, DefaultVisual(dpy, 0), 24, ZPixmap, 0,
-                    (char *)target_window->content.buffer.data(), target_window->content.size.width,
-                    target_window->content.size.height, 32, 0);
+                target_window->x11_image =
+                    XCreateImage(dpy, DefaultVisual(dpy, 0), 24, ZPixmap, 0,
+                                 (char *)target_window->main_widget.content.buffer.data(),
+                                 target_window->main_widget.content.size.width,
+                                 target_window->main_widget.content.size.height, 32, 0);
 
                 target_window->on_resize(event);
             }
