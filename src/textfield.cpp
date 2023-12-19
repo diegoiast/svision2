@@ -24,9 +24,12 @@ auto TextField::draw() -> void {
     Widget::draw();
 
     auto padding_vertical = 5;
+    auto text_size = theme->font.text_size(text);
+
+    // TODO - we need to find where the text clips - properly
     auto display_text_logical = (content.size.width - padding_start - padding_end) / 8;
     auto display_text = this->text.substr(display_from, display_from + display_text_logical);
-    auto center_y = (content.size.height - 16) / 2;
+    auto center_y = (content.size.height - text_size.height) / 2;
     auto selection_width = (selection.end - selection.start) - display_from;
     selection_width *= 8;
 
@@ -37,7 +40,8 @@ auto TextField::draw() -> void {
                           content.size.height - padding_vertical - 2,
                           theme->colors.text_selection_background);
     }
-    content.write_fixed(Position{padding_start, center_y}, display_text, theme->colors.text_color);
+    theme->font.write(content, Position{padding_start, center_y}, display_text,
+                      theme->colors.text_color);
 
     if (this->cursor_on && this->has_focus) {
         auto position_x = padding_start + (cursor_position - display_from) * 8;

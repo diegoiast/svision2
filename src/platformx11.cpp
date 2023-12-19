@@ -14,6 +14,7 @@
 #include <spdlog/spdlog.h>
 
 #include "events.h"
+#include "fontproviderfreetype.h"
 #include "platformx11.h"
 #include "theme.h"
 #include "widget.h"
@@ -76,13 +77,14 @@ auto convert_x11_key_event(XEvent &ev, Display *dpy) -> EventKeyboard {
     }
 
     if (event.key == KeyCodes::Unknown) {
-        spdlog::critical("Keycode 0x{0:x} is not detected, will send 0x{1:x}", keySym,
+        spdlog::critical("X11: Keycode 0x{0:x} is not detected, will send 0x{1:x}", keySym,
                          (int)event.key);
     }
     auto m = ev.xkey.state;
     event.keydown = ev.type == KeyPress;
     event.modifiers = (!!(m & ControlMask)) | (!!(m & ShiftMask) << 1) | (!!(m & Mod1Mask) << 2) |
                       (!!(m & Mod4Mask) << 3);
+    spdlog::info("X11: pressed key: {}", (int)event.key);
     return event;
 }
 
@@ -143,7 +145,8 @@ auto PlatformX11::init() -> void {
     }
 
     // TODO - detect GTK and use a GTK theme
-    default_theme = std::make_shared<ThemePlasma>();
+    this->default_font = std::make_shared<FontProviderFreetype>(default_font_file);
+    default_theme = std::make_shared<ThemePlasma>(*this->default_font);
     //    spdlog::set_level(spdlog::level::debug);
     spdlog::info("PlatformX11 initialized");
 }

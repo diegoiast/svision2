@@ -81,10 +81,10 @@ struct DebugWidget : public Widget {
 
         if (mouse_over) {
             auto str = fmt::format("{} Position = {}x{} ", state_pressed ? "*" : " ", pos.x, pos.y);
-            content.write_fixed(Position{4, 4}, str, MakeColor(0xf, 0xf, 0));
+            theme->font.write(content, {4, 4}, str, MakeColor(0xf, 0xf, 0));
         } else {
             if (state_pressed)
-                content.write_fixed_char(Position{4, 4}, '*', MakeColor(0x0, 0x0, 0));
+                theme->font.write(content, {4, 4}, "*", MakeColor(0xf, 0xf, 0));
         }
 
         content.line(10, 23, 30, 23, 0);
@@ -105,11 +105,11 @@ int main() {
     int timer_count = 0;
     auto platform = ThePlatform();
     platform.init();
-    //    platform.default_theme = std::make_shared<ThemeVision>(0x00ff00);
-    //    platform.default_theme = std::make_shared<ThemeVision>();
-    //    platform.default_theme = std::make_shared<ThemeRedmond>();
-    //    platform.default_theme = std::make_shared<ThemePlasma>(0xff6737);
-    //    platform.default_theme = std::make_shared<ThemePlasma>();
+    //    platform.default_theme = std::make_shared<ThemeVision>(*platform.default_font, 0x00ff00);
+    //    platform.default_theme = std::make_shared<ThemeVision>(*platform.default_font);
+    //    platform.default_theme = std::make_shared<ThemeRedmond>(*platform.default_font);
+    //    platform.default_theme = std::make_shared<ThemePlasma>(*platform.default_font, 0xff6737);
+    //    platform.default_theme = std::make_shared<ThemePlasma>(*platform.default_font);
 
     Timer t1(500, true, [&timer_count]() {
         timer_count++;
@@ -121,15 +121,15 @@ int main() {
     //    plat  form.show_window(w2);
 
     auto w1 = platform.open_window(100, 100, 640, 480, "test 1");
-    w1->add_new<Label>(Position{10, 10}, Size{100, 20}, "Hello world!")->frame = {
-        FrameStyles::Normal, FrameSize::SingleFrame};
+    w1->add_new<Label>(Position{10, 10}, Size{300, 20}, "test 1 - Hello world! glqi שלום עולם")
+        ->frame = {FrameStyles::Normal, FrameSize::SingleFrame};
     w1->add_new<TextField>(Position{10, 35}, Size{165, 30});
 
     ;
 
     auto ll = w1->add_new<ListView>(Position{10, 80}, Size{165, 100});
     ll->adapter = std::make_shared<ListItemAdapter>(std::vector<std::string>{
-        "Option 1",
+        "Option 1 (default)",
         "Option 2",
         "Option 3",
         "Option 4",
@@ -140,7 +140,7 @@ int main() {
         "Option 9",
         "Option 10",
         "Option 11",
-        "Option 12",
+        "Option 12 (last)",
     });
 
     auto rb = w1->add_new<RadioButtonGroup>(Position{400, 20}, 160,

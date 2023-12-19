@@ -13,11 +13,13 @@
 
 struct Theme;
 struct PlatformWindow;
+struct FontProvider;
 
 struct Platform {
     bool exit_loop = false;
     bool close_on_last_window = true;
     std::shared_ptr<Theme> default_theme;
+    std::shared_ptr<FontProvider> default_font;
 
     virtual auto init() -> void = 0;
     virtual auto done() -> void = 0;

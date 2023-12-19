@@ -10,6 +10,7 @@
 #include <bitmap.h>
 #include <buttonstates.h>
 #include <checkboxshape.h>
+#include <fontprovider.h>
 
 struct ColorStyle {
     int32_t window_background = 0;
@@ -54,6 +55,9 @@ struct ColorStyle {
 
 struct Theme {
     ColorStyle colors = {};
+    FontProvider &font;
+
+    Theme(FontProvider &f) : font(f) {}
 
     auto draw_frame(Bitmap &content, Position position, Size size, FrameStyles style,
                     FrameSize frame_size) -> void;
@@ -87,7 +91,7 @@ struct ThemeRedmond : Theme {
     static auto get_light_colors() -> ColorStyle;
     static auto get_dark_colors() -> ColorStyle;
 
-    ThemeRedmond() { colors = get_light_colors(); }
+    ThemeRedmond(FontProvider &f) : Theme(f) { colors = get_light_colors(); }
 
     virtual auto init() -> void override{};
     virtual auto draw_widget_background(Bitmap &content, bool has_focus) -> void override;
@@ -115,7 +119,9 @@ struct ThemeVision : Theme {
     static auto get_light_colors(int32_t accent = DefaultAccentLight) -> ColorStyle;
     static auto get_dark_colors(int32_t accent = DefaultAccentLight) -> ColorStyle;
 
-    ThemeVision(int32_t accent = DefaultAccentLight) { colors = get_light_colors(accent); }
+    ThemeVision(FontProvider &f, int32_t accent = DefaultAccentLight) : Theme(f) {
+        colors = get_light_colors(accent);
+    }
 
     virtual auto init() -> void override{};
     virtual auto draw_widget_background(Bitmap &content, bool has_focus) -> void override;
@@ -141,7 +147,9 @@ struct ThemePlasma : Theme {
     static auto get_light_colors(int32_t accent = DefaultAccentLight) -> ColorStyle;
     static auto get_dark_colors(int32_t accent = DefaultAccentLight) -> ColorStyle;
 
-    ThemePlasma(int32_t accent = DefaultAccentLight) { colors = get_light_colors(accent); }
+    ThemePlasma(FontProvider &f, int32_t accent = DefaultAccentLight) : Theme(f) {
+        colors = get_light_colors(accent);
+    }
 
     virtual auto init() -> void override{};
     virtual auto draw_widget_background(Bitmap &content, bool has_focus) -> void override;

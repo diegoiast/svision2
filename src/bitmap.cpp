@@ -93,6 +93,23 @@ auto Lighter(uint32_t color, double percentage) -> uint32_t {
     return hslToRGB(hsl);
 }
 
+auto Bitmap::blend_pixel(int x, int y, uint32_t color, uint8_t alpha) -> void {
+    if (x < 0)
+        return;
+    if (y < 0)
+        return;
+    if (x >= size.width)
+        return;
+    if (y >= size.height)
+        return;
+
+    auto color2 = get_pixel(x, y);
+    auto red = ((255 - alpha) * GetRed(color2) + alpha * GetRed(color)) / 255;
+    auto green = ((255 - alpha) * GetGreen(color2) + alpha * GetGreen(color)) / 255;
+    auto blue = ((255 - alpha) * GetBlue(color2) + alpha * GetBlue(color)) / 255;
+    put_pixel(x, y, MakeColor(red, green, blue));
+}
+
 auto Bitmap::resize(int width, int height) -> void {
     if (width == this->size.width && height == this->size.height) {
         return;
@@ -377,32 +394,4 @@ auto Bitmap::draw(Position position, const Bitmap &other) -> void {
             put_pixel(xx, yy, other.get_pixel(x, y));
         }
     }
-}
-auto Bitmap::write_fixed(Position position, const std::string &str, const uint32_t color) -> void {
-    for (auto c : str) {
-        write_fixed_char(position, c, color);
-        position.x += 8;
-    }
-}
-
-auto Bitmap::write_fixed_char(Position position, char c, const uint32_t color) -> void {
-    // const unsigned char *font = ATIx550_8x16_bin;
-    const unsigned char *font = IBM_VGA_8x16_bin;
-
-    for (auto y = 0; y < 16; y++) {
-        unsigned char line = font[16 * (unsigned char)c + y];
-        for (auto x = 0; x < 8; x++) {
-            auto xx = 8 - x;
-            if (get_bit(line, xx)) {
-                put_pixel(position.x + x, position.y + y, color);
-            }
-        }
-    }
-}
-
-auto Bitmap::text_size(const std::string &str) -> Size {
-    auto size = Size();
-    size.height = 16;
-    size.width = str.length() * 8;
-    return size;
 }

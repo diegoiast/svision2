@@ -10,7 +10,8 @@
 #include <platform.h>
 
 struct PlatformWin32 : Platform {
-  public:
+    const std::string_view default_font_file = "c:\\Windows\\Fonts\\arial.ttf";
+
     PlatformWin32();
     virtual auto init() -> void override;
     virtual auto done() -> void override;

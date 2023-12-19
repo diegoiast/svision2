@@ -3,7 +3,7 @@ spdlog/1.11.0
 fmt/9.1.0
 
 #zlib/1.2.13
-#freetype/2.13.0
+freetype/2.13.0
 #harfbuzz/7.1.0
 #libiconv/1.16
 catch2/3.3.2

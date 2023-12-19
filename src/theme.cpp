@@ -151,10 +151,10 @@ auto ThemeRedmond::draw_scrollbar_background(Bitmap &content) -> void {
 auto ThemeRedmond::draw_button(Bitmap &content, bool has_focus, bool is_default, bool is_enabled,
                                ButtonStates state, const std::string &text) -> void {
     auto text_padding = 5;
-    auto shadow_padding = text_padding + 1;
+    //    auto shadow_padding = state == ButtonStates::ClickedInside ? -2 : -1;
 
     auto background_color = 0;
-    auto shadow_offset = 0;
+    auto shadow_offset = -1;
     auto text_offset = 0;
     auto topleft = Position{0, 0};
     auto frame_size = is_default ? FrameSize::TrippleFrame : FrameSize::DoubleFrame;
@@ -184,7 +184,7 @@ auto ThemeRedmond::draw_button(Bitmap &content, bool has_focus, bool is_default,
             draw_frame(content, topleft, content.size, FrameStyles::Disabled, frame_size);
         }
         background_color = colors.button_background_1;
-        shadow_offset = is_default ? 2 : 1;
+        shadow_offset = is_default ? -3 : -2;
         break;
     case ButtonStates::ClickedOutside:
         background_color = colors.window_background;
@@ -193,7 +193,6 @@ auto ThemeRedmond::draw_button(Bitmap &content, bool has_focus, bool is_default,
         } else {
             draw_frame(content, topleft, content.size, FrameStyles::Disabled, frame_size);
         }
-        shadow_offset = 0;
         break;
     default:
         break;
@@ -205,15 +204,12 @@ auto ThemeRedmond::draw_button(Bitmap &content, bool has_focus, bool is_default,
         content.fill_rect(3, 3, content.size.width - 6, content.size.height - 6, background_color);
     }
 
-    auto text_size = Bitmap::text_size(text) + (std::max(text_padding, shadow_padding) +
-                                                std::max(text_offset, shadow_offset));
-    auto text_position = Position{((content.size.width - text_size.width) / 2) + text_padding,
-                                  ((content.size.height - text_size.height) / 2) + text_padding};
-    auto shadow_position =
-        Position{((content.size.width - text_size.width) / 2) + shadow_padding,
-                 ((content.size.height - text_size.height) / 2) + shadow_padding};
-    content.write_fixed(shadow_position, text, 0x0);
-    content.write_fixed(text_position, text, 0xffffff);
+    auto text_size = font.text_size(text);
+    auto content_rect = content.size - (text_padding);
+    auto centered = content_rect.centered(text_size);
+
+    font.write(content, centered - shadow_offset, text, 0x00);
+    font.write(content, centered, text, 0xffffff);
 }
 
 auto ThemeRedmond::draw_checkbox(Bitmap &content, bool has_focus, bool is_enabled, bool is_checked,
@@ -246,30 +242,35 @@ auto ThemeRedmond::draw_checkbox(Bitmap &content, bool has_focus, bool is_enable
     }
 
     auto m = checkbox_size / 2;
-    auto padding = 1;
+    auto icon_padding = 1;
+    auto text_padding = 5;
+
     content.fill(colors.window_background);
 
     switch (shape) {
     case CheckboxShape::Checkbox:
-        content.fill_rect(padding, padding, checkbox_size - padding * 2,
-                          checkbox_size - padding * 2, background_color);
+        content.fill_rect(icon_padding, icon_padding, checkbox_size - icon_padding * 2,
+                          checkbox_size - icon_padding * 2, background_color);
         draw_frame(content, {0, 0}, {checkbox_size, checkbox_size}, FrameStyles::Normal,
                    FrameSize::SingleFrame);
         break;
     case CheckboxShape::RadioButton:
-        content.fill_circle(m, m, checkbox_size / 2 - padding, background_color);
+        content.fill_circle(m, m, checkbox_size / 2 - icon_padding, background_color);
 
         if (is_enabled) {
-            content.draw_circle(m, m, checkbox_size / 2 - padding, colors.frame_normal_color1);
-            content.draw_circle(m, m, checkbox_size / 2 - padding - 1, colors.frame_normal_color2);
+            content.draw_circle(m, m, checkbox_size / 2 - icon_padding, colors.frame_normal_color1);
+            content.draw_circle(m, m, checkbox_size / 2 - icon_padding - 1,
+                                colors.frame_normal_color2);
         } else {
-            content.draw_circle(m, m, checkbox_size / 2 - padding, colors.frame_disabled_color1);
+            content.draw_circle(m, m, checkbox_size / 2 - icon_padding,
+                                colors.frame_disabled_color1);
         }
         break;
     }
 
-    content.write_fixed({checkbox_size + 5, 5}, text,
-                        is_enabled ? foreground_color : colors.text_color_disabled);
+    font.write(content, {checkbox_size + 5, 5}, text,
+               is_enabled ? foreground_color : colors.text_color_disabled);
+
     if (is_checked) {
         auto padding = 4;
 
@@ -360,13 +361,15 @@ auto ThemeRedmond::draw_listview_background(Bitmap &content, const bool has_focu
 
 void ThemeRedmond::draw_listview_item(Bitmap &content, const std::string &text,
                                       const ItemStatus status, bool is_hover) {
+    auto padding = Position{5, 5};
+
     auto text_color = status.is_active ? colors.text_selection_color : colors.text_color;
     auto background_color =
         status.is_active ? colors.text_selection_background : colors.input_background_normal;
     if (is_hover && !status.is_active)
         background_color = colors.input_background_hover;
     content.fill(background_color);
-    content.write_fixed(Position{5, 5}, text, text_color);
+    font.write(content, padding, text, text_color);
 }
 
 auto ThemeVision::draw_widget_background(Bitmap &content, bool has_focus) -> void {
@@ -416,11 +419,9 @@ auto ThemeVision::draw_button(Bitmap &content, bool has_focus, bool is_default, 
     }
     content.fill_rect(1, 1, content.size.width - 2, content.size.height - 2, background);
 
-    auto text_size = Bitmap::text_size(text) + text_padding;
-    auto text_position = Position{((content.size.width - text_size.width) / 2) + text_padding,
-                                  ((content.size.height - text_size.height) / 2) + text_padding};
-
-    content.write_fixed(text_position, text, color);
+    auto text_size = font.text_size(text);
+    auto centered = content.size.centered(text_size, text_padding);
+    font.write(content, centered, text, color);
 }
 
 auto ThemeVision::draw_checkbox(Bitmap &content, bool has_focus, bool is_enabled, bool is_checked,
@@ -489,8 +490,12 @@ auto ThemeVision::draw_checkbox(Bitmap &content, bool has_focus, bool is_enabled
         break;
     }
 
-    content.write_fixed({checkbox_size + 5, 5}, text,
-                        is_enabled ? colors.text_color : colors.text_color_disabled);
+    // TODO properly center
+    auto text_padding = 5;
+    auto text_size = font.text_size(text);
+    auto centered = Position{checkbox_size + 5, 5};
+    font.write(content, centered, text,
+               is_enabled ? colors.text_color : colors.text_color_disabled);
 }
 
 auto ThemeVision::draw_input_background(Bitmap &content, const bool has_focus) -> void {
@@ -611,7 +616,12 @@ void ThemeVision::draw_listview_item(Bitmap &content, const std::string &text,
     if (is_hover && !status.is_active)
         background_color = colors.text_selection_background_hover;
     content.fill(background_color);
-    content.write_fixed(Position{5, 5}, text, text_color);
+
+    // TODO properly center
+    auto text_padding = 5;
+    auto text_size = font.text_size(text);
+    auto centered = Position{text_padding, text_padding};
+    font.write(content, centered, text, text_color);
 }
 
 auto ThemePlasma::draw_widget_background(Bitmap &content, bool has_focus) -> void {
@@ -619,7 +629,7 @@ auto ThemePlasma::draw_widget_background(Bitmap &content, bool has_focus) -> voi
 }
 
 auto ThemePlasma::draw_window_background(Bitmap &content) -> void {
-    content.fill_rect(0, 0, content.size.width, content.size.height, colors.window_background);
+    content.fill(colors.window_background);
     content.line(0, 0, content.size.width - 1, 0, colors.frame_disabled_color1);
 }
 
@@ -686,14 +696,13 @@ auto ThemePlasma::draw_button(Bitmap &content, bool has_focus, bool is_default, 
                                    background1, background2);
     }
 
-    auto text_size = Bitmap::text_size(text) + text_padding;
-    auto the_width = content.size.width;
-    auto the_height = content.size.height;
-    auto text_position = Position{((the_width - text_size.width) / 2) + text_padding,
-                                  ((the_height - text_size.height) / 2) + text_padding};
-
-    if (is_enabled)
-        content.write_fixed(text_position, text, color);
+    if (is_enabled) {
+        // TODO properly center
+        auto text_padding = 5;
+        auto text_size = font.text_size(text);
+        auto centered = content.size.centered(text_size, text_padding);
+        font.write(content, centered, text, color);
+    }
 }
 
 auto ThemePlasma::draw_checkbox(Bitmap &content, bool has_focus, bool is_enabled, bool is_checked,
@@ -780,8 +789,11 @@ auto ThemePlasma::draw_checkbox(Bitmap &content, bool has_focus, bool is_enabled
             break;
         }
     }
-    content.write_fixed({checkbox_size + 5, 5}, text,
-                        is_enabled ? foreground_color : colors.text_color_disabled);
+
+    auto text_padding = 5;
+    auto text_size = font.text_size(text);
+    auto centered = Position{checkbox_size + 5, 5};
+    font.write(content, centered, text, is_enabled ? foreground_color : colors.text_color_disabled);
 }
 
 auto ThemePlasma::draw_input_background(Bitmap &content, const bool has_focus) -> void {
@@ -816,5 +828,8 @@ void ThemePlasma::draw_listview_item(Bitmap &content, const std::string &text,
         background_color = colors.text_selection_background_hover;
 
     content.fill(background_color);
-    content.write_fixed(Position{5, 5}, text, text_color);
+    auto text_padding = 5;
+    auto text_size = font.text_size(text);
+    auto centered = content.size.centeredY(text_size, text_padding);
+    font.write(content, centered, text, text_color);
 }
