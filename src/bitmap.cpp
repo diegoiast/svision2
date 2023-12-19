@@ -103,11 +103,11 @@ auto Bitmap::blend_pixel(int x, int y, uint32_t color, uint8_t alpha) -> void {
     if (y >= size.height)
         return;
 
-    auto color2 = get_pixel(x, y);
+    auto color2 = get_pixel_unsafe(x, y);
     auto red = ((255 - alpha) * GetRed(color2) + alpha * GetRed(color)) / 255;
     auto green = ((255 - alpha) * GetGreen(color2) + alpha * GetGreen(color)) / 255;
     auto blue = ((255 - alpha) * GetBlue(color2) + alpha * GetBlue(color)) / 255;
-    put_pixel(x, y, MakeColor(red, green, blue));
+    put_pixel_unsafe(x, y, MakeColor(red, green, blue));
 }
 
 auto Bitmap::resize(int width, int height) -> void {
@@ -383,15 +383,21 @@ auto Bitmap::fill(int x, int y, uint32_t old, uint32_t c) -> void {
 auto Bitmap::draw(Position position, const Bitmap &other) -> void {
     for (auto y = 0; y < other.size.height; y++) {
         auto yy = y + position.y;
-        if (yy > size.height) {
+        if (yy < 0) {
+            continue;
+        }
+        if (yy >= size.height) {
             break;
         }
         for (auto x = 0; x < other.size.width; x++) {
             auto xx = x + position.x;
-            if (xx > size.width) {
+            if (xx < 0) {
+                continue;
+            }
+            if (xx >= size.width) {
                 break;
             }
-            put_pixel(xx, yy, other.get_pixel(x, y));
+            put_pixel_unsafe(xx, yy, other.get_pixel_unsafe(x, y));
         }
     }
 }

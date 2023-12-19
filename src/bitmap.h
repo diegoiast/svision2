@@ -101,10 +101,18 @@ struct Bitmap {
     }
 
     auto inline get_pixel(int x, int y) const -> uint32_t {
-        if (x >= size.width)
+        if (x < 0 || x >= size.width)
             return 0;
-        if (y >= size.height)
+        if (y < 0 || y >= size.height)
             return 0;
+        return buffer[(y * size.width) + x];
+    }
+
+    auto inline put_pixel_unsafe(int x, int y, uint32_t color) -> void {
+        buffer[(y * size.width) + x] = color;
+    }
+
+    auto inline get_pixel_unsafe(int x, int y) const -> uint32_t {
         return buffer[(y * size.width) + x];
     }
 
