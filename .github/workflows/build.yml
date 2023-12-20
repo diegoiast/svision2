@@ -50,18 +50,18 @@ jobs:
       - name: Run tests
         run : '${{ runner.workspace }}/build/${{ runner.os }}/bin/test-buttons'
 
-    - name: Run static analysis
-      uses: JacobDomagala/StaticAnalysis@master
-      with:
-        language: c++
+      - name: Run static analysis
+        uses: JacobDomagala/StaticAnalysis@master
+        with:
+          language: c++
 
-        # Exclude any issues found in ${Project_root_dir}/lib
-        exclude_dir: lib
+          # Exclude any issues found in ${Project_root_dir}/lib
+          exclude_dir: lib
 
-        use_cmake: true
+          use_cmake: true
 
-        # (Optional) clang-tidy args
-        clang_tidy_args: -checks='*,fuchsia-*,google-*,zircon-*,abseil-*,modernize-use-trailing-return-type'
+          # (Optional) clang-tidy args
+          clang_tidy_args: -checks='*,fuchsia-*,google-*,zircon-*,abseil-*,modernize-use-trailing-return-type'
 
-        # (Optional) cppcheck args
-        cppcheck_args: --enable=all --suppress=missingInclude
+          # (Optional) cppcheck args
+          cppcheck_args: --enable=all --suppress=missingInclude
