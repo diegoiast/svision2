@@ -72,16 +72,18 @@ jobs:
         if: matrix.os == 'ubuntu-22.04'
         run : sudo apt install clang-tidy
 
-      - name: Confiure + build (CMake+Ninja)
+      - name: Confiure 
         id: runcmake
         run: |
-          conan --version
-          cmake -S ${{ github.workspace }}  \
-                -B ${{ runner.workspace }}/build/${{ runner.os }} \
+          cmake --verbose -S ${{ github.workspace }}  \
+                -B "${{ runner.workspace }}/build/${{ runner.config.os }}"" \
                 -G "${{ matrix.config.generators }}" \
                 -DCMAKE_BUILD_TYPE="${{ matrix.config.build_type }}" \
                 -DCMAKE_C_COMPILER=${{ matrix.config.cc }} \
                 -DCMAKE_CXX_COMPILER=${{ matrix.config.cxx }}
+      - name: Build
+        id: runcmakebuild
+        run: |
           cmake --build ${{ runner.workspace }}/build/${{ runner.os }} --parallel --verbose
       - name: Run clang format
         if: matrix.os == 'ubuntu-22.04'
