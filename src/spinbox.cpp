@@ -96,7 +96,7 @@ auto Spinbox::set_value(double value) -> void {
     }
 }
 
-auto Spinbox::set_values(double min, double max, double value) -> void {
+auto Spinbox::set_values(double value, double min, double max) -> void {
     this->min_value = min;
     this->max_value = max;
     this->value = value;

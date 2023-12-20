@@ -69,14 +69,14 @@ auto WidgetCollection::on_mouse(const EventMouse &event) -> EventPropagation {
             // not handled by subwidgets, send this event to the widget itself
             switch (event.type) {
             case MouseEvents::Release: {
-                auto b = on_mouse_release(event, w);
+                b = on_mouse_release(event, w);
                 if (b == EventPropagation::handled) {
                     result = EventPropagation::handled;
                 }
                 break;
             }
             case MouseEvents::Press: {
-                auto b = on_mouse_press(event, w);
+                b = on_mouse_press(event, w);
                 if (b == EventPropagation::handled) {
                     result = EventPropagation::handled;
                 }
@@ -84,7 +84,7 @@ auto WidgetCollection::on_mouse(const EventMouse &event) -> EventPropagation {
             }
             case MouseEvents::MouseMove: {
                 // TODO: event name is bad, as this also handles mouse move
-                auto b = on_mouse_press(event, w);
+                b = on_mouse_press(event, w);
                 if (b == EventPropagation::handled) {
                     result = EventPropagation::handled;
                 }
@@ -133,7 +133,7 @@ auto WidgetCollection::on_mouse_press(const EventMouse &event, std::shared_ptr<W
         return EventPropagation::propagate;
     }
 
-    auto result = EventPropagation::propagate;
+    EventPropagation result;
     auto local_event = event;
     local_event.is_local = true;
     local_event.x = event.x - w->position.x;
@@ -334,8 +334,8 @@ auto Widget::draw() -> void {
     }
 
     auto frame_proxy = this->frame;
-    auto theme = get_theme();
-    if (can_focus && theme->modify_frame_on_hover()) {
+    auto actual_theme = get_theme();
+    if (can_focus && actual_theme->modify_frame_on_hover()) {
         // Setting hover frame works only on selectable widgets
         if (frame_proxy.style == FrameStyles::Normal ||
             frame_proxy.style == FrameStyles::Reversed) {
@@ -348,7 +348,8 @@ auto Widget::draw() -> void {
         }
     }
     if (frame_proxy.style != FrameStyles::NoFrame) {
-        theme->draw_frame(content, {0, 0}, content.size, frame_proxy.style, frame_proxy.size);
+        actual_theme->draw_frame(content, {0, 0}, content.size, frame_proxy.style,
+                                 frame_proxy.size);
     }
 }
 

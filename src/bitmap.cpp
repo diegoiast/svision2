@@ -169,9 +169,10 @@ auto Bitmap::line(int x0, int y0, int x1, int y1, uint32_t color) -> void {
     int dy = -abs(y1 - y0);
     int sy = y0 < y1 ? 1 : -1;
     int err = dx + dy;
-    int e2; /* error value e_xy */
 
-    for (;;) { /* loop */
+    for (;;) {  /* loop */
+        int e2; /* error value e_xy */
+
         put_pixel(x0, y0, color);
         if (x0 == x1 && y0 == y1)
             break;
@@ -191,22 +192,22 @@ auto Bitmap::line(int x0, int y0, int x1, int y1, uint32_t color) -> void {
     }
 }
 
-auto Bitmap::line_thikness(int x1, int y1, int x2, int y2, int thickness, uint32_t color) -> void {
-    float dx = x2 - x1;
-    float dy = y2 - y1;
+auto Bitmap::line_thikness(int x0, int y0, int x1, int y1, int thickness, uint32_t color) -> void {
+    float dx = x1 - x0;
+    float dy = y1 - y0;
     float length = sqrtf(dx * dx + dy * dy);
     float nx = dx / length;
     float ny = dy / length;
 
     float half_thickness = thickness / 2.0f;
-    float x_min = fminf(x1 - half_thickness, x2 - half_thickness);
-    float y_min = fminf(y1 - half_thickness, y2 - half_thickness);
-    float x_max = fmaxf(x1 + half_thickness, x2 + half_thickness);
-    float y_max = fmaxf(y1 + half_thickness, y2 + half_thickness);
+    float x_min = fminf(x0 - half_thickness, x1 - half_thickness);
+    float y_min = fminf(y0 - half_thickness, y1 - half_thickness);
+    float x_max = fmaxf(x0 + half_thickness, x1 + half_thickness);
+    float y_max = fmaxf(y0 + half_thickness, y1 + half_thickness);
 
     for (int x = roundf(x_min); x <= roundf(x_max); x++) {
         for (int y = roundf(y_min); y <= roundf(y_max); y++) {
-            float d = fabsf((x - x1) * ny - (y - y1) * nx);
+            float d = fabsf((x - x0) * ny - (y - y0) * nx);
             // TODO - alpha blend the colors, using `d`
             if (d <= half_thickness) {
                 put_pixel(x, y, color);

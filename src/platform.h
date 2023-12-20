@@ -23,7 +23,7 @@ struct Platform {
 
     virtual auto init() -> void = 0;
     virtual auto done() -> void = 0;
-    virtual auto open_window(int x, int y, int width, int height, const std::string title)
+    virtual auto open_window(int x, int y, int width, int height, const std::string &title)
         -> std::shared_ptr<PlatformWindow> = 0;
     virtual auto show_window(std::shared_ptr<PlatformWindow> window) -> void = 0;
 

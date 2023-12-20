@@ -83,9 +83,6 @@ auto FontProviderFreetype::write(Bitmap &bitmap, Position position, const std::s
     };
 
     FT_Set_Pixel_Sizes(face, 0, fontSize);
-    auto base_line = 0;
-    auto bbox_ymax = face->bbox.yMax + face->bbox.yMin;
-
     auto text_bounds = text_size(text);
     if (debug_render) {
         bitmap.draw_rectangle(position.x, position.y, text_bounds.width, text_bounds.height,
@@ -128,14 +125,12 @@ auto FontProviderFreetype::text_size(const std::string_view text) -> Size {
         return {0, 0};
     };
 
-    FT_Set_Pixel_Sizes(face, 0, fontSize);
-
-    auto strPos = 0;
     auto penX = 0;
     auto penY = (unsigned int)0;
     auto it = text.begin();
     const auto end = text.end();
 
+    FT_Set_Pixel_Sizes(face, 0, fontSize);
     while (it != end) {
         auto code_point = extractUnicodeCharacter(it, end);
         auto error = FT_Load_Char(face, code_point, FT_LOAD_RENDER | FT_LOAD_TARGET_NORMAL);

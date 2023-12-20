@@ -12,9 +12,11 @@
 #include <widget.h>
 
 struct Label : public Widget {
-    std::string text;
+    std::string_view text;
 
-    Label(Position pp, Size size, std::string text) : Widget(pp, size, 0) { this->text = text; }
+    Label(Position pp, Size size, std::string_view text) : Widget(pp, size, 0) {
+        this->text = text;
+    }
 
     virtual auto draw() -> void override {
         Widget::draw();

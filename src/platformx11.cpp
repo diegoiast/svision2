@@ -65,7 +65,7 @@ auto convert_x11_key_event(XEvent &ev, Display *dpy) -> EventKeyboard {
     auto event = EventKeyboard();
     char buf[20];
     KeySym keySym;
-    (void)XLookupString((XKeyEvent *)&ev, buf, 20, &keySym, nullptr);
+    (void)XLookupString(reinterpret_cast<XKeyEvent *>(&ev), buf, 20, &keySym, nullptr);
 
     // TODO binary search could be nice.
     for (auto i = 0; X11_KEYCODES[i] != 0; i += 2) {
@@ -78,7 +78,7 @@ auto convert_x11_key_event(XEvent &ev, Display *dpy) -> EventKeyboard {
 
     if (event.key == KeyCodes::Unknown) {
         spdlog::critical("X11: Keycode 0x{0:x} is not detected, will send 0x{1:x}", keySym,
-                         (int)event.key);
+                         static_cast<int>(event.key));
     }
     auto m = ev.xkey.state;
     event.keydown = ev.type == KeyPress;
@@ -159,7 +159,7 @@ auto PlatformX11::done() -> void {
     XCloseDisplay(dpy);
 }
 
-auto PlatformX11::open_window(int x, int y, int width, int height, const std::string title)
+auto PlatformX11::open_window(int x, int y, int width, int height, const std::string &title)
     -> std::shared_ptr<PlatformWindow> {
     auto window = std::make_shared<PlatformWindowX11>();
     window->title = title;
@@ -177,10 +177,10 @@ auto PlatformX11::open_window(int x, int y, int width, int height, const std::st
     window->main_widget.content.resize(width, height);
     window->main_widget.theme = default_theme;
     window->platform = this;
-    window->x11_image = XCreateImage(dpy, DefaultVisual(dpy, 0), 24, ZPixmap, 0,
-                                     (char *)window->main_widget.content.buffer.data(),
-                                     window->main_widget.content.size.width,
-                                     window->main_widget.content.size.height, 32, 0);
+    window->x11_image = XCreateImage(
+        dpy, DefaultVisual(dpy, 0), 24, ZPixmap, 0,
+        reinterpret_cast<char *>(window->main_widget.content.buffer.data()),
+        window->main_widget.content.size.width, window->main_widget.content.size.height, 32, 0);
 
     windows[window->x11_window] = window;
     return window;
@@ -284,11 +284,11 @@ auto PlatformX11::main_loop() -> void {
                 //        needed values? I should modify only the width/height and
                 //        byteperline or something.
                 XFree(target_window->x11_image);
-                target_window->x11_image =
-                    XCreateImage(dpy, DefaultVisual(dpy, 0), 24, ZPixmap, 0,
-                                 (char *)target_window->main_widget.content.buffer.data(),
-                                 target_window->main_widget.content.size.width,
-                                 target_window->main_widget.content.size.height, 32, 0);
+                target_window->x11_image = XCreateImage(
+                    dpy, DefaultVisual(dpy, 0), 24, ZPixmap, 0,
+                    reinterpret_cast<char *>(target_window->main_widget.content.buffer.data()),
+                    target_window->main_widget.content.size.width,
+                    target_window->main_widget.content.size.height, 32, 0);
 
                 target_window->on_resize(event);
             }
