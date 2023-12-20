@@ -7,6 +7,7 @@ on:
     braches:
        - main
        - new-feature-github-actions
+       - *
 
 jobs:
   build-cmake:
