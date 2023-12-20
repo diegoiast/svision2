@@ -8,7 +8,7 @@ on:
 
 jobs:
   build-cmake:
-    name: ${{ matrix.os }}-hosted-basic-=
+    name: build-${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -40,16 +40,15 @@ jobs:
       - name: Install clang-tidy
         if: matrix.os == 'ubuntu-22.04'
         run : sudo apt install clang-tidy
+      - name: Confiure + build (CMake+Ninja)
+        id: runcmake
+        run: |
+          cmake -S ${{ github.workspace }} -B ${{ runner.workspace }}/build/${{ runner.os }} -G Ninja -DCMAKE_BUILD_TYPE=Release
+          cmake --build ${{ runner.workspace }}/build/${{ runner.os }} --parallel
       - name: Run clang format
         if: matrix.os == 'ubuntu-22.04'
         run : |
           ninja -C '${{ runner.workspace }}/build/${{ runner.os }}' clang-format 
           # echo ninja -C '${{ runner.workspace }}/build/${{ runner.os }}' check-clang-format
-
-      - name: Confiure + build (CMake+Ninja)
-        id: runcmake
-        run: |
-          cmake -S ${{ github.workspace }} -B ${{ runner.workspace }}/build/${{ runner.os }} -G Ninja
-          cmake --build ${{ runner.workspace }}/build/${{ runner.os }} --parallel
       - name: Run tests
         run : '${{ runner.workspace }}/build/${{ runner.os }}/bin/test-buttons'
