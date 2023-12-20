@@ -2,8 +2,7 @@ name: Codespell
 
 on:
   push:
-    branches:
-      - master
+    braches : ["main", "new-feature-github-actions"]
   pull_request:
   
 jobs:

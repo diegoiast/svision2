@@ -58,7 +58,7 @@ jobs:
           # Exclude any issues found in ${Project_root_dir}/lib
           exclude_dir: lib
 
-          use_cmake: true
+          use_cmake: false
 
           # (Optional) clang-tidy args
           clang_tidy_args: -checks='*,fuchsia-*,google-*,zircon-*,abseil-*,modernize-use-trailing-return-type'
