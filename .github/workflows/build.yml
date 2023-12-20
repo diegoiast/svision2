@@ -8,7 +8,7 @@ on:
 
 jobs:
   build-cmake:
-    name: build-${{ matrix.name }}
+    name: build-${{ matrix.config.name }}
     runs-on: ${{ matrix.config.os }}
       # see https://gist.github.com/NickNaso/0d478f1481686d5bcc868cac06620a60
     strategy:
@@ -75,7 +75,7 @@ jobs:
         id: runcmake
         run: |
           conan --version
-          cmake -S ${{ github.workspace }} -B ${{ runner.workspace }}/build/${{ runner.os }} -G "${{ matrix.config.generators }} -DCMAKE_BUILD_TYPE=${{ matrix.config.build_type }}
+          cmake -S ${{ github.workspace }} -B ${{ runner.workspace }}/build/${{ runner.os }} -G "${{ matrix.config.generators }}" -DCMAKE_BUILD_TYPE="${{ matrix.config.build_type }}"
           cmake --build ${{ runner.workspace }}/build/${{ runner.os }} --parallel
       - name: Run clang format
         if: matrix.os == 'ubuntu-22.04'
