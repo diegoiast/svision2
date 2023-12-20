@@ -23,9 +23,7 @@ jobs:
           # - os: macos-12
           #   triplet: x64-osx
     steps:
-      - uses: actions/checkout@v3
-        with:
-          submodules: true
+      - uses: actions/checkout@v4
       - uses: lukka/get-cmake@latest
       - uses: actions/setup-python@v5
         with:
@@ -51,3 +49,19 @@ jobs:
           # echo ninja -C '${{ runner.workspace }}/build/${{ runner.os }}' check-clang-format
       - name: Run tests
         run : '${{ runner.workspace }}/build/${{ runner.os }}/bin/test-buttons'
+
+    - name: Run static analysis
+      uses: JacobDomagala/StaticAnalysis@master
+      with:
+        language: c++
+
+        # Exclude any issues found in ${Project_root_dir}/lib
+        exclude_dir: lib
+
+        use_cmake: true
+
+        # (Optional) clang-tidy args
+        clang_tidy_args: -checks='*,fuchsia-*,google-*,zircon-*,abseil-*,modernize-use-trailing-return-type'
+
+        # (Optional) cppcheck args
+        cppcheck_args: --enable=all --suppress=missingInclude
