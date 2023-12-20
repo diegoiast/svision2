@@ -27,7 +27,7 @@ struct Platform {
         -> std::shared_ptr<PlatformWindow> = 0;
     virtual auto show_window(std::shared_ptr<PlatformWindow> window) -> void = 0;
 
-    // TODO: I would like to pass the shared pointer, to keep API consistant
+    // TODO: I would like to pass the shared pointer, to keep API consistent
     virtual auto invalidate(PlatformWindow &window) -> void = 0;
     virtual auto main_loop() -> void = 0;
 };

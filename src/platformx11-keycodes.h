@@ -27,7 +27,7 @@ https://github.com/fltk/fltk/blob/5438954d8c6213f1b0cc9d23b70ffaae388e1d60/src/x
 
 */
 
-// lookup table to convert X11 keyboard events to "Psuedo ASCII" ("borrowed" from WxWidgets)
+// lookup table to convert X11 keyboard events to "Pseudo ASCII" ("borrowed" from WxWidgets)
 // TODO - make constants for our own keyboard events
 
 static int X11_KEYCODES[] = {
@@ -687,7 +687,7 @@ static int X11_KEYCODES[] = {
     0x09f2, 0x23bc,    // horizlinescan7
     0x09f3, 0x23bd,    // horizlinescan9
     0x09f4, 0x251c,    // leftt
-    0x09f5, 0x2524,    // rightt
+    0x09f5, 0x2524,    // right
     0x09f6, 0x2534,    // bott
     0x09f7, 0x252c,    // topt
     0x09f8, 0x2502,    // vertbar
