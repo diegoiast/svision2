@@ -41,6 +41,7 @@ jobs:
       - name: Confiure + build (CMake+Ninja)
         id: runcmake
         run: |
+          conan --version
           cmake -S ${{ github.workspace }} -B ${{ runner.workspace }}/build/${{ runner.os }} -G Ninja -DCMAKE_BUILD_TYPE=Debug
           cmake --build ${{ runner.workspace }}/build/${{ runner.os }} --parallel
       - name: Run clang format
