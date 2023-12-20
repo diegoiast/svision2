@@ -79,12 +79,7 @@ jobs:
       - name: Confiure 
         id: runcmake
         run: |
-          cmake -S ${{ github.workspace }}  \
-                -B ${{ runner.workspace }}/build/${{ runner.config.build_dir }} \
-                -G "${{ matrix.config.generators }}" \
-                -DCMAKE_BUILD_TYPE="${{ matrix.config.build_type }}" \
-                -DCMAKE_C_COMPILER=${{ matrix.config.cc }} \
-                -DCMAKE_CXX_COMPILER=${{ matrix.config.cxx }}
+          cmake -S ${{ github.workspace }} -B ${{ runner.workspace }}/build/${{ runner.config.build_dir }}" -G "${{ matrix.config.generators }}" -DCMAKE_BUILD_TYPE="${{ matrix.config.build_type }}" -DCMAKE_C_COMPILER=${{ matrix.config.cc }} -DCMAKE_CXX_COMPILER=${{ matrix.config.cxx }}
       - name: Build
         id: runcmakebuild
         run: |
