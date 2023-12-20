@@ -17,6 +17,7 @@ jobs:
         config: 
         - {
             name: "Windows MSVC",
+            build_dir: "windows-msvc",
             os: windows-latest,
             artifact: "windows_msvc.7z",
             build_type: "Release",
@@ -29,6 +30,7 @@ jobs:
           }
         - {
             name: "Windows MinGW",
+            build_dir: "windows-mingw",
             os: windows-latest,
             artifact: "windows_mingw.7z",
             build_type: "Release",
@@ -39,6 +41,7 @@ jobs:
           }
         - {
             name: "Ubuntu GCC",
+            build_dir: "ubungu-gcc",
             os: ubuntu-22.04,
             artifact: "ubuntu_gcc.7z",
             build_type: "Release",
@@ -49,6 +52,7 @@ jobs:
           }
         - {
             name: "Ubuntu Clang",
+            build_dir: "ubuntu-clang",
             os: ubuntu-22.04,
             artifact: "ubuntu_clang.7z",
             build_type: "Release",
@@ -76,7 +80,7 @@ jobs:
         id: runcmake
         run: |
           cmake -S ${{ github.workspace }}  \
-                -B "${{ runner.workspace }}/build/${{ runner.config.os }}" \
+                -B "${{ runner.workspace }}/build/${{ runner.config.build_dir }}" \
                 -G "${{ matrix.config.generators }}" \
                 -DCMAKE_BUILD_TYPE="${{ matrix.config.build_type }}" \
                 -DCMAKE_C_COMPILER=${{ matrix.config.cc }} \
@@ -84,11 +88,11 @@ jobs:
       - name: Build
         id: runcmakebuild
         run: |
-          cmake --build ${{ runner.workspace }}/build/${{ runner.os }} --parallel --verbose
+          cmake --build ${{ runner.workspace }}/build/${{ config.build_dir }} --parallel --verbose
       - name: Run clang format
         if: matrix.config.os == 'ubuntu-22.04'
         run : |
-          ninja -C '${{ runner.workspace }}/build/${{ runner.os }}' clang-format 
-          # echo ninja -C '${{ runner.workspace }}/build/${{ runner.os }}' check-clang-format
+          ninja -C '${{ runner.workspace }}/build/${{ runner.config.build_dir }}' clang-format 
+          # echo ninja -C '${{ runner.workspace }}/build/${{ runner.config.build_dir }}' check-clang-format
       - name: Run tests
-        run : '${{ runner.workspace }}/build/${{ runner.os }}/bin/test-buttons'
+        run : '${{ runner.workspace }}/build/${{ runner.config.build_dir }}/bin/test-buttons'
