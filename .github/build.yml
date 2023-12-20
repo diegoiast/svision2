@@ -1,0 +1,54 @@
+# Copyright (c) 2019-2020-2021 Luca Cappa
+# Released under the term specified in file LICENSE.txt
+# SPDX short identifier: MIT
+name: Build and test SVIsion2
+on:
+  push:
+    braches:
+       - main
+       - new-feature-github-actions
+
+jobs:
+  build-cmake:
+    name: ${{ matrix.os }}-hosted-basic
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-22.04, windows-2022]
+        # os: [ubuntu-22.04, macos-12, windows-2022]
+        include:
+          - os: windows-2022
+            triplet: x64-windows
+          - os: ubuntu-22.04
+            triplet: x64-linux
+          # - os: macos-12
+          #   triplet: x64-osx
+    steps:
+      - uses: actions/checkout@v1
+        with:
+          submodules: true
+      - uses: lukka/get-cmake@latest
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12.1' 
+      - name: Set output names
+        id: vars
+        run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+      - name: Install conan
+        run: pip3 install conan==1.61
+      - name: Install clang-tidy
+        if: matrix.os == 'ubuntu-latest'
+        run : sudo apt install clang-tidy
+      - name: Confiure + build (CMake+Ninja)
+        id: runcmake
+        run: |
+          cmake -S ${{ github.workspace }} -B ${{ runner.workspace }}/build/${{ runner.os }} -G Ninja
+          cmake --build ${{ runner.workspace }}/build/${{ runner.os }} --parallel
+      - name: Run clang format
+        if: matrix.os == 'ubuntu-latest'
+        run : |
+          ninja -C '${{ runner.workspace }}/build/${{ runner.os }}' clang-format 
+          # echo ninja -C '${{ runner.workspace }}/build/${{ runner.os }}' check-clang-format
+      - name: Run tests
+        run : '${{ runner.workspace }}/build/${{ runner.os }}/bin/test-buttons'
