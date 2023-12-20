@@ -10,7 +10,6 @@
 #undef min
 #undef max
 
-#include <iostream>
 #include "spdlog/spdlog.h"
 
 #include "events.h"
@@ -161,32 +160,35 @@ struct PlatformWindowWin32 : public PlatformWindow {
 };
 
 static auto win32_paint_window(PlatformWindowWin32 *window) -> void {
-    if (window->content.buffer.data() == nullptr || window->content.size.height <= 0 ||
-        window->content.size.height <= 0) {
+    if (window->main_widget.content.buffer.data() == nullptr ||
+        window->main_widget.content.size.height <= 0 ||
+        window->main_widget.content.size.height <= 0) {
         spdlog::warn("win32_paint_window: Window has invalid size! ptr={}, size={}x{}",
-                     fmt::ptr(window->content.buffer.data()), window->content.size.width,
-                     window->content.size.height);
+                     fmt::ptr(window->main_widget.content.buffer.data()),
+                     window->main_widget.content.size.width,
+                     window->main_widget.content.size.height);
         return;
     }
 
     PAINTSTRUCT ps;
     HDC hdc = BeginPaint(window->hwnd, &ps);
     HDC memdc = CreateCompatibleDC(hdc);
-    HBITMAP hbmp =
-        CreateCompatibleBitmap(hdc, window->content.size.width, window->content.size.height);
+    HBITMAP hbmp = CreateCompatibleBitmap(hdc, window->main_widget.content.size.width,
+                                          window->main_widget.content.size.height);
     HGDIOBJ oldbmp = SelectObject(memdc, hbmp);
-    BITMAPINFO bi = {
-        {sizeof(bi), window->content.size.width, -window->content.size.height, 1, 32, BI_RGB}};
+    BITMAPINFO bi = {{sizeof(bi), window->main_widget.content.size.width,
+                      -window->main_widget.content.size.height, 1, 32, BI_RGB}};
     bi.bmiColors[0].rgbRed = 0xff;
     bi.bmiColors[0].rgbGreen = 0xff;
     bi.bmiColors[0].rgbBlue = 0xff;
     bi.bmiColors[0].rgbReserved = 0xff;
 
-    SetDIBitsToDevice(memdc, 0, 0, window->content.size.width, window->content.size.height, 0, 0, 0,
-                      window->content.size.height, window->content.buffer.data(), (BITMAPINFO *)&bi,
-                      DIB_RGB_COLORS);
-    BitBlt(hdc, 0, 0, window->content.size.width, window->content.size.height, memdc, 0, 0,
-           SRCCOPY);
+    SetDIBitsToDevice(memdc, 0, 0, window->main_widget.content.size.width,
+                      window->main_widget.content.size.height, 0, 0, 0,
+                      window->main_widget.content.size.height,
+                      window->main_widget.content.buffer.data(), (BITMAPINFO *)&bi, DIB_RGB_COLORS);
+    BitBlt(hdc, 0, 0, window->main_widget.content.size.width,
+           window->main_widget.content.size.height, memdc, 0, 0, SRCCOPY);
     SelectObject(memdc, oldbmp);
     DeleteObject(hbmp);
     DeleteDC(memdc);
@@ -233,9 +235,9 @@ static LRESULT CALLBACK svision_wndproc(HWND hwnd, UINT msg, WPARAM wParam, LPAR
         //      case WM_SIZING:
         {
             auto event = convert_win32_resize_event(msg, wParam, lParam);
-            if (event.size != window->content.size) {
+            if (event.size != window->main_widget.content.size) {
                 window->needs_redraw = true;
-                window->content.resize(event.size.width, event.size.height);
+                window->main_widget.content.resize(event.size.width, event.size.height);
                 window->on_resize(event);
             }
         }
@@ -348,7 +350,7 @@ auto PlatformWin32::open_window(int x, int y, int width, int height, const std::
     }
 
     SetWindowLongPtr(window->hwnd, GWLP_USERDATA, (LONG_PTR)window.get());
-    window->theme = default_theme;
+    window->main_widget.theme = default_theme;
     window->platform = this;
     return window;
 }
