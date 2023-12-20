@@ -57,7 +57,7 @@ struct Theme {
     ColorStyle colors = {};
     FontProvider &font;
 
-    Theme(FontProvider &f) : font(f) {}
+    explicit Theme(FontProvider &f) : font(f) {}
 
     auto draw_frame(Bitmap &content, Position position, Size size, FrameStyles style,
                     FrameSize frame_size) -> void;
@@ -77,7 +77,7 @@ struct Theme {
 
     virtual auto draw_listview_background(Bitmap &content, const bool has_focus,
                                           bool draw_background) -> void = 0;
-    virtual auto draw_listview_item(Bitmap &content, const std::string &text,
+    virtual auto draw_listview_item(Bitmap &content, const std::string_view text,
                                     const ItemStatus status, bool is_hover) -> void = 0;
 
     virtual auto needs_frame_for_focus() const -> bool = 0;
@@ -91,7 +91,7 @@ struct ThemeRedmond : Theme {
     static auto get_light_colors() -> ColorStyle;
     static auto get_dark_colors() -> ColorStyle;
 
-    ThemeRedmond(FontProvider &f) : Theme(f) { colors = get_light_colors(); }
+    explicit ThemeRedmond(FontProvider &f) : Theme(f) { colors = get_light_colors(); }
 
     virtual auto init() -> void override{};
     virtual auto draw_widget_background(Bitmap &content, bool has_focus) -> void override;
@@ -105,7 +105,7 @@ struct ThemeRedmond : Theme {
     virtual auto draw_input_background(Bitmap &content, const bool has_focus) -> void override;
     virtual auto draw_listview_background(Bitmap &content, const bool has_focus,
                                           bool draw_background) -> void override;
-    virtual auto draw_listview_item(Bitmap &content, const std::string &text,
+    virtual auto draw_listview_item(Bitmap &content, const std::string_view text,
                                     const ItemStatus status, bool is_hover) -> void override;
 
     virtual auto needs_frame_for_focus() const -> bool override { return true; };
@@ -119,7 +119,7 @@ struct ThemeVision : Theme {
     static auto get_light_colors(int32_t accent = DefaultAccentLight) -> ColorStyle;
     static auto get_dark_colors(int32_t accent = DefaultAccentLight) -> ColorStyle;
 
-    ThemeVision(FontProvider &f, int32_t accent = DefaultAccentLight) : Theme(f) {
+    explicit ThemeVision(FontProvider &f, int32_t accent = DefaultAccentLight) : Theme(f) {
         colors = get_light_colors(accent);
     }
 
@@ -135,7 +135,7 @@ struct ThemeVision : Theme {
     virtual auto draw_input_background(Bitmap &content, const bool has_focus) -> void override;
     virtual auto draw_listview_background(Bitmap &content, const bool has_focus,
                                           bool draw_background) -> void override;
-    virtual auto draw_listview_item(Bitmap &content, const std::string &text,
+    virtual auto draw_listview_item(Bitmap &content, const std::string_view text,
                                     const ItemStatus status, bool is_hover) -> void override;
 
     virtual auto needs_frame_for_focus() const -> bool override { return false; };
@@ -147,7 +147,7 @@ struct ThemePlasma : Theme {
     static auto get_light_colors(int32_t accent = DefaultAccentLight) -> ColorStyle;
     static auto get_dark_colors(int32_t accent = DefaultAccentLight) -> ColorStyle;
 
-    ThemePlasma(FontProvider &f, int32_t accent = DefaultAccentLight) : Theme(f) {
+    explicit ThemePlasma(FontProvider &f, int32_t accent = DefaultAccentLight) : Theme(f) {
         colors = get_light_colors(accent);
     }
 
@@ -163,7 +163,7 @@ struct ThemePlasma : Theme {
     virtual auto draw_input_background(Bitmap &content, const bool has_focus) -> void override;
     virtual auto draw_listview_background(Bitmap &content, const bool has_focus,
                                           const bool draw_background) -> void override;
-    virtual auto draw_listview_item(Bitmap &content, const std::string &text,
+    virtual auto draw_listview_item(Bitmap &content, const std::string_view text,
                                     const ItemStatus status, bool is_hover) -> void override;
 
     virtual auto needs_frame_for_focus() const -> bool override { return false; };

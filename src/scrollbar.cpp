@@ -168,7 +168,6 @@ auto ScrollBar::update_thumb_size() -> void {
         auto minimum_thumb_size =
             is_horizontal ? down_button->content.size.width : down_button->content.size.height;
         auto maximum_thumb_size = available_size;
-        auto range = maximum - minimum;
         auto visible_range = range / step;
         auto thumb_range = 0;
 

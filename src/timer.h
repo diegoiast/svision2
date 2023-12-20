@@ -71,9 +71,6 @@ struct Win32Timer : PlatformTimer {
 
   private:
     UINT_PTR timer_id = 0;
-
-    //    static auto handler(sigval sival_int) -> void;
-    //    timer_t timerid = 0;
     static void CALLBACK TimerProc(HWND hwnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime);
     static std::map<UINT_PTR, Win32Timer *> available_timers;
 };

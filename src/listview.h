@@ -28,17 +28,17 @@ struct ItemAdapter {
 struct ListItemAdapter : ItemAdapter {
     std::vector<std::string> strings;
 
-    ListItemAdapter(std::vector<std::string> s) { this->strings = s; };
+    explicit ListItemAdapter(const std::vector<std::string> &s) { this->strings = s; };
     virtual auto get_count() -> size_t const override { return strings.size(); }
     virtual auto get_widget(size_t position) -> PWidget override;
     virtual auto set_content(PWidget widget, size_t position, ItemStatus status) -> void override;
 };
 
 struct ListItemWidget : public Widget {
-    std::string text = {};
+    std::string_view text = {};
     ItemStatus status = {};
 
-    ListItemWidget(Position pp, Size size, std::string text) : Widget(pp, size, 0) {
+    ListItemWidget(Position pp, Size size, std::string_view text) : Widget(pp, size, 0) {
         this->text = text;
     }
 

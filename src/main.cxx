@@ -157,7 +157,7 @@ int main() {
 
     auto debug_widget = w1->add_new<DebugWidget>(Position{400, 160}, Size{200, 40}, 0x22dd37);
     auto cb = w1->add_new<Checkbox>(Position{400, 130}, 220, "Show/hide debug widget");
-    cb->on_checkbox_change = [debug_widget](Checkbox &cb) {
+    cb->on_checkbox_change = [debug_widget](const Checkbox &cb) {
         if (cb.is_checked) {
             debug_widget->show();
         } else {

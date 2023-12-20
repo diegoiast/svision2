@@ -161,7 +161,6 @@ struct PlatformWindowWin32 : public PlatformWindow {
 
 static auto win32_paint_window(PlatformWindowWin32 *window) -> void {
     if (window->main_widget.content.buffer.data() == nullptr ||
-        window->main_widget.content.size.height <= 0 ||
         window->main_widget.content.size.height <= 0) {
         spdlog::warn("win32_paint_window: Window has invalid size! ptr={}, size={}x{}",
                      fmt::ptr(window->main_widget.content.buffer.data()),
@@ -327,7 +326,7 @@ auto PlatformWin32::main_loop() -> void {
     }
 }
 
-auto PlatformWin32::open_window(int x, int y, int width, int height, const std::string title)
+auto PlatformWin32::open_window(int x, int y, int width, int height, const std::string &title)
     -> std::shared_ptr<PlatformWindow> {
     auto hInstance = GetModuleHandle(nullptr);
     auto windowRect = RECT{0, 0, width, height};
@@ -345,10 +344,6 @@ auto PlatformWin32::open_window(int x, int y, int width, int height, const std::
     if (window->hwnd == nullptr) {
         return nullptr;
     }
-    if (window->hwnd == nullptr) {
-        return nullptr;
-    }
-
     SetWindowLongPtr(window->hwnd, GWLP_USERDATA, (LONG_PTR)window.get());
     window->main_widget.theme = default_theme;
     window->platform = this;

@@ -121,7 +121,6 @@ EventPropagation ListView::on_mouse_click(const EventMouse &event) {
 
 auto static ensure_item_in_viewport(ListView &l) {
     auto first_widget = l.adapter->get_widget(0);
-    auto padding = 2;
     auto item_height = (first_widget->content.size.height);
     auto widget_count = l.content.size.height / item_height;
     auto first_visible_item = l.scrollbar->value / item_height;
