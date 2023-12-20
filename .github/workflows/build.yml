@@ -77,7 +77,7 @@ jobs:
         run : sudo apt install clang-tidy
 
       - name: Config
-        if: runner.config.environment_script != ""
+        if: runner.config.environment_script != ''
         run: |
            cmd runner.config.environment_script 
       - name: Confiure 
