@@ -75,7 +75,7 @@ jobs:
       - name: Confiure 
         id: runcmake
         run: |
-          cmake --verbose -S ${{ github.workspace }}  \
+          cmake -S ${{ github.workspace }}  \
                 -B "${{ runner.workspace }}/build/${{ runner.config.os }}" \
                 -G "${{ matrix.config.generators }}" \
                 -DCMAKE_BUILD_TYPE="${{ matrix.config.build_type }}" \
