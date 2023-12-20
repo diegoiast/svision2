@@ -24,7 +24,8 @@ jobs:
             cxx: "cl",
             environment_script: "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat",
             archiver: "7z a",
-            generators: "Visual Studio 16 2019"
+            # generators: "Visual Studio 16 2019",
+            generators: "Ninja"
           }
         - {
             name: "Windows MinGW",
@@ -75,8 +76,13 @@ jobs:
         id: runcmake
         run: |
           conan --version
-          cmake -S ${{ github.workspace }} -B ${{ runner.workspace }}/build/${{ runner.os }} -G "${{ matrix.config.generators }}" -DCMAKE_BUILD_TYPE="${{ matrix.config.build_type }}"
-          cmake --build ${{ runner.workspace }}/build/${{ runner.os }} --parallel
+          cmake -S ${{ github.workspace }}  \
+                -B ${{ runner.workspace }}/build/${{ runner.os }} \
+                -G "${{ matrix.config.generators }}" \
+                -DCMAKE_BUILD_TYPE="${{ matrix.config.build_type }}" \
+                -DCMAKE_C_COMPILER=${{ matrix.config.cc }} \
+                -DCMAKE_CXX_COMPILER=${{ matrix.config.cxx }}
+          cmake --build ${{ runner.workspace }}/build/${{ runner.os }} --parallel --verbose
       - name: Run clang format
         if: matrix.os == 'ubuntu-22.04'
         run : |
