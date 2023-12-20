@@ -88,7 +88,7 @@ jobs:
       - name: Build
         id: runcmakebuild
         run: |
-          cmake --build ${{ runner.workspace }}/build/${{ config.build_dir }} --parallel --verbose
+          cmake --build ${{ runner.workspace }}/build/${{ runnner.config.build_dir }} --parallel --verbose
       - name: Run clang format
         if: matrix.config.os == 'ubuntu-22.04'
         run : |
