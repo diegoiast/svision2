@@ -30,20 +30,18 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12.1'
-      
-      - name: Set output names
-        id: vars
-        run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
       - name: Install conan
         run: pip3 install conan==1.61.0
-
+      - name: Install cmake-format
+        run: pip3 install cmake-format
       - name: Install clang-tidy
         if: matrix.os == 'ubuntu-22.04'
         run : sudo apt install clang-tidy
+
       - name: Confiure + build (CMake+Ninja)
         id: runcmake
         run: |
-          cmake -S ${{ github.workspace }} -B ${{ runner.workspace }}/build/${{ runner.os }} -G Ninja -DCMAKE_BUILD_TYPE=Release
+          cmake -S ${{ github.workspace }} -B ${{ runner.workspace }}/build/${{ runner.os }} -G Ninja -DCMAKE_BUILD_TYPE=Debug
           cmake --build ${{ runner.workspace }}/build/${{ runner.os }} --parallel
       - name: Run clang format
         if: matrix.os == 'ubuntu-22.04'
