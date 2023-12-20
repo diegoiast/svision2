@@ -205,7 +205,7 @@ auto ListView::did_adapter_update() -> void {
         k = 0;
     }
 
-    // the speed is just to make wierd funkey updates
+    // the speed is just to make weird funkey updates
     this->scrollbar->set_values(0, k * item_height, 0, (item_height * 3) / 11);
 
     widget_count++;
@@ -220,7 +220,7 @@ auto ListView::did_adapter_update() -> void {
         this->reserved_widgets.push_back(b);
         widget_count--;
     }
-    this->invalidate(); 
+    this->invalidate();
 }
 
 auto ListItemWidget::draw() -> void {

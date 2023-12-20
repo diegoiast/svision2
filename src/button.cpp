@@ -26,7 +26,7 @@ auto start_repeate_timer(Button *button) -> void {
                 button->click_timer->stop();
 
                 // We need a new timer, with different timeout.
-                // re-use existing timer. I hope this works.
+                // reuse existing timer. I hope this works.
                 button->click_timer->repeating = true;
                 button->click_timer->millies = button->autorepeat_millies;
                 button->click_timer->initialize();

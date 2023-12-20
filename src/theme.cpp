@@ -499,7 +499,7 @@ auto ThemeVision::draw_checkbox(Bitmap &content, bool has_focus, bool is_enabled
 }
 
 auto ThemeVision::draw_input_background(Bitmap &content, const bool has_focus) -> void {
-    // TODO - padding should be the framw size
+    // TODO - padding should be the frame size
     auto padding = 1;
     auto background = has_focus ? colors.input_background_hover : colors.input_background_normal;
     content.fill_rect(padding, padding, content.size.width - padding * 2,
@@ -797,7 +797,7 @@ auto ThemePlasma::draw_checkbox(Bitmap &content, bool has_focus, bool is_enabled
 }
 
 auto ThemePlasma::draw_input_background(Bitmap &content, const bool has_focus) -> void {
-    // TODO - padding should be the framw size
+    // TODO - padding should be the frame size
     auto padding = 1;
     auto background = has_focus ? colors.input_background_hover : colors.input_background_normal;
     content.fill_rect(padding, padding, content.size.width - padding * 2,
