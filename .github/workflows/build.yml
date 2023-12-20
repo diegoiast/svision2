@@ -35,7 +35,7 @@ jobs:
         id: vars
         run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
       - name: Install conan
-        run: pip3 install conan==1.61
+        run: pip3 install conan==1.61.0
 
       - name: Install clang-tidy
         if: matrix.os == 'ubuntu-22.04'
