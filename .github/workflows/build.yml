@@ -1,7 +1,7 @@
 # Copyright (c) 2019-2020-2021 Luca Cappa
 # Released under the term specified in file LICENSE.txt
 # SPDX short identifier: MIT
-name: Build and test SVIsion2
+name: Build and test
 on:
   push:
     braches : ["main", "new-feature-github-actions"]
@@ -13,15 +13,50 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-22.04, windows-2022]
-        # os: [ubuntu-22.04, macos-12, windows-2022]
-        include:
-          - os: windows-2022
-            triplet: x64-windows
-          - os: ubuntu-22.04
-            triplet: x64-linux
-          # - os: macos-12
-          #   triplet: x64-osx
+        # see https://gist.github.com/NickNaso/0d478f1481686d5bcc868cac06620a60
+        config: 
+        - {
+            name: "Windows MSVC",
+            os: windows-latest,
+            artifact: "windows_msvc.7z",
+            build_type: "Release",
+            cc: "cl",
+            cxx: "cl",
+            environment_script: "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat",
+            archiver: "7z a",
+            generators: "Visual Studio 16 2019"
+          }
+        - {
+            name: "Windows MinGW",
+            os: windows-latest,
+            artifact: "windows_mingw.7z",
+            build_type: "Release",
+            cc: "gcc",
+            cxx: "g++",
+            archiver: "7z a",
+            generators: "Ninja"
+          }
+        - {
+            name: "Ubuntu GCC",
+            os: ubuntu-22.04,
+            artifact: "ubuntu_gcc.7z",
+            build_type: "Release",
+            cc: "gcc",
+            cxx: "g++",
+            archiver: "7z a",
+            generators: "Ninja"
+          }
+        - {
+            name: "Ubuntu Clang",
+            os: ubuntu-22.04,
+            artifact: "ubuntu_clang.7z",
+            build_type: "Release",
+            cc: "clang",
+            cxx: "clang++",
+            archiver: "7z a",
+            generators: "Ninja"
+          }
+
     steps:
       - uses: actions/checkout@v4
       - uses: lukka/get-cmake@latest
@@ -40,7 +75,7 @@ jobs:
         id: runcmake
         run: |
           conan --version
-          cmake -S ${{ github.workspace }} -B ${{ runner.workspace }}/build/${{ runner.os }} -G Ninja -DCMAKE_BUILD_TYPE=Debug
+          cmake -S ${{ github.workspace }} -B ${{ runner.workspace }}/build/${{ runner.os }} -G "${{ matrix.config.generators }} -DCMAKE_BUILD_TYPE=${{ matrix.config.build_type }}
           cmake --build ${{ runner.workspace }}/build/${{ runner.os }} --parallel
       - name: Run clang format
         if: matrix.os == 'ubuntu-22.04'
