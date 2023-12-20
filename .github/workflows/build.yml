@@ -76,10 +76,14 @@ jobs:
         if: matrix.config.os == 'ubuntu-22.04'
         run : sudo apt install clang-tidy
 
-      - name: Config
+      - name: Configure script enabled
         if: ${{ runner.config.environment_script != '' }}
         run: |
            cmd ${{ runner.config.environment_script }}
+      - name: Configure script disabled
+        if: ${{ runner.config.environment_script == '' }}
+        run: |
+           echo "No config script"
       - name: Confiure 
         id: runcmake
         run: |
