@@ -8,7 +8,7 @@ on:
 
 jobs:
   build-cmake:
-    name: build-${{ matrix.config.name }}
+    name: Build ${{ matrix.config.name }}
     runs-on: ${{ matrix.config.os }}
       # see https://gist.github.com/NickNaso/0d478f1481686d5bcc868cac06620a60
     strategy:
@@ -77,9 +77,9 @@ jobs:
         run : sudo apt install clang-tidy
 
       - name: Config
-        if: runner.config.environment_script != ''
+        if: ${{ runner.config.environment_script }} != ''
         run: |
-           cmd runner.config.environment_script 
+           cmd ${{ runner.config.environment_script }}
       - name: Confiure 
         id: runcmake
         run: |
