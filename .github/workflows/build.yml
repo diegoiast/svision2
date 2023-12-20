@@ -69,14 +69,14 @@ jobs:
       - name: Install cmake-format
         run: pip3 install cmake-format
       - name: Install clang-tidy
-        if: matrix.os == 'ubuntu-22.04'
+        if: matrix.config.os == 'ubuntu-22.04'
         run : sudo apt install clang-tidy
 
       - name: Confiure 
         id: runcmake
         run: |
           cmake --verbose -S ${{ github.workspace }}  \
-                -B "${{ runner.workspace }}/build/${{ runner.config.os }}"" \
+                -B "${{ runner.workspace }}/build/${{ runner.config.os }}" \
                 -G "${{ matrix.config.generators }}" \
                 -DCMAKE_BUILD_TYPE="${{ matrix.config.build_type }}" \
                 -DCMAKE_C_COMPILER=${{ matrix.config.cc }} \
@@ -86,7 +86,7 @@ jobs:
         run: |
           cmake --build ${{ runner.workspace }}/build/${{ runner.os }} --parallel --verbose
       - name: Run clang format
-        if: matrix.os == 'ubuntu-22.04'
+        if: matrix.config.os == 'ubuntu-22.04'
         run : |
           ninja -C '${{ runner.workspace }}/build/${{ runner.os }}' clang-format 
           # echo ninja -C '${{ runner.workspace }}/build/${{ runner.os }}' check-clang-format
