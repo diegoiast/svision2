@@ -8,12 +8,12 @@ on:
 
 jobs:
   build-cmake:
-    name: build-${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
+    name: build-${{ matrix.name }}
+    runs-on: ${{ matrix.config.os }}
+      # see https://gist.github.com/NickNaso/0d478f1481686d5bcc868cac06620a60
     strategy:
       fail-fast: false
       matrix:
-        # see https://gist.github.com/NickNaso/0d478f1481686d5bcc868cac06620a60
         config: 
         - {
             name: "Windows MSVC",
