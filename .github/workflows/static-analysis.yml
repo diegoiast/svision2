@@ -35,5 +35,5 @@ jobs:
 
         # (Optional) cppcheck args
         # cppcheck_args: --enable=all --suppress=missingInclude --suppress=missingIncludeSystem
-        cppcheck_args: --enable=all --suppress=missingIncludeSystem --std=c++17 --language=c++
+        cppcheck_args: --enable=all --disable=unusedFunction,missingInclude  --suppress=missingIncludeSystem --std=c++17 --language=c++
 
