@@ -1,0 +1,37 @@
+name: Static analysis
+
+on:
+  # Will run on push when merging to 'branches'. The output will be shown in the console
+  push:
+    braches : ["main", "new-feature-github-actions"]
+  pull_request:
+
+  # 'pull_request_target' allows this Action to also run on forked repositories
+  # The output will be shown in PR comments (unless the 'force_console_print' flag is used)
+  pull_request_target:
+    branches:
+      - "*"
+
+jobs:
+  static_analysis:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+
+    - name: Run static analysis
+      uses: JacobDomagala/StaticAnalysis@master
+      with:
+        language: c++
+
+        # Exclude any issues found in ${Project_root_dir}/lib
+        exclude_dir: lib
+
+        use_cmake: false
+
+        # (Optional) clang-tidy args
+        clang_tidy_args: -checks='*,fuchsia-*,google-*,zircon-*,abseil-*,modernize-use-trailing-return-type'
+
+        # (Optional) cppcheck args
+        cppcheck_args: --enable=all --suppress=missingInclude
