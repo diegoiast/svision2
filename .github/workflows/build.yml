@@ -78,6 +78,7 @@ jobs:
 
       - name: Configure script enabled
         if: ${{ matrix.config.environment_script != null }}
+        shell: cmd
         run: |
           call '${{ matrix.config.environment_script }}'
       - name: Confiure 
