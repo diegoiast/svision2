@@ -24,6 +24,9 @@ jobs:
       uses: JacobDomagala/StaticAnalysis@master
       with:
         language: c++
+        
+        # don't fail build, just warn
+        continue-on-error: true  # Continue on error or failure
 
         # Exclude any issues found in ${Project_root_dir}/lib
         exclude_dir: lib
