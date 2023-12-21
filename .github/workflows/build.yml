@@ -79,11 +79,13 @@ jobs:
       - name: Configure script enabled
         if: ${{ runner.config.environment_script != '' }}
         run: |
-           cmd ${{ runner.config.environment_script }}
+          echo ${{ runner.config.environment_script }} 
+          cmd ${{ runner.config.environment_script }}
       - name: Configure script disabled
         if: ${{ runner.config.environment_script == '' }}
         run: |
-           echo "No config script"
+          echo ${{ runner.config.environment_script }} 
+          echo "No config script "
       - name: Confiure 
         id: runcmake
         run: |
