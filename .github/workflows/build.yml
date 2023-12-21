@@ -79,7 +79,7 @@ jobs:
       - name: Configure script enabled
         if: ${{ matrix.config.environment_script != null }}
         run: |
-          cmd ${{ matrix.config.environment_script }}
+          cmd '${{ matrix.config.environment_script }}'
       - name: Confiure 
         id: runcmake
         run: |
