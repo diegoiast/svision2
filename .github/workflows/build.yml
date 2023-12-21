@@ -76,7 +76,7 @@ jobs:
         run : sudo apt install clang-tidy
 
       - name: Setup MSVC
-        if: ${{ matrix.config.cxx == "cl" }}
+        if: ${{ matrix.config.cxx == 'cl' }}
         uses: ilammy/msvc-dev-cmd@v1
 
       - name: Confiure 
