@@ -77,12 +77,12 @@ jobs:
         run : sudo apt install clang-tidy
 
       - name: Configure script enabled
-        if: ${{ fromJson(runner.config.environment_script) != [] }}
+        if: ${{ matrix.config.environment_script != null }}
         run: |
-          echo ${{ runner.config.environment_script }} 
-          cmd ${{ runner.config.environment_script }}
+          echo ${{ matrix.config.environment_script }} 
+          cmd ${{ matrix.config.environment_script }}
       - name: Configure script disabled
-        if: ${{ runner.config.environment_script == null }}
+        if: ${{ matrix.config.environment_script == null }}
         run: |
           echo "No config script "
       - name: Confiure 
