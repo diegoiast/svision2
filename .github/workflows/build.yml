@@ -36,7 +36,6 @@ jobs:
             build_type: "Release",
             cc: "gcc",
             cxx: "g++",
-            environment_script: "",
             archiver: "7z a",
             generators: "Ninja"
           }
@@ -48,7 +47,6 @@ jobs:
             build_type: "Release",
             cc: "gcc",
             cxx: "g++",
-            environment_script: "",
             archiver: "7z a",
             generators: "Ninja"
           }
@@ -60,7 +58,6 @@ jobs:
             build_type: "Release",
             cc: "clang",
             cxx: "clang++",
-            environment_script: "",
             archiver: "7z a",
             generators: "Ninja"
           }
@@ -80,12 +77,12 @@ jobs:
         run : sudo apt install clang-tidy
 
       - name: Configure script enabled
-        if: ${{ runner.config.environment_script != '' }}
+        if: ${{ runner.config.environment_script != null }}
         run: |
           echo ${{ runner.config.environment_script }} 
           cmd ${{ runner.config.environment_script }}
       - name: Configure script disabled
-        if: ${{ runner.config.environment_script == '' }}
+        if: ${{ runner.config.environment_script == null }}
         run: |
           echo "No config script "
       - name: Confiure 
