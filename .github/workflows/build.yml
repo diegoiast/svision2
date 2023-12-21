@@ -36,6 +36,7 @@ jobs:
             build_type: "Release",
             cc: "gcc",
             cxx: "g++",
+            environment_script: "",
             archiver: "7z a",
             generators: "Ninja"
           }
@@ -47,6 +48,7 @@ jobs:
             build_type: "Release",
             cc: "gcc",
             cxx: "g++",
+            environment_script: "",
             archiver: "7z a",
             generators: "Ninja"
           }
@@ -58,6 +60,7 @@ jobs:
             build_type: "Release",
             cc: "clang",
             cxx: "clang++",
+            environment_script: "",
             archiver: "7z a",
             generators: "Ninja"
           }
