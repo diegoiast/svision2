@@ -77,7 +77,7 @@ jobs:
         run : sudo apt install clang-tidy
 
       - name: Configure script enabled
-        if: ${{ runner.config.environment_script != null }}
+        if: ${{ fromJson(runner.config.environment_script) != [] }}
         run: |
           echo ${{ runner.config.environment_script }} 
           cmd ${{ runner.config.environment_script }}
