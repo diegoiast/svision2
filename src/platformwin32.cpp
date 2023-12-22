@@ -13,11 +13,10 @@
 #include "spdlog/spdlog.h"
 
 #include "events.h"
+#include "fontproviderfreetype.h"
 #include "platformwin32.h"
 #include "theme.h"
 #include "widget.h"
-#include "fontproviderfreetype.h"
-
 
 int main(int arc, char *argv[]);
 
