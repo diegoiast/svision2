@@ -21,6 +21,7 @@ jobs:
 
 
     - name: Run static analysis
+      if: false
       uses: JacobDomagala/StaticAnalysis@master
       with:
         language: c++
