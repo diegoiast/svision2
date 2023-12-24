@@ -484,6 +484,7 @@ auto PlatformWindow::on_resize(const EventResize &event) -> void {
     spdlog::info("New window size: {}x{}", event.size.width, event.size.height);
     if (main_widget.layout) {
         main_widget.layout->relayout({0, 0}, event.size);
+        invalidate();
     }
 }
 

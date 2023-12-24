@@ -121,11 +121,12 @@ int main() {
     //    plat  form.show_window(w2);
 
     auto w1 = platform.open_window(100, 100, 640, 480, "test 1");
+    w1->main_widget.layout = std::make_shared<HorizontalLayout>();
     w1->add_new<Label>(Position{10, 10}, Size{300, 20}, "test 1 - Hello world! glqi שלום עולם")
         ->frame = {FrameStyles::Normal, FrameSize::SingleFrame};
+    /*
     w1->add_new<TextField>(Position{10, 35}, Size{165, 30});
 
-    ;
 
     auto ll = w1->add_new<ListView>(Position{10, 80}, Size{165, 100});
     ll->adapter = std::make_shared<ListItemAdapter>(std::vector<std::string>{
@@ -185,7 +186,7 @@ int main() {
     spin = w1->add_new<Spinbox>(Position{10, 330}, Size{165, 30});
     spin->set_values(1000, 2000, 200);
     spin->did_change = [&scroll](auto spinbox, auto value) { scroll->set_value(value); };
-
+*/
     w1->add_new<Button>(Position{10, 420}, Size{200, 40}, "OK", true, [&platform]() {
         spdlog::info("OK clicked!");
         platform.exit_loop = true;

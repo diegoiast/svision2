@@ -9,21 +9,28 @@
 struct Widget;
 
 struct LayouttItem {
+    std::list<std::weak_ptr<LayouttItem>> sub_items;
+
     virtual auto relayout(Position posiition, const Size size) -> void = 0;
+
+    template <typename T> auto add(T widget) -> T {
+        sub_items.push_back(widget);
+        return widget;
+    };
 };
 
 struct HorizontalLayout : LayouttItem {
-    std::list<std::weak_ptr<LayouttItem>> items;
 
     auto relayout(Position position, const Size size) -> void override {
         auto recommended_size = size;
-        auto width = size.width / items.size();
+        auto width = size.width / sub_items.size();
         recommended_size.width = width;
 
-        for (auto item_iterator : items) {
+        for (auto item_iterator : sub_items) {
             if (auto item = item_iterator.lock()) {
                 item->relayout(position, recommended_size);
             }
+            position.x += width;
         }
     }
 };
@@ -40,6 +47,7 @@ struct VerticalLayout : LayouttItem {
             if (auto item = item_iterator.lock()) {
                 item->relayout(position, recommended_size);
             }
+            position.y += height;
         }
     }
 };

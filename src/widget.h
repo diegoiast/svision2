@@ -38,7 +38,7 @@ struct WidgetCollection {
     auto focus_widget(std::shared_ptr<Widget> widget) -> void;
 };
 
-struct Widget : public std::enable_shared_from_this<Widget> {
+struct Widget : std::enable_shared_from_this<Widget>, LayouttItem {
     Bitmap content;
     Position position;
     WidgetCollection widgets;
@@ -89,6 +89,16 @@ struct Widget : public std::enable_shared_from_this<Widget> {
     auto hide() -> void;
     auto is_visible() const -> bool { return is_widget_visible; }
 
+    auto relayout(Position position, const Size size) -> void override {
+        this->position = position;
+        content.resize(size);
+        needs_redraw = true;
+
+        if (layout) {
+            layout->relayout(position, size);
+        }
+    }
+
     friend class PlatformWindow;
     friend class WidgetCollection;
 
@@ -101,6 +111,7 @@ struct PlatformWindow {
     std::string title;
     Widget main_widget;
 
+    bool is_visible = false;
     bool needs_redraw = false;
     Platform *platform = nullptr;
 
@@ -138,6 +149,9 @@ struct PlatformWindow {
     // TODO - make sure this T derieves from `Widget`
     template <typename T> auto add(T widget) -> T {
         main_widget.widgets.add(widget, this);
+        if (main_widget.layout) {
+            main_widget.layout->add(widget);
+        }
         return widget;
     };
 

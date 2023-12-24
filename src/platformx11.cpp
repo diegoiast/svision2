@@ -275,7 +275,8 @@ auto PlatformX11::main_loop() -> void {
 
         case ConfigureNotify: {
             auto event = convert_x11_configure_event(ev);
-            if (event.size != target_window->main_widget.content.size) {
+            if (event.size != target_window->main_widget.content.size ||
+                !target_window->is_visible) {
                 spdlog::info("Resing window {} to {}x{}", target_window->title, event.size.width,
                              event.size.height);
                 target_window->main_widget.content.resize(event.size.width, event.size.height);
@@ -290,6 +291,7 @@ auto PlatformX11::main_loop() -> void {
                     target_window->main_widget.content.size.width,
                     target_window->main_widget.content.size.height, 32, 0);
 
+                target_window->is_visible = true;
                 target_window->on_resize(event);
             }
             break;
