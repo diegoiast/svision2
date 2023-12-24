@@ -56,6 +56,8 @@ set(SVISION_SOURCES
     src/fontproviderfreetype.h
     src/label.cpp
     src/label.h
+    src/layout.cpp
+    src/layout.h
     src/listview.cpp
     src/listview.h
     src/platform.cpp

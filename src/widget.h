@@ -10,6 +10,7 @@
 #include <bitmap.h>
 #include <checkboxshape.h>
 #include <events.h>
+#include <layout.h>
 
 #include <list>
 #include <memory>
@@ -43,6 +44,7 @@ struct Widget : public std::enable_shared_from_this<Widget> {
     WidgetCollection widgets;
     std::shared_ptr<Theme> theme;
     Frame frame{FrameStyles::NoFrame, FrameSize::SingleFrame};
+    std::shared_ptr<LayouttItem> layout;
 
     // TODO this should be a weak pointer
     PlatformWindow *window = nullptr;
@@ -128,7 +130,7 @@ struct PlatformWindow {
     virtual auto draw() -> void;
     virtual auto on_keyboard(const EventKeyboard &) -> void;
     virtual auto on_mouse(const EventMouse &) -> void;
-    virtual auto on_resize(const EventResize &) -> void {}
+    virtual auto on_resize(const EventResize &) -> void;
     virtual auto can_close() -> bool { return true; }
     virtual auto invalidate() -> void;
     virtual auto on_close() -> void;
