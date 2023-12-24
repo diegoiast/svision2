@@ -149,9 +149,9 @@ struct PlatformWindow {
     // TODO - make sure this T derieves from `Widget`
     template <typename T> auto add(T widget) -> T {
         main_widget.widgets.add(widget, this);
-        if (main_widget.layout) {
-            main_widget.layout->add(widget);
-        }
+        //        if (main_widget.layout) {
+        //            main_widget.layout->add(widget);
+        //        }
         return widget;
     };
 

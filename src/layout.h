@@ -13,9 +13,9 @@ struct LayouttItem {
 
     virtual auto relayout(Position posiition, const Size size) -> void = 0;
 
-    template <typename T> auto add(T widget) -> T {
-        sub_items.push_back(widget);
-        return widget;
+    template <typename T> auto add(T layoutItem) -> T {
+        sub_items.push_back(layoutItem);
+        return layoutItem;
     };
 };
 
@@ -39,6 +39,9 @@ struct VerticalLayout : LayouttItem {
     std::list<std::weak_ptr<LayouttItem>> items;
 
     auto relayout(Position position, const Size size) -> void override {
+        if (items.empty()) {
+            return;
+        }
         auto recommended_size = size;
         auto height = size.height / items.size();
         recommended_size.height = height;
