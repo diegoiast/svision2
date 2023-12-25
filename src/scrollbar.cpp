@@ -9,8 +9,8 @@
 #include "theme.h"
 #include <button.h>
 
-ScrollBar::ScrollBar(Position position, int length, bool horizontal, int maximum)
-    : Widget(position, {}, 0) {
+auto make_buttons(ScrollBar &sb, int length, bool horizontal) {
+    // todo
     // TODO button size is found in the theme. Theme is not set up until the
     // widget is added to window. Which means - all this code should be called
     // inside a callback which gets called when added to a window. No such
@@ -19,25 +19,54 @@ ScrollBar::ScrollBar(Position position, int length, bool horizontal, int maximum
     // images yet.
     auto buttons_size = 24;
     auto button_size = Size{buttons_size, buttons_size};
+
     if (horizontal) {
         auto button_position = Position{0, 0};
-        this->content.resize({length, buttons_size});
-        this->down_button = std::make_shared<Button>(button_position, button_size, "<");
-        this->add(this->down_button);
+        sb.content.resize({length, buttons_size});
 
-        button_position.x = content.size.width - buttons_size;
-        this->up_button = std::make_shared<Button>(button_position, button_size, ">");
-        this->add(this->up_button);
+        if (!sb.down_button) {
+            sb.down_button = std::make_shared<Button>(button_position, button_size, "<");
+            sb.add(sb.down_button);
+        } else {
+            sb.down_button->position = button_position;
+            sb.down_button->content.resize(button_size);
+        }
+
+        button_position.x = sb.content.size.width - buttons_size;
+        if (!sb.up_button) {
+            sb.up_button = std::make_shared<Button>(button_position, button_size, ">");
+            sb.add(sb.up_button);
+        } else {
+            sb.up_button->position = button_position;
+            sb.up_button->content.resize(button_size);
+        }
     } else {
         auto button_position = Position{0, 0};
-        this->content.resize({buttons_size, length});
-        this->down_button = std::make_shared<Button>(button_position, button_size, "^");
-        this->add(this->down_button);
+        sb.content.resize({buttons_size, length});
 
-        button_position.y = content.size.height - buttons_size;
-        this->up_button = std::make_shared<Button>(button_position, button_size, "*");
-        this->add(this->up_button);
+        if (!sb.down_button) {
+            sb.down_button = std::make_shared<Button>(button_position, button_size, "^");
+            sb.add(sb.down_button);
+        } else {
+            sb.down_button->position = button_position;
+            sb.down_button->content.resize(button_size);
+        }
+
+        button_position.y = sb.content.size.height - buttons_size;
+        if (!sb.up_button) {
+            sb.up_button = std::make_shared<Button>(button_position, button_size, "*");
+            sb.add(sb.up_button);
+        } else {
+            sb.up_button->position = button_position;
+            sb.up_button->content.resize(button_size);
+        }
     }
+}
+
+ScrollBar::ScrollBar(Position position, int length, bool horizontal, int maximum)
+    : Widget(position, {}, 0) {
+
+    make_buttons(*this, length, horizontal);
 
     this->up_button->on_button_click = [this]() { step_up(); };
     this->down_button->set_auto_repeat(500);
@@ -53,6 +82,7 @@ ScrollBar::ScrollBar(Position position, int length, bool horizontal, int maximum
 
 auto ScrollBar::draw() -> void {
     auto theme = get_theme();
+    content.fill(0xffff00);
     theme->draw_scrollbar_background(content);
     Widget::draw();
 
@@ -72,6 +102,10 @@ auto ScrollBar::draw() -> void {
                                theme->colors.frame_normal_color1,
                                theme->colors.frame_normal_color2);
     }
+}
+
+auto ScrollBar::on_resize() -> void {
+    make_buttons(*this, is_horizontal ? content.size.width : content.size.height, is_horizontal);
 }
 
 auto ScrollBar::set_value(int value) -> void {

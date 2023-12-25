@@ -14,7 +14,7 @@ auto ListItemAdapter::get_widget(size_t) -> PWidget {
     auto size = Size{20, 20};
     auto p = std::make_shared<ListItemWidget>(position, size, "");
     p->can_focus = true;
-    //    p->draw_background = false;
+    p->draw_background = false;
     return p;
 }
 
@@ -25,7 +25,6 @@ auto ListItemAdapter::set_content(PWidget widget, size_t position, ItemStatus st
 }
 
 ListView::ListView(Position position, Size size) : Widget(position, size, 0) {
-
     position.x = size.width - 24;
     position.y = 0;
     this->scrollbar = add_new<ScrollBar>(position, size.height, false);
@@ -113,7 +112,6 @@ EventPropagation ListView::on_mouse_click(const EventMouse &event) {
     auto first_widget = adapter->get_widget(0);
     auto padding = 2;
     auto item_height = (first_widget->content.size.height);
-    auto widget_count = (this->content.size.height - padding) / item_height + 1;
     auto first_item = scrollbar->value / item_height;
     auto offset = -(scrollbar->value % item_height);
 
@@ -196,6 +194,20 @@ auto ListView::on_keyboard(const EventKeyboard &event) -> EventPropagation {
         }
     }
     return result;
+}
+
+auto ListView::on_resize() -> void {
+    // TODO - read size from theme
+    auto width = 24;
+    auto position = Position{content.size.width - width, 0};
+
+    for (auto &w : reserved_widgets) {
+        w->hide();
+    }
+    this->reserved_widgets.clear();
+    this->scrollbar->position = position;
+    this->scrollbar->content.resize(width, content.size.height);
+    this->scrollbar->on_resize();
 }
 
 auto ListView::did_adapter_update() -> void {

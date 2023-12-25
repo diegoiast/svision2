@@ -62,6 +62,7 @@ struct ListView : public Widget {
     virtual auto draw() -> void override;
     virtual auto on_mouse_click(const EventMouse &event) -> EventPropagation override;
     virtual auto on_keyboard(const EventKeyboard &) -> EventPropagation override;
+    virtual auto on_resize() -> void override;
 
     auto did_adapter_update() -> void;
 };
