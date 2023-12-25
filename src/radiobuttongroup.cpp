@@ -1,3 +1,10 @@
+/*
+ * This file is part of SVision2
+ * Copyright (c) Diego Iastrubni <diegoiast@gmail.com>
+ *
+ * SPDX-License-Identifier: MIT
+ */
+
 #include "radiobuttongroup.h"
 #include "checkbox.h"
 #include <spdlog/spdlog.h>

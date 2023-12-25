@@ -45,7 +45,9 @@ Random list of things to be implemented on this library
         4. Add Aqua (old OSX) theme
         5. Add OSX theme
         6. Add support for a 'transparent color' (currently 0 paints black)
-    8. OSX support
+        7. Finish dark color support
+        8. Missing API: when to use dark themes
+    8. MacOS support
     9. MSDOS support (for gaming!?)
     10. Multitouch (?)
     11. High DPI: drawing functions will be on a wrapper - that will
