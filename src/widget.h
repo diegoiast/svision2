@@ -149,14 +149,22 @@ struct PlatformWindow {
     // TODO - make sure this T derieves from `Widget`
     template <typename T> auto add(T widget) -> T {
         main_widget.widgets.add(widget, this);
-        //        if (main_widget.layout) {
-        //            main_widget.layout->add(widget);
-        //        }
         return widget;
     };
 
     // TODO - make sure this T derieves from `Widget`
     template <typename T, typename... Args> auto add_new(Args &&...args) -> std::shared_ptr<T> {
         return add(std::make_shared<T>(std::forward<Args>(args)...));
+    };
+
+    // TODO - make sure this T derieves from `Widget`
+    template <typename T, typename... Args>
+    auto add_new_to_layout(std::shared_ptr<LayouttItem> layout, Args &&...args)
+        -> std::shared_ptr<T> {
+        auto widget = add(std::make_shared<T>(std::forward<Args>(args)...));
+        if (layout) {
+            layout->add(widget);
+        }
+        return widget;
     };
 };

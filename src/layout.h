@@ -22,6 +22,9 @@ struct LayouttItem {
 struct HorizontalLayout : LayouttItem {
 
     auto relayout(Position position, const Size size) -> void override {
+        if (sub_items.empty()) {
+            return;
+        }
         auto recommended_size = size;
         auto width = size.width / sub_items.size();
         recommended_size.width = width;
@@ -36,17 +39,15 @@ struct HorizontalLayout : LayouttItem {
 };
 
 struct VerticalLayout : LayouttItem {
-    std::list<std::weak_ptr<LayouttItem>> items;
-
     auto relayout(Position position, const Size size) -> void override {
-        if (items.empty()) {
+        if (sub_items.empty()) {
             return;
         }
         auto recommended_size = size;
-        auto height = size.height / items.size();
+        auto height = size.height / sub_items.size();
         recommended_size.height = height;
 
-        for (auto item_iterator : items) {
+        for (auto item_iterator : sub_items) {
             if (auto item = item_iterator.lock()) {
                 item->relayout(position, recommended_size);
             }
