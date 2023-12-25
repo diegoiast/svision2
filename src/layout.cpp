@@ -19,6 +19,10 @@ auto HorizontalLayout ::relayout(Position position, const Size size) -> void {
     position.y += margin.top + padding.top;
     position.x += margin.start;
 
+    if (recommended_size.height < 0) {
+        recommended_size.height = 0;
+    }
+
     for (auto item_iterator : sub_items) {
         position.x += padding.start;
         if (auto item = item_iterator.lock()) {
@@ -40,6 +44,10 @@ auto VerticalLayout::relayout(Position position, const Size size) -> void {
     recommended_size.width = size.width - margin.get_horizontal() - padding.get_horizontal();
     position.y += margin.top;
     position.x += margin.start + padding.start;
+
+    if (recommended_size.width < 0) {
+        recommended_size.width = 0;
+    }
 
     for (auto item_iterator : sub_items) {
         position.y += padding.top;
