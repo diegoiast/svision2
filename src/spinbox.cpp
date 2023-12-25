@@ -6,6 +6,8 @@
  */
 
 #include "spinbox.h"
+#include "bitmap.h"
+#include "button.h"
 #include "fmt/core.h"
 
 #include <ciso646>
@@ -51,7 +53,18 @@ Spinbox::Spinbox(Position position, Size size) : TextField(position, size) {
     add(down_button);
 }
 
-void Spinbox::draw() { TextField::draw(); }
+auto Spinbox::on_resize() -> void {
+    auto s = content.size.height / 2;
+    auto button_position = Position{content.size.width - s, 0};
+    up_button->position = button_position;
+    up_button->content.resize(s, s);
+    up_button->invalidate();
+
+    button_position.y = s;
+    down_button->position = button_position;
+    down_button->content.resize(s, s);
+    down_button->invalidate();
+}
 
 auto Spinbox::increase_value() -> void {
     std::istringstream iss(get_text());

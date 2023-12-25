@@ -71,6 +71,7 @@ struct Widget : std::enable_shared_from_this<Widget>, LayouttItem {
     virtual auto on_focus_change(bool new_state) -> void;
     virtual auto on_keyboard(const EventKeyboard &) -> EventPropagation;
     virtual auto on_remove() -> void;
+    virtual auto on_resize() -> void{};
 
     // TODO - make sure this T derieves from `Widget`
     template <typename T> auto add(T widget) -> T {
@@ -97,6 +98,8 @@ struct Widget : std::enable_shared_from_this<Widget>, LayouttItem {
         if (layout) {
             layout->relayout(position, size);
         }
+
+        on_resize();
     }
 
     friend class PlatformWindow;

@@ -26,7 +26,7 @@ struct Spinbox : public TextField {
     double value = 0;
 
     Spinbox(Position position, Size size);
-    virtual auto draw() -> void override;
+    virtual auto on_resize() -> void override;
 
     auto increase_value() -> void;
     auto decrease_value() -> void;
