@@ -1,5 +1,11 @@
-#ifndef RADIOBUTTONGROUP_H
-#define RADIOBUTTONGROUP_H
+/*
+ * This file is part of SVision2
+ * Copyright (c) Diego Iastrubni <diegoiast@gmail.com>
+ *
+ * SPDX-License-Identifier: MIT
+ */
+
+#pragma once
 
 #include "widget.h"
 #include <functional>
@@ -13,5 +19,3 @@ class RadioButtonGroup : public Widget {
     std::function<void(int index, Checkbox &button)> on_selected = {};
     std::vector<std::shared_ptr<Checkbox>> radio_buttons = {};
 };
-
-#endif // RADIOBUTTONGROUP_H
