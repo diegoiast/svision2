@@ -1,3 +1,10 @@
+/*
+ * This file is part of SVision2
+ * Copyright (c) Diego Iastrubni <diegoiast@gmail.com>
+ *
+ * SPDX-License-Identifier: MIT
+ */
+
 #pragma once
 
 #include <list>
@@ -8,8 +15,37 @@
 
 struct Widget;
 
+struct LayoutParams {
+    int top = 0;
+    int bottom = 0;
+    int start = 0;
+    int end = 0;
+
+    auto set_horitzonal(int value) {
+        start = value;
+        end = value;
+    }
+
+    auto set_vertical(int value) {
+        top = value;
+        bottom = value;
+    }
+
+    auto set(int value) {
+        top = value;
+        bottom = value;
+        start = value;
+        end = value;
+    }
+
+    auto get_horizontal() const -> auto { return start + end; }
+    auto get_vertical() const -> auto { return top + bottom; }
+};
+
 struct LayouttItem {
     std::list<std::weak_ptr<LayouttItem>> sub_items;
+    LayoutParams padding = {};
+    LayoutParams margin = {};
 
     virtual auto relayout(Position posiition, const Size size) -> void = 0;
 
@@ -20,38 +56,9 @@ struct LayouttItem {
 };
 
 struct HorizontalLayout : LayouttItem {
-
-    auto relayout(Position position, const Size size) -> void override {
-        if (sub_items.empty()) {
-            return;
-        }
-        auto recommended_size = size;
-        auto width = size.width / sub_items.size();
-        recommended_size.width = width;
-
-        for (auto item_iterator : sub_items) {
-            if (auto item = item_iterator.lock()) {
-                item->relayout(position, recommended_size);
-            }
-            position.x += width;
-        }
-    }
+    auto relayout(Position position, const Size size) -> void override;
 };
 
 struct VerticalLayout : LayouttItem {
-    auto relayout(Position position, const Size size) -> void override {
-        if (sub_items.empty()) {
-            return;
-        }
-        auto recommended_size = size;
-        auto height = size.height / sub_items.size();
-        recommended_size.height = height;
-
-        for (auto item_iterator : sub_items) {
-            if (auto item = item_iterator.lock()) {
-                item->relayout(position, recommended_size);
-            }
-            position.y += height;
-        }
-    }
+    auto relayout(Position position, const Size size) -> void override;
 };

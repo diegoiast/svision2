@@ -122,6 +122,9 @@ int main() {
 
     auto w1 = platform.open_window(100, 100, 640, 480, "test 1");
     w1->main_widget.layout = std::make_shared<VerticalLayout>();
+    w1->main_widget.layout->padding.set_vertical(5);
+    w1->main_widget.layout->padding.set_horitzonal(5);
+
     w1->add_new_to_layout<Label>(w1->main_widget.layout, Position{10, 10}, Size{300, 20},
                                  "test 1 - Hello world! glqi שלום עולם")
         ->frame = {FrameStyles::Normal, FrameSize::SingleFrame};
@@ -187,7 +190,11 @@ int main() {
     spin = w1->add_new_to_layout<Spinbox>(w1->main_widget.layout, Position{10, 330}, Size{165, 30});
     spin->set_values(1000, 2000, 200);
     spin->did_change = [&scroll](auto spinbox, auto value) { scroll->set_value(value); };
+
     auto l2 = w1->main_widget.layout->add(std::make_shared<HorizontalLayout>());
+    l2->margin.set_horitzonal(5);
+    l2->margin.set_vertical(5);
+    l2->padding.set_horitzonal(10);
     w1->add_new_to_layout<Button>(l2, Position{10, 420}, Size{200, 40}, "OK", true, [&platform]() {
         spdlog::info("OK clicked!");
         platform.exit_loop = true;
