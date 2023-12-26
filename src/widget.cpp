@@ -6,6 +6,7 @@
  */
 
 #include "widget.h"
+#include "layout.h"
 #include "platform.h"
 #include "theme.h"
 
@@ -416,6 +417,12 @@ auto Widget::hide() -> void {
     }
     is_widget_visible = false;
     invalidate();
+}
+
+PlatformWindow::PlatformWindow() {
+    main_widget.layout = std::make_shared<VerticalLayout>();
+    main_widget.layout->padding.set_vertical(5);
+    main_widget.layout->padding.set_horitzonal(5);
 }
 
 PlatformWindow::~PlatformWindow() { spdlog::info("Window done"); }

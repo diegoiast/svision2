@@ -121,38 +121,33 @@ int main() {
     //    plat  form.show_window(w2);
 
     auto w1 = platform.open_window(100, 100, 640, 480, "test 1");
-    w1->main_widget.layout = std::make_shared<VerticalLayout>();
-    w1->main_widget.layout->padding.set_vertical(5);
-    w1->main_widget.layout->padding.set_horitzonal(5);
 
-    w1->add_new_to_layout<Label>(w1->main_widget.layout, Position{10, 10}, Size{300, 20},
-                                 "test 1 - Hello world! glqi שלום עולם")
+    w1->add_new<Label>(Position{10, 10}, Size{300, 20}, "test 1 - Hello world! glqi שלום עולם")
         ->frame = {FrameStyles::Normal, FrameSize::SingleFrame};
-    w1->add_new_to_layout<TextField>(w1->main_widget.layout, Position{10, 35}, Size{165, 30});
-    w1->add_new_to_layout<ListView>(w1->main_widget.layout, Position{10, 80}, Size{165, 100})
-        ->adapter = std::make_shared<ListItemAdapter>(std::vector<std::string>{
-        "Option 1 (default)",
-        "Option 2",
-        "Option 3",
-        "Option 4",
-        "Option 5",
-        "Option 6",
-        "Option 7",
-        "Option 8",
-        "Option 9",
-        "Option 10",
-        "Option 11",
-        "Option 12 (last)",
-    });
+    w1->add_new<TextField>(Position{10, 35}, Size{165, 30});
+    w1->add_new<ListView>(Position{10, 80}, Size{165, 100})->adapter =
+        std::make_shared<ListItemAdapter>(std::vector<std::string>{
+            "Option 1 (default)",
+            "Option 2",
+            "Option 3",
+            "Option 4",
+            "Option 5",
+            "Option 6",
+            "Option 7",
+            "Option 8",
+            "Option 9",
+            "Option 10",
+            "Option 11",
+            "Option 12 (last)",
+        });
 
-    auto rb =
-        w1->add_new_to_layout<RadioButtonGroup>(w1->main_widget.layout, Position{400, 20}, 160,
-                                                std::vector<std::string>{
-                                                    "Option 1",
-                                                    "Option 2",
-                                                    "Option 3",
-                                                    "Option 4",
-                                                });
+    auto rb = w1->add_new<RadioButtonGroup>(Position{400, 20}, 160,
+                                            std::vector<std::string>{
+                                                "Option 1",
+                                                "Option 2",
+                                                "Option 3",
+                                                "Option 4",
+                                            });
     rb->on_selected = [](int index, Checkbox &button) {
         spdlog::info("Selected item {} with text {}", index, button.text);
     };
@@ -184,10 +179,10 @@ int main() {
     std::shared_ptr<ScrollBar> scroll;
     std::shared_ptr<Spinbox> spin;
 
-    scroll = w1->add_new_to_layout<ScrollBar>(w1->main_widget.layout, Position{10, 380}, 400, true);
+    scroll = w1->add_new<ScrollBar>(Position{10, 380}, 400, true);
     scroll->set_values(1000, 2000, 200, 50);
     scroll->did_change = [&spin](auto scrollbar, auto value) { spin->set_value(value); };
-    spin = w1->add_new_to_layout<Spinbox>(w1->main_widget.layout, Position{10, 330}, Size{165, 30});
+    spin = w1->add_new<Spinbox>(Position{10, 330}, Size{165, 30});
     spin->set_values(1000, 2000, 200);
     spin->did_change = [&scroll](auto spinbox, auto value) { scroll->set_value(value); };
 

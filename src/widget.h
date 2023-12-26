@@ -119,6 +119,7 @@ struct PlatformWindow {
     bool needs_redraw = false;
     Platform *platform = nullptr;
 
+    PlatformWindow();
     virtual ~PlatformWindow();
 
     auto focus_next_widget() -> void {
@@ -153,6 +154,9 @@ struct PlatformWindow {
     // TODO - make sure this T derieves from `Widget`
     template <typename T> auto add(T widget) -> T {
         main_widget.widgets.add(widget, this);
+        if (main_widget.layout) {
+            main_widget.layout->add(widget);
+        }
         return widget;
     };
 
@@ -165,7 +169,8 @@ struct PlatformWindow {
     template <typename T, typename... Args>
     auto add_new_to_layout(std::shared_ptr<LayouttItem> layout, Args &&...args)
         -> std::shared_ptr<T> {
-        auto widget = add(std::make_shared<T>(std::forward<Args>(args)...));
+        auto widget = std::make_shared<T>(std::forward<Args>(args)...);
+        main_widget.widgets.add(widget, this);
         if (layout) {
             layout->add(widget);
         }
