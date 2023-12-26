@@ -19,6 +19,7 @@ TextField::TextField(Position position, Size size) : Widget(position, size, 0) {
         invalidate();
     };
     timer.initialize();
+    this->padding.set(5);
     this->can_focus = true;
     this->draw_background = false;
     this->frame = {FrameStyles::Reversed, FrameSize::SingleFrame};
@@ -30,11 +31,10 @@ auto TextField::draw() -> void {
     theme->draw_input_background(content, has_focus);
     Widget::draw();
 
-    auto padding_vertical = 5;
     auto text_size = theme->font.text_size(text);
 
     // TODO - we need to find where the text clips - properly
-    auto display_text_logical = (content.size.width - padding_start - padding_end) / 8;
+    auto display_text_logical = (content.size.width - padding.get_horizontal()) / 8;
     auto display_text = this->text.substr(display_from, display_from + display_text_logical);
     auto center_y = (content.size.height - text_size.height) / 2;
     auto selection_width = (selection.end - selection.start) - display_from;
@@ -43,17 +43,17 @@ auto TextField::draw() -> void {
     // TODO - unmanaged color writing in a widget
     // TODO handle partial selection
     if (selection_width != 0) {
-        content.fill_rect(padding_start - 1, padding_vertical - 1, selection_width + 1,
-                          content.size.height - padding_vertical - 2,
+        content.fill_rect(padding.start - 1, padding.get_vertical() - 1, selection_width + 1,
+                          content.size.height - padding.get_vertical() - 2,
                           theme->colors.text_selection_background);
     }
-    theme->font.write(content, Position{padding_start, center_y}, display_text,
+    theme->font.write(content, Position{padding.start, center_y}, display_text,
                       theme->colors.text_color);
 
     if (this->cursor_on && this->has_focus) {
-        auto position_x = padding_start + (cursor_position - display_from) * 8;
-        content.draw_rectangle(position_x, padding_vertical, 1,
-                               content.size.height - padding_vertical * 2, 0, 0);
+        auto position_x = padding.start + (cursor_position - display_from) * 8;
+        content.draw_rectangle(position_x, padding.get_vertical(), 1,
+                               content.size.height - padding.get_vertical() * 2, 0, 0);
     }
 }
 
@@ -201,6 +201,14 @@ auto TextField::on_focus_change(bool new_state) -> void {
 }
 
 auto TextField::on_remove() -> void { timer.stop(); }
+
+auto TextField::size_hint() const -> Size {
+    // TODO: Size of text is not correct. We also need to calculate the yMin and yMax for example
+    auto s = get_theme()->font.text_size(get_text());
+    auto padding_x = this->padding.get_horizontal();
+    auto padding_y = this->padding.get_vertical();
+    return {content.size.width + padding_x, s.height * 2 + padding_y};
+}
 
 auto TextField::select_all() -> void {
     selection.start = 0;

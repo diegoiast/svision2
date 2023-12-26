@@ -72,6 +72,7 @@ struct Widget : std::enable_shared_from_this<Widget>, LayouttItem {
     virtual auto on_keyboard(const EventKeyboard &) -> EventPropagation;
     virtual auto on_remove() -> void;
     virtual auto on_resize() -> void{};
+    virtual auto size_hint() const -> Size override { return {0, 0}; };
 
     // TODO - make sure this T derieves from `Widget`
     template <typename T> auto add(T widget) -> T {
@@ -85,7 +86,7 @@ struct Widget : std::enable_shared_from_this<Widget>, LayouttItem {
         return add(std::make_shared<T>(std::forward<Args>(args)...));
     };
 
-    auto get_theme() -> std::shared_ptr<Theme>;
+    auto get_theme() const -> std::shared_ptr<Theme>;
     auto show() -> void;
     auto hide() -> void;
     auto is_visible() const -> bool { return is_widget_visible; }

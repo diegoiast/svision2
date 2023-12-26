@@ -389,7 +389,7 @@ auto Widget::on_keyboard(const EventKeyboard &) -> EventPropagation {
 
 auto Widget::on_remove() -> void{};
 
-auto Widget::get_theme() -> std::shared_ptr<Theme> {
+auto Widget::get_theme() const -> std::shared_ptr<Theme> {
     if (theme)
         return theme;
 

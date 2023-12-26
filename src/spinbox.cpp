@@ -38,7 +38,7 @@ Spinbox::Spinbox(Position position, Size size) : TextField(position, size) {
     auto s = content.size.height / 2;
     auto button_size = Size{s, s};
     auto button_position = Position{content.size.width - s, 0};
-    padding_end = s + 5;
+    padding.set_horitzonal(5);
     this->up_button = std::make_shared<Button>(button_position, button_size, "+");
     button_position.y = s;
     this->down_button = std::make_shared<Button>(button_position, button_size, "-");

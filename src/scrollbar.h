@@ -24,6 +24,7 @@ struct ScrollBar : Widget {
 
     auto draw() -> void override;
     auto on_resize() -> void override;
+    auto size_hint() const -> Size override;
 
     auto set_value(int value) -> void;
     auto set_values(int minimum, int maximum, int value, int step = 0) -> void;

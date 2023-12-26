@@ -9,6 +9,9 @@
 #include "theme.h"
 #include <button.h>
 
+// TODO - this should be part of the theme.
+auto constexpr default_buttons_size = 24;
+
 auto make_buttons(ScrollBar &sb, int length, bool horizontal) {
     // todo
     // TODO button size is found in the theme. Theme is not set up until the
@@ -17,12 +20,11 @@ auto make_buttons(ScrollBar &sb, int length, bool horizontal) {
     // event exist yet.
     // TODO button text should be images (?). However - buttons do not support
     // images yet.
-    auto buttons_size = 24;
-    auto button_size = Size{buttons_size, buttons_size};
+    auto button_size = Size{default_buttons_size, default_buttons_size};
 
     if (horizontal) {
         auto button_position = Position{0, 0};
-        sb.content.resize({length, buttons_size});
+        sb.content.resize({length, default_buttons_size});
 
         if (!sb.down_button) {
             sb.down_button = std::make_shared<Button>(button_position, button_size, "<");
@@ -32,7 +34,7 @@ auto make_buttons(ScrollBar &sb, int length, bool horizontal) {
             sb.down_button->content.resize(button_size);
         }
 
-        button_position.x = sb.content.size.width - buttons_size;
+        button_position.x = sb.content.size.width - default_buttons_size;
         if (!sb.up_button) {
             sb.up_button = std::make_shared<Button>(button_position, button_size, ">");
             sb.add(sb.up_button);
@@ -42,7 +44,7 @@ auto make_buttons(ScrollBar &sb, int length, bool horizontal) {
         }
     } else {
         auto button_position = Position{0, 0};
-        sb.content.resize({buttons_size, length});
+        sb.content.resize({default_buttons_size, length});
 
         if (!sb.down_button) {
             sb.down_button = std::make_shared<Button>(button_position, button_size, "^");
@@ -52,7 +54,7 @@ auto make_buttons(ScrollBar &sb, int length, bool horizontal) {
             sb.down_button->content.resize(button_size);
         }
 
-        button_position.y = sb.content.size.height - buttons_size;
+        button_position.y = sb.content.size.height - default_buttons_size;
         if (!sb.up_button) {
             sb.up_button = std::make_shared<Button>(button_position, button_size, "*");
             sb.add(sb.up_button);
@@ -106,6 +108,13 @@ auto ScrollBar::draw() -> void {
 
 auto ScrollBar::on_resize() -> void {
     make_buttons(*this, is_horizontal ? content.size.width : content.size.height, is_horizontal);
+}
+
+auto ScrollBar::size_hint() const -> Size {
+    if (is_horizontal)
+        return {content.size.width, default_buttons_size};
+    else
+        return {default_buttons_size, content.size.height};
 }
 
 auto ScrollBar::set_value(int value) -> void {

@@ -28,6 +28,7 @@ struct TextField : Widget {
     virtual auto on_mouse_click(const EventMouse &event) -> EventPropagation override;
     virtual auto on_focus_change(bool new_state) -> void override;
     virtual auto on_remove() -> void override;
+    virtual auto size_hint() const -> Size override;
 
     auto select_all() -> void;
     auto select_none() -> void;
@@ -36,8 +37,6 @@ struct TextField : Widget {
     auto get_text() const -> std::string { return text; }
     auto set_text(const std::string_view new_text) -> void;
 
-    int padding_start = 5;
-    int padding_end = 5;
     std::shared_ptr<input_validator> validator;
 
   private:

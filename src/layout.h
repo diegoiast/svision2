@@ -48,6 +48,7 @@ struct LayouttItem {
     LayoutParams margin = {};
 
     virtual auto relayout(Position posiition, const Size size) -> void = 0;
+    virtual auto size_hint() const -> Size = 0;
 
     template <typename T> auto add(T layoutItem) -> T {
         sub_items.push_back(layoutItem);
@@ -57,8 +58,10 @@ struct LayouttItem {
 
 struct HorizontalLayout : LayouttItem {
     auto relayout(Position position, const Size size) -> void override;
+    virtual auto size_hint() const -> Size override { return {0, 0}; };
 };
 
 struct VerticalLayout : LayouttItem {
     auto relayout(Position position, const Size size) -> void override;
+    virtual auto size_hint() const -> Size override { return {0, 0}; };
 };
