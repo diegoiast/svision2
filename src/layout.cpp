@@ -55,12 +55,30 @@ auto HorizontalLayout ::relayout(Position position, const Size size) -> void {
             if (auto item = item_iterator.lock()) {
                 item->relayout(position, recommended_size);
             }
-            if (hint.width > 0) {
-                position.x += padding.end;
-            }
             position.x += recommended_size.width;
+            position.x += margin.end;
         }
     }
+}
+
+auto HorizontalLayout::size_hint() const -> Size {
+    auto hint = Size{};
+    auto found = 0;
+    for (auto item_iterator : sub_items) {
+        if (auto item = item_iterator.lock()) {
+            found++;
+            auto item_hint = item->size_hint();
+            hint.height = std::max(item_hint.height, hint.height);
+            hint.width = std::max(item_hint.width, hint.width);
+        }
+    }
+
+    if (found == 0) {
+        return {};
+    }
+    hint.width += margin.get_horizontal();
+    hint.height += margin.get_vertical();
+    return hint;
 }
 
 auto VerticalLayout::relayout(Position position, const Size size) -> void {
@@ -112,10 +130,28 @@ auto VerticalLayout::relayout(Position position, const Size size) -> void {
             if (auto item = item_iterator.lock()) {
                 item->relayout(position, recommended_size);
             }
-            if (hint.height > 0) {
-                position.y += padding.bottom;
-            }
             position.y += recommended_size.height;
+            position.y += margin.bottom;
         }
     }
+}
+
+auto VerticalLayout::size_hint() const -> Size {
+    auto hint = Size{};
+    auto found = 0;
+    for (auto item_iterator : sub_items) {
+        if (auto item = item_iterator.lock()) {
+            found++;
+            auto item_hint = item->size_hint();
+            hint.height = std::max(item_hint.height, hint.height);
+            hint.width = std::max(item_hint.width, hint.width);
+        }
+    }
+
+    if (found == 0) {
+        return {};
+    }
+    hint.width += margin.get_horizontal();
+    hint.height += margin.get_vertical();
+    return hint;
 }

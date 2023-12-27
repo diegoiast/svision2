@@ -57,11 +57,11 @@ struct LayouttItem {
 };
 
 struct HorizontalLayout : LayouttItem {
-    auto relayout(Position position, const Size size) -> void override;
-    virtual auto size_hint() const -> Size override { return {0, 0}; };
+    virtual auto relayout(Position position, const Size size) -> void override;
+    virtual auto size_hint() const -> Size override;
 };
 
 struct VerticalLayout : LayouttItem {
-    auto relayout(Position position, const Size size) -> void override;
-    virtual auto size_hint() const -> Size override { return {0, 0}; };
+    virtual auto relayout(Position position, const Size size) -> void override;
+    virtual auto size_hint() const -> Size override;
 };
