@@ -25,15 +25,15 @@ auto HorizontalLayout ::relayout(Position position, const Size size) -> void {
                 widget_count++;
                 total_padding += padding.get_horizontal();
             } else {
-                widget_count -= hint.height + item->padding.get_horizontal();
+                width -= hint.width + item->padding.get_horizontal();
             }
         }
     }
     if (widget_count != 0) {
         width = (width - total_padding - margin.get_horizontal()) / widget_count;
     }
-    recommended_size.width = widget_count;
-    recommended_size.height = size.height - margin.get_horizontal() - padding.get_horizontal();
+    recommended_size.width = width;
+    recommended_size.height = size.height - margin.get_vertical() - padding.get_vertical();
     position.y += margin.top + padding.top;
     position.x += margin.start + padding.start;
 
