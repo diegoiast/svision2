@@ -37,8 +37,14 @@ auto HorizontalLayout ::relayout(Position position, const Size size) -> void {
     position.y += margin.top + padding.top;
     position.x += margin.start + padding.start;
 
+    if (width < 0) {
+        width = 0;
+    }
     if (recommended_size.height < 0) {
         recommended_size.height = 0;
+    }
+    if (recommended_size.width < 0) {
+        recommended_size.width = 0;
     }
 
     // Second pass - resize items. Width is computed, unless the
@@ -112,6 +118,12 @@ auto VerticalLayout::relayout(Position position, const Size size) -> void {
     position.y += margin.top + padding.top;
     position.x += margin.start + padding.start;
 
+    if (height < 0) {
+        height = 0;
+    }
+    if (recommended_size.height < 0) {
+        recommended_size.height = 0;
+    }
     if (recommended_size.width < 0) {
         recommended_size.width = 0;
     }
