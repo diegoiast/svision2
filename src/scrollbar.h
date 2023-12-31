@@ -38,5 +38,4 @@ struct ScrollBar : Widget {
     auto update_thumb_size() -> void;
     int thumb_size = 0;
     int thumb_position = 0;
-
 };

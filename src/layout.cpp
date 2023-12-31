@@ -14,7 +14,7 @@ auto HorizontalLayout ::relayout(Position position, const Size size) -> void {
     auto recommended_size = Size{};
     auto total_padding = 0;
 
-    // first pass - find all widgets with size hints, and substract them
+    // first pass - find all widgets with size hints, and subtract them
     // from the list
     auto widget_count = 0;
     auto width = size.width - margin.get_horizontal();
@@ -97,7 +97,7 @@ auto VerticalLayout::relayout(Position position, const Size size) -> void {
     auto recommended_size = Size{};
     auto total_padding = 0;
 
-    // first pass - find all widgets with size hints, and substract them
+    // first pass - find all widgets with size hints, and subtract them
     // from the list
     auto widget_count = 0;
     auto height = size.height - margin.get_vertical();
