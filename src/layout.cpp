@@ -72,6 +72,9 @@ auto HorizontalLayout::size_hint() const -> Size {
     auto found = 0;
     for (auto item_iterator : sub_items) {
         if (auto item = item_iterator.lock()) {
+            if (item->ignore_layout()) {
+                continue;
+            }
             found++;
             auto item_hint = item->size_hint();
             hint.height = std::max(item_hint.height, hint.height);
@@ -100,6 +103,9 @@ auto VerticalLayout::relayout(Position position, const Size size) -> void {
     auto height = size.height - margin.get_vertical();
     for (auto item_iterator : sub_items) {
         if (auto item = item_iterator.lock()) {
+            if (item->ignore_layout()) {
+                continue;
+            }
             auto hint = item->size_hint();
             if (hint.height <= 0) {
                 widget_count++;

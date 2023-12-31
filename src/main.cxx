@@ -125,7 +125,13 @@ int main() {
     w1->add_new<Label>(Position{10, 10}, Size{300, 20}, "test 1 - Hello world! glqi שלום עולם")
         ->frame = {FrameStyles::Normal, FrameSize::SingleFrame};
     w1->add_new<TextField>(Position{10, 35}, Size{165, 30});
-    w1->add_new<ListView>(Position{10, 80}, Size{165, 100})->adapter =
+
+    auto l1 = w1->main_widget.layout->add(std::make_shared<HorizontalLayout>());
+    auto l_left = l1->add(std::make_shared<VerticalLayout>());
+    auto l_right = l1->add(std::make_shared<VerticalLayout>());
+
+    //    l_right->margin.set(5);
+    w1->add_new_to_layout<ListView>(l_left, Position{10, 80}, Size{165, 100})->adapter =
         std::make_shared<ListItemAdapter>(std::vector<std::string>{
             "Option 1 (default)",
             "Option 2",
@@ -140,18 +146,26 @@ int main() {
             "Option 11",
             "Option 12 (last)",
         });
-
-    auto rb = w1->add_new<RadioButtonGroup>(Position{400, 20}, 160,
-                                            std::vector<std::string>{
-                                                "Option 1",
-                                                "Option 2",
-                                                "Option 3",
-                                                "Option 4",
-                                            });
+    auto rb = w1->add_new_to_layout<RadioButtonGroup>(l_right, Position{400, 20}, 160,
+                                                      std::vector<std::string>{
+                                                          "Option 1",
+                                                          "Option 2",
+                                                          "Option 3",
+                                                          "Option 4",
+                                                      });
     rb->on_selected = [](int index, Checkbox &button) {
         spdlog::info("Selected item {} with text {}", index, button.text);
     };
     rb->radio_buttons[1]->is_enabled = false;
+    w1->add_new<Combobox>(Position{10, 280}, 200,
+                          std::vector<std::string>{
+                              "Spring",
+                              "Summer",
+                              "Autumn/Fall",
+                              "Winter",
+                          });
+
+    //    w1->add_new_to_layout<Label>(l_right, Position{10, 10}, Size{300, 20}, "12331");
 
     /*
     auto debug_widget = w1->add_new<DebugWidget>(Position{400, 160}, Size{200, 40}, 0x22dd37);
@@ -166,14 +180,6 @@ int main() {
     cb->set_checked(EventPropagation::handled);
 
     w1->add_new<ScrollBar>(Position{615, 00}, 480, false)->set_values(100, 200, 200, 5);
-
-    w1->add_new<Combobox>(Position{10, 280}, 200,
-                          std::vector<std::string>{
-                              "Spring",
-                              "Summer",
-                              "Autumn/Fall",
-                              "Winter",
-                          });
 
      */
     std::shared_ptr<ScrollBar> scroll;

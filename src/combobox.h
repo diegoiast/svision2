@@ -12,8 +12,8 @@
 
 #include <widget.h>
 
+class Button;
 class ListView;
-
 class ComboboxList;
 
 struct Combobox : Widget {
@@ -28,6 +28,11 @@ struct Combobox : Widget {
     virtual auto on_mouse(const EventMouse &) -> EventPropagation override;
     virtual auto on_focus_change(bool new_state) -> void override;
     virtual auto on_keyboard(const EventKeyboard &) -> EventPropagation override;
+    virtual auto size_hint() const -> Size override;
+    virtual auto on_resize() -> void override;
 
     auto show_popup() -> void;
+
+  private:
+    std::shared_ptr<Button> popup_button = nullptr;
 };

@@ -49,6 +49,7 @@ struct LayouttItem {
 
     virtual auto relayout(Position posiition, const Size size) -> void = 0;
     virtual auto size_hint() const -> Size = 0;
+    virtual auto ignore_layout() const -> bool { return false; }
 
     template <typename T> auto add(T layoutItem) -> T {
         sub_items.push_back(layoutItem);
