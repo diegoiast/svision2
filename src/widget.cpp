@@ -175,7 +175,7 @@ auto WidgetCollection::focus_next_widget() -> void {
     std::shared_ptr<Widget> best_focus_widget;
     std::shared_ptr<Widget> least_focus_widget;
     for (auto w : this->widgets) {
-        if (!w->can_focus) {
+        if (!w->can_focus || !w->is_visible()) {
             continue;
         }
 
@@ -221,7 +221,7 @@ auto WidgetCollection::focus_previous_widget() -> void {
     std::shared_ptr<Widget> best_focus_widget;
     std::shared_ptr<Widget> least_focus_widget;
     for (auto w : this->widgets) {
-        if (!w->can_focus) {
+        if (!w->can_focus || !w->is_visible()) {
             continue;
         }
 
@@ -263,7 +263,7 @@ auto WidgetCollection::focus_widget(std::shared_ptr<Widget> widget) -> void {
         return;
     }
 
-    if (!widget->can_focus) {
+    if (!widget->can_focus || !widget->is_visible()) {
         spdlog::info("Not focusing widget, has it has a no focus policy");
         return;
     }
