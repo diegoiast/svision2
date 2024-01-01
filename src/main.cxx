@@ -157,13 +157,13 @@ int main() {
         spdlog::info("Selected item {} with text {}", index, button.text);
     };
     rb->radio_buttons[1]->is_enabled = false;
-    w1->add_new<Combobox>(Position{10, 280}, 200,
-                          std::vector<std::string>{
-                              "Spring",
-                              "Summer",
-                              "Autumn/Fall",
-                              "Winter",
-                          });
+    w1->add_new_to_layout<Combobox>(l1, Position{10, 280}, 200,
+                                    std::vector<std::string>{
+                                        "Spring",
+                                        "Summer",
+                                        "Autumn/Fall",
+                                        "Winter",
+                                    });
 
     //    w1->add_new_to_layout<Label>(l_right, Position{10, 10}, Size{300, 20}, "12331");
 

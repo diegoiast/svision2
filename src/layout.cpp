@@ -57,6 +57,9 @@ auto HorizontalLayout ::relayout(Position position, const Size size) -> void {
             } else {
                 recommended_size.width = hint.width;
             }
+            if (hint.height > 0) {
+                recommended_size.height = hint.height;
+            }
             position.x += padding.start;
             if (auto item = item_iterator.lock()) {
                 item->relayout(position, recommended_size);
@@ -77,8 +80,12 @@ auto HorizontalLayout::size_hint() const -> Size {
             }
             found++;
             auto item_hint = item->size_hint();
-            hint.height = std::max(item_hint.height, hint.height);
-            hint.width = std::max(item_hint.width, hint.width);
+            if (hint.height > 0) {
+                hint.height = std::max(item_hint.height, hint.height);
+            }
+            if (hint.width > 0) {
+                hint.width = std::max(item_hint.width, hint.width);
+            }
         }
     }
 
@@ -144,6 +151,10 @@ auto VerticalLayout::relayout(Position position, const Size size) -> void {
             } else {
                 recommended_size.height = hint.height;
             }
+            // TODO - this breaks the display. I think the type hints is borked.
+            if (hint.width > 0) {
+                //                recommended_size.width = hint.width;
+            }
             position.y += padding.top;
             if (auto item = item_iterator.lock()) {
                 item->relayout(position, recommended_size);
@@ -161,8 +172,12 @@ auto VerticalLayout::size_hint() const -> Size {
         if (auto item = item_iterator.lock()) {
             found++;
             auto item_hint = item->size_hint();
-            hint.height = std::max(item_hint.height, hint.height);
-            hint.width = std::max(item_hint.width, hint.width);
+            if (hint.height > 0) {
+                hint.height = std::max(item_hint.height, hint.height);
+            }
+            if (hint.width > 0) {
+                hint.width = std::max(item_hint.width, hint.width);
+            }
         }
     }
 
