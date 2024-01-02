@@ -20,6 +20,9 @@ auto HorizontalLayout ::relayout(Position position, const Size size) -> void {
     auto width = size.width - margin.get_horizontal();
     for (auto item_iterator : sub_items) {
         if (auto item = item_iterator.lock()) {
+            if (item->ignore_layout()) {
+                continue;
+            }
             auto hint = item->size_hint();
             if (hint.width <= 0) {
                 widget_count++;
@@ -57,13 +60,12 @@ auto HorizontalLayout ::relayout(Position position, const Size size) -> void {
             } else {
                 recommended_size.width = hint.width;
             }
+
             if (hint.height > 0) {
                 recommended_size.height = hint.height;
             }
-            position.x += padding.start;
-            if (auto item = item_iterator.lock()) {
-                item->relayout(position, recommended_size);
-            }
+            position.x += margin.start;
+            item->relayout(position, recommended_size);
             position.x += recommended_size.width;
             position.x += margin.end;
         }
@@ -125,7 +127,6 @@ auto VerticalLayout::relayout(Position position, const Size size) -> void {
     if (widget_count != 0) {
         height = (height - total_padding - margin.get_vertical()) / widget_count;
     }
-
     recommended_size.height = height;
     recommended_size.width = size.width - margin.get_horizontal() - padding.get_horizontal();
     position.y += margin.top + padding.top;
@@ -155,10 +156,8 @@ auto VerticalLayout::relayout(Position position, const Size size) -> void {
             if (hint.width > 0) {
                 //                recommended_size.width = hint.width;
             }
-            position.y += padding.top;
-            if (auto item = item_iterator.lock()) {
-                item->relayout(position, recommended_size);
-            }
+            position.y += margin.top;
+            item->relayout(position, recommended_size);
             position.y += recommended_size.height;
             position.y += margin.bottom;
         }
@@ -170,6 +169,9 @@ auto VerticalLayout::size_hint() const -> Size {
     auto found = 0;
     for (auto item_iterator : sub_items) {
         if (auto item = item_iterator.lock()) {
+            if (item->ignore_layout()) {
+                continue;
+            }
             found++;
             auto item_hint = item->size_hint();
             if (hint.height > 0) {
@@ -181,10 +183,9 @@ auto VerticalLayout::size_hint() const -> Size {
         }
     }
 
-    if (found == 0) {
-        return {};
+    if (found != 0) {
+        hint.width += margin.get_horizontal() + padding.get_horizontal();
+        hint.height += margin.get_vertical() + padding.get_vertical();
     }
-    hint.width += margin.get_horizontal();
-    hint.height += margin.get_vertical();
     return hint;
 }
