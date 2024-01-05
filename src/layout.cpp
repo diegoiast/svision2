@@ -12,7 +12,6 @@ auto HorizontalLayout ::relayout(Position position, const Size size) -> void {
         return;
     }
     auto recommended_size = Size{};
-    auto total_padding = 0;
 
     // first pass - find all widgets with size hints, and subtract them
     // from the list
@@ -26,19 +25,19 @@ auto HorizontalLayout ::relayout(Position position, const Size size) -> void {
             auto hint = item->size_hint();
             if (hint.width <= 0) {
                 widget_count++;
-                total_padding += padding.get_horizontal();
             } else {
-                width -= hint.width + item->padding.get_horizontal();
+                width -= hint.width;
             }
+            width -= padding.get_horizontal();
         }
     }
     if (widget_count != 0) {
-        width = (width - total_padding - margin.get_horizontal()) / widget_count;
+        width = width / widget_count;
     }
     recommended_size.width = width;
-    recommended_size.height = size.height - margin.get_vertical() - padding.get_vertical();
-    position.y += margin.top + padding.top;
-    position.x += margin.start + padding.start;
+    recommended_size.height = size.height - margin.get_vertical();
+    position.y += margin.top;
+    position.x += margin.start;
 
     if (width < 0) {
         width = 0;
@@ -54,6 +53,9 @@ auto HorizontalLayout ::relayout(Position position, const Size size) -> void {
     // widget has a size hint. In such case - we enforce it.
     for (auto item_iterator : sub_items) {
         if (auto item = item_iterator.lock()) {
+            if (item->ignore_layout()) {
+                continue;
+            }
             auto hint = item->size_hint();
             if (hint.width <= 0) {
                 recommended_size.width = width;
@@ -64,10 +66,10 @@ auto HorizontalLayout ::relayout(Position position, const Size size) -> void {
             if (hint.height > 0) {
                 recommended_size.height = hint.height;
             }
-            position.x += margin.start;
+            position.x += padding.start;
             item->relayout(position, recommended_size);
             position.x += recommended_size.width;
-            position.x += margin.end;
+            position.x += padding.end;
         }
     }
 }
@@ -82,20 +84,20 @@ auto HorizontalLayout::size_hint() const -> Size {
             }
             found++;
             auto item_hint = item->size_hint();
-            if (hint.height > 0) {
+            if (item_hint.height > 0) {
                 hint.height = std::max(item_hint.height, hint.height);
             }
-            if (hint.width > 0) {
+            if (item_hint.width > 0) {
                 hint.width = std::max(item_hint.width, hint.width);
             }
+            hint.width += this->padding.get_horizontal();
         }
     }
 
-    if (found == 0) {
-        return {};
+    if (found != 0) {
+        hint.width += margin.get_horizontal();
+        hint.height += margin.get_vertical();
     }
-    hint.width += margin.get_horizontal();
-    hint.height += margin.get_vertical();
     return hint;
 }
 
@@ -104,7 +106,6 @@ auto VerticalLayout::relayout(Position position, const Size size) -> void {
         return;
     }
     auto recommended_size = Size{};
-    auto total_padding = 0;
 
     // first pass - find all widgets with size hints, and subtract them
     // from the list
@@ -118,19 +119,19 @@ auto VerticalLayout::relayout(Position position, const Size size) -> void {
             auto hint = item->size_hint();
             if (hint.height <= 0) {
                 widget_count++;
-                total_padding += padding.get_vertical();
             } else {
-                height -= hint.height + item->padding.get_vertical();
+                height -= hint.height;
             }
+            height -= padding.get_vertical();
         }
     }
     if (widget_count != 0) {
-        height = (height - total_padding - margin.get_vertical()) / widget_count;
+        height = height / widget_count;
     }
     recommended_size.height = height;
-    recommended_size.width = size.width - margin.get_horizontal() - padding.get_horizontal();
-    position.y += margin.top + padding.top;
-    position.x += margin.start + padding.start;
+    recommended_size.width = size.width - margin.get_horizontal();
+    position.y += margin.top;
+    position.x += margin.start;
 
     if (height < 0) {
         height = 0;
@@ -146,6 +147,9 @@ auto VerticalLayout::relayout(Position position, const Size size) -> void {
     // widget has a size hint. In such case - we enforce it.
     for (auto item_iterator : sub_items) {
         if (auto item = item_iterator.lock()) {
+            if (item->ignore_layout()) {
+                continue;
+            }
             auto hint = item->size_hint();
             if (hint.height <= 0) {
                 recommended_size.height = height;
@@ -156,10 +160,10 @@ auto VerticalLayout::relayout(Position position, const Size size) -> void {
             if (hint.width > 0) {
                 //                recommended_size.width = hint.width;
             }
-            position.y += margin.top;
+            position.y += padding.top;
             item->relayout(position, recommended_size);
             position.y += recommended_size.height;
-            position.y += margin.bottom;
+            position.y += padding.bottom;
         }
     }
 }
@@ -174,18 +178,19 @@ auto VerticalLayout::size_hint() const -> Size {
             }
             found++;
             auto item_hint = item->size_hint();
-            if (hint.height > 0) {
+            if (item_hint.height > 0) {
                 hint.height = std::max(item_hint.height, hint.height);
             }
-            if (hint.width > 0) {
+            if (item_hint.width > 0) {
                 hint.width = std::max(item_hint.width, hint.width);
             }
+            hint.height += this->padding.get_vertical();
         }
     }
 
     if (found != 0) {
-        hint.width += margin.get_horizontal() + padding.get_horizontal();
-        hint.height += margin.get_vertical() + padding.get_vertical();
+        hint.width += margin.get_horizontal();
+        hint.height += margin.get_vertical();
     }
     return hint;
 }
