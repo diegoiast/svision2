@@ -21,7 +21,7 @@ struct ItemAdapter {
     using PWidget = std::shared_ptr<Widget>;
 
     virtual auto get_count() -> size_t const = 0;
-    virtual auto get_widget(size_t position) -> PWidget = 0;
+    virtual auto get_widget(size_t position, Theme &theme) -> PWidget = 0;
     virtual auto set_content(PWidget widget, size_t position, ItemStatus status) -> void = 0;
 };
 
@@ -30,7 +30,7 @@ struct ListItemAdapter : ItemAdapter {
 
     explicit ListItemAdapter(const std::vector<std::string> &s) { this->strings = s; };
     virtual auto get_count() -> size_t const override { return strings.size(); }
-    virtual auto get_widget(size_t position) -> PWidget override;
+    virtual auto get_widget(size_t position, Theme &theme) -> PWidget override;
     virtual auto set_content(PWidget widget, size_t position, ItemStatus status) -> void override;
 };
 
