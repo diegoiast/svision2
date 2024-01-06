@@ -10,12 +10,12 @@
 #include "widget.h"
 #include <functional>
 
-class Checkbox;
+struct Checkbox;
 
-class RadioButtonGroup : public Widget {
+struct RadioButtonGroup : Widget {
   public:
     RadioButtonGroup(Position pos, int width, const std::vector<std::string> &items);
-
+    
     std::function<void(int index, Checkbox &button)> on_selected = {};
     std::vector<std::shared_ptr<Checkbox>> radio_buttons = {};
 };

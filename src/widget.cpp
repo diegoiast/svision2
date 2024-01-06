@@ -390,6 +390,12 @@ auto Widget::on_keyboard(const EventKeyboard &) -> EventPropagation {
 
 auto Widget::on_remove() -> void{};
 
+auto Widget::on_resize() -> void {
+    if (layout) {
+        layout->relayout({0, 0}, this->content.size);
+    }
+}
+
 auto Widget::get_theme() const -> std::shared_ptr<Theme> {
     if (theme)
         return theme;

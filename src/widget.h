@@ -71,12 +71,15 @@ struct Widget : std::enable_shared_from_this<Widget>, LayouttItem {
     virtual auto on_focus_change(bool new_state) -> void;
     virtual auto on_keyboard(const EventKeyboard &) -> EventPropagation;
     virtual auto on_remove() -> void;
-    virtual auto on_resize() -> void{};
+    virtual auto on_resize() -> void;
     virtual auto size_hint() const -> Size override { return {0, 0}; };
 
     // TODO - make sure this T derieves from `Widget`
     template <typename T> auto add(T widget) -> T {
         widgets.add(widget, window);
+        if (layout) {
+            layout->add(widget);
+        }
         widget->parent = this;
         return widget;
     }
