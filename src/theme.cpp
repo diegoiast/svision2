@@ -266,7 +266,12 @@ auto ThemeRedmond::draw_checkbox(Bitmap &content, bool has_focus, bool is_enable
         break;
     }
 
-    font.write(content, {checkbox_size + 5, 5}, text,
+    auto text_padding = 2;
+    auto text_size = font.text_size(text);
+    auto content_rect = content.size - (text_padding);
+    auto centered = content_rect.centeredY(text_size);
+    centered.x += checkbox_size + text_padding;
+    font.write(content, centered, text,
                is_enabled ? foreground_color : colors.text_color_disabled);
 
     if (is_checked) {
@@ -429,6 +434,7 @@ auto ThemeVision::draw_checkbox(Bitmap &content, bool has_focus, bool is_enabled
     auto background_color = colors.window_background;
     auto checkbox_size = content.size.height;
     auto checkbox_color = colors.frame_hover_color1;
+    auto padding = 2;
 
     switch (state) {
     case ButtonStates::ClickedInside:
@@ -450,7 +456,6 @@ auto ThemeVision::draw_checkbox(Bitmap &content, bool has_focus, bool is_enabled
 
     content.fill(background_color);
     {
-        auto padding = 2;
         auto p = Position{padding, padding};
         auto w = Size{checkbox_size - padding * 2, checkbox_size - padding * 2};
         auto m = checkbox_size / 2;
@@ -481,7 +486,6 @@ auto ThemeVision::draw_checkbox(Bitmap &content, bool has_focus, bool is_enabled
         break;
     case CheckboxShape::RadioButton:
         if (is_checked) {
-            auto padding = 5;
             auto m = checkbox_size / 2;
             content.fill_circle(m, m, checkbox_size / 2 - padding,
                                 is_enabled ? checkbox_color : colors.text_color_disabled);
@@ -489,8 +493,10 @@ auto ThemeVision::draw_checkbox(Bitmap &content, bool has_focus, bool is_enabled
         break;
     }
 
-    // TODO properly center
-    auto centered = Position{checkbox_size + 5, 5};
+    auto text_size = font.text_size(text);
+    auto content_rect = content.size;
+    auto centered = content_rect.centeredY(text_size);
+    centered.x += checkbox_size + padding;
     font.write(content, centered, text,
                is_enabled ? colors.text_color : colors.text_color_disabled);
 }
