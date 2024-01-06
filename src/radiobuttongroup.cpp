@@ -30,7 +30,7 @@ RadioButtonGroup::RadioButtonGroup(Position position, int width,
     auto height = 0;
     this->layout = std::make_shared<VerticalLayout>();
     this->layout->padding.set_vertical(2);
-    
+
     for (auto &item : items) {
         auto cb = add_new<Checkbox>(p, width, item);
         cb->shape = CheckboxShape::RadioButton;

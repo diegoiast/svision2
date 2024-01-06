@@ -271,8 +271,7 @@ auto ThemeRedmond::draw_checkbox(Bitmap &content, bool has_focus, bool is_enable
     auto content_rect = content.size - (text_padding);
     auto centered = content_rect.centeredY(text_size);
     centered.x += checkbox_size + text_padding;
-    font.write(content, centered, text,
-               is_enabled ? foreground_color : colors.text_color_disabled);
+    font.write(content, centered, text, is_enabled ? foreground_color : colors.text_color_disabled);
 
     if (is_checked) {
         auto padding = 4;
