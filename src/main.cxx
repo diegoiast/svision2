@@ -119,7 +119,6 @@ int main() {
     //    auto w2 = platform.open_window(300, 300, 640, 480, "test 2");
     //    w2->content.background_color = 0x00FF00;
     //    plat  form.show_window(w2);
-
     auto w1 = platform.open_window(100, 100, 640, 480, "test 1");
 
     w1->add_new<Label>(Position{10, 10}, Size{300, 20}, "test 1 - Hello world! glqi שלום עולם")
@@ -196,6 +195,8 @@ int main() {
     l2->margin.set_horitzonal(5);
     l2->margin.set_vertical(5);
     l2->padding.set_horitzonal(10);
+    l2->add(std::make_shared<HorizontalSpacer>());
+
     w1->add_new_to_layout<Button>(l2, Position{10, 420}, Size{200, 40}, "OK", true, [&platform]() {
         spdlog::info("OK clicked!");
         platform.exit_loop = true;

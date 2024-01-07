@@ -43,7 +43,7 @@ struct LayoutParams {
 };
 
 struct LayouttItem {
-    std::list<std::weak_ptr<LayouttItem>> sub_items;
+    std::list<std::shared_ptr<LayouttItem>> sub_items;
     LayoutParams padding = {};
     LayoutParams margin = {};
 
@@ -55,6 +55,16 @@ struct LayouttItem {
         sub_items.push_back(layoutItem);
         return layoutItem;
     };
+};
+
+struct HorizontalSpacer : LayouttItem {
+    virtual auto relayout(Position position, const Size size) -> void override{};
+    virtual auto size_hint() const -> Size override { return {0, 1}; }
+};
+
+struct VerticalSpacer : LayouttItem {
+    virtual auto relayout(Position position, const Size size) -> void override{};
+    virtual auto size_hint() const -> Size override { return {1, 0}; }
 };
 
 struct HorizontalLayout : LayouttItem {
