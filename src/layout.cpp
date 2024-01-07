@@ -12,6 +12,7 @@ auto HorizontalLayout::relayout(Position position, const Size size) -> void {
         return;
     }
     auto recommended_size = Size{};
+    auto total_weight = 0.0;
 
     // first pass - find all widgets with size hints, and subtract them
     // from the list
@@ -28,11 +29,9 @@ auto HorizontalLayout::relayout(Position position, const Size size) -> void {
             width -= hint.width;
         }
         width -= padding.get_horizontal();
+        total_weight += item->weight;
     }
 
-    if (widget_count != 0) {
-        width = width / widget_count;
-    }
     recommended_size.width = width;
     recommended_size.height = size.height - margin.get_vertical();
     position.y += margin.top;
@@ -56,7 +55,8 @@ auto HorizontalLayout::relayout(Position position, const Size size) -> void {
         }
         auto hint = item->size_hint();
         if (hint.width <= 0) {
-            recommended_size.width = width;
+            recommended_size.width = (width * item->weight) / total_weight;
+
         } else {
             recommended_size.width = hint.width;
         }
@@ -107,6 +107,7 @@ auto VerticalLayout::relayout(Position position, const Size size) -> void {
         return;
     }
     auto recommended_size = Size{};
+    auto total_weight = 0.0;
 
     // first pass - find all widgets with size hints, and subtract them
     // from the list
@@ -123,10 +124,9 @@ auto VerticalLayout::relayout(Position position, const Size size) -> void {
             height -= hint.height;
         }
         height -= padding.get_vertical();
+        total_weight += item->weight;
     }
-    if (widget_count != 0) {
-        height = height / widget_count;
-    }
+
     recommended_size.height = height;
     recommended_size.width = size.width - margin.get_horizontal();
     position.y += margin.top;
@@ -150,7 +150,8 @@ auto VerticalLayout::relayout(Position position, const Size size) -> void {
         }
         auto hint = item->size_hint();
         if (hint.height <= 0) {
-            recommended_size.height = height;
+            recommended_size.height = height / widget_count;
+            // recommended_size.height = (height * item->weight) / total_weight;
         } else {
             recommended_size.height = hint.height;
         }

@@ -195,7 +195,7 @@ int main() {
     l2->margin.set_horitzonal(5);
     l2->margin.set_vertical(5);
     l2->padding.set_horitzonal(10);
-    l2->add(std::make_shared<HorizontalSpacer>());
+    l2->add(std::make_shared<HorizontalSpacer>())->weight = 2;
 
     w1->add_new_to_layout<Button>(l2, Position{10, 420}, Size{200, 40}, "OK", true, [&platform]() {
         spdlog::info("OK clicked!");

@@ -46,6 +46,7 @@ struct LayouttItem {
     std::list<std::shared_ptr<LayouttItem>> sub_items;
     LayoutParams padding = {};
     LayoutParams margin = {};
+    double weight = 1;
 
     virtual auto relayout(Position posiition, const Size size) -> void = 0;
     virtual auto size_hint() const -> Size = 0;
