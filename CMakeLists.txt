@@ -131,7 +131,7 @@ add_executable (demo src/main.cxx )
 target_link_libraries(demo svision2)
 
 # Create a GUI application (no console)
-#set_target_properties(demo PROPERTIES WIN32_EXECUTABLE TRUE)
+set_target_properties(demo PROPERTIES WIN32_EXECUTABLE TRUE)
 
 # Unit tests
 include(CTest)
