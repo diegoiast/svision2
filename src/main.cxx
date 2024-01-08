@@ -123,14 +123,18 @@ int main() {
 #endif
 
     auto w1 = platform.open_window(100, 100, 640, 480, "test 1");
-
-    w1->add_new<Label>(Position{10, 10}, Size{300, 20}, "test 1 - Hello world! glqi שלום עולם")
-        ->frame = {FrameStyles::Normal, FrameSize::SingleFrame};
+    auto l =
+        w1->add_new<Label>(Position{10, 10}, Size{300, 20}, "test 1 - Hello world! glqi שלום עולם");
+    l->frame = {FrameStyles::Normal, FrameSize::SingleFrame};
+    l->weight = 0.3;
     w1->add_new<TextField>(Position{10, 35}, Size{165, 30});
 
-    auto l1 = w1->main_widget.layout->add(std::make_shared<HorizontalLayout>());
-    auto l_left = l1->add(std::make_shared<VerticalLayout>());
-    auto l_right = l1->add(std::make_shared<VerticalLayout>());
+    auto center_layout = w1->main_widget.layout->add(std::make_shared<HorizontalLayout>());
+    auto l_left = center_layout->add(std::make_shared<VerticalLayout>());
+    auto l_right = center_layout->add(std::make_shared<VerticalLayout>());
+
+    w1->main_widget.layout->margin.set(5);
+    center_layout->padding.set_horitzonal(10);
 
     //    l_right->margin.set(5);
     w1->add_new_to_layout<ListView>(l_left, Position{10, 80}, Size{165, 100})->adapter =
@@ -181,6 +185,7 @@ int main() {
         debug_widget->window->relayout();
     };
     cb->set_checked(EventPropagation::handled);
+    debug_widget->weight = 0.5;
 
     std::shared_ptr<ScrollBar> scroll;
     std::shared_ptr<Spinbox> spin;
@@ -192,24 +197,27 @@ int main() {
     spin->set_values(1000, 2000, 200);
     spin->did_change = [&scroll](auto spinbox, auto value) { scroll->set_value(value); };
 
-    auto l2 = w1->main_widget.layout->add(std::make_shared<HorizontalLayout>());
-    l2->margin.set_horitzonal(5);
-    l2->margin.set_vertical(5);
-    l2->padding.set_horitzonal(10);
-    l2->add(std::make_shared<HorizontalSpacer>())->weight = 2;
+    auto buttons_layout = w1->main_widget.layout->add(std::make_shared<HorizontalLayout>());
+    buttons_layout->margin.set_horitzonal(5);
+    buttons_layout->margin.set_vertical(5);
+    buttons_layout->padding.set_horitzonal(10);
+    buttons_layout->add(std::make_shared<HorizontalSpacer>())->weight = 2;
 
-    w1->add_new_to_layout<Button>(l2, Position{10, 420}, Size{200, 40}, "OK", true, [&platform]() {
-        spdlog::info("OK clicked!");
-        platform.exit_loop = true;
-    });
-
-    w1->add_new_to_layout<Button>(l2, Position{220, 420}, Size{200, 40}, "Cancel", false,
+    w1->add_new_to_layout<Button>(buttons_layout, Position{10, 420}, Size{200, 40}, "OK", true,
                                   [&platform]() {
-                                      static auto clicked_count = 0;
-                                      clicked_count++;
-                                      spdlog::info("Cancel clicke1d! count = {}", clicked_count);
-                                  })
-        ->set_auto_repeat(300, 700);
+                                      spdlog::info("OK clicked!");
+                                      platform.exit_loop = true;
+                                  });
+
+    std::shared_ptr<Button> cancel_button = w1->add_new_to_layout<Button>(
+        buttons_layout, Position{220, 420}, Size{200, 40}, "Cancel", false, [&cancel_button]() {
+            static auto clicked_count = 0;
+            clicked_count++;
+            spdlog::info("Cancel clicke1d! count = {}", clicked_count);
+            cancel_button->text = fmt::format("Cancel ({})", clicked_count);
+            cancel_button->invalidate();
+        });
+    cancel_button->set_auto_repeat(300, 700);
 
     platform.show_window(w1);
 
