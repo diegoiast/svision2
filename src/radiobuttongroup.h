@@ -10,9 +10,9 @@
 #include "widget.h"
 #include <functional>
 
-class Checkbox;
+struct Checkbox;
 
-class RadioButtonGroup : public Widget {
+struct RadioButtonGroup : Widget {
   public:
     RadioButtonGroup(Position pos, int width, const std::vector<std::string> &items);
 

@@ -84,7 +84,7 @@ auto convert_x11_key_event(XEvent &ev, Display *dpy) -> EventKeyboard {
     event.keydown = ev.type == KeyPress;
     event.modifiers = (!!(m & ControlMask)) | (!!(m & ShiftMask) << 1) | (!!(m & Mod1Mask) << 2) |
                       (!!(m & Mod4Mask) << 3);
-    spdlog::info("X11: pressed key: {}", (int)event.key);
+    //    spdlog::info("X11: pressed key: {}", (int)event.key);
     return event;
 }
 
@@ -275,7 +275,8 @@ auto PlatformX11::main_loop() -> void {
 
         case ConfigureNotify: {
             auto event = convert_x11_configure_event(ev);
-            if (event.size != target_window->main_widget.content.size) {
+            if (event.size != target_window->main_widget.content.size ||
+                !target_window->is_visible) {
                 spdlog::info("Resing window {} to {}x{}", target_window->title, event.size.width,
                              event.size.height);
                 target_window->main_widget.content.resize(event.size.width, event.size.height);
@@ -284,12 +285,14 @@ auto PlatformX11::main_loop() -> void {
                 //        needed values? I should modify only the width/height and
                 //        byteperline or something.
                 XFree(target_window->x11_image);
+                target_window->needs_redraw = true;
                 target_window->x11_image = XCreateImage(
                     dpy, DefaultVisual(dpy, 0), 24, ZPixmap, 0,
                     reinterpret_cast<char *>(target_window->main_widget.content.buffer.data()),
                     target_window->main_widget.content.size.width,
                     target_window->main_widget.content.size.height, 32, 0);
 
+                target_window->is_visible = true;
                 target_window->on_resize(event);
             }
             break;

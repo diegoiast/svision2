@@ -68,6 +68,8 @@ Button::Button(Position pp, Size size, std::string text, bool is_default,
     this->is_default = is_default;
     this->on_button_click = on_button_click;
     this->can_focus = true;
+    this->padding.set(10);
+    this->margin.set_horitzonal(10);
 }
 
 auto Button::draw() -> void {
@@ -151,7 +153,17 @@ auto Button::on_keyboard(const EventKeyboard &event) -> EventPropagation {
         return EventPropagation::handled;
     }
     return Widget::on_keyboard(event);
-};
+}
+
+Size Button::size_hint() const {
+    //    return {0, 0};
+    // TODO: Size of text is not correct. We also need to calculate the yMin and yMax for example
+    auto s = get_theme()->font.text_size(text);
+    auto padding_x = this->padding.get_horizontal();
+    auto padding_y = this->padding.get_vertical();
+    //    return {s.width + padding_x, s.height * 2 + padding_y};
+    return {0, s.height * 1 + padding_y};
+}
 
 auto Button::set_auto_repeat(int64_t repeat_millies, int64_t repeat_start) -> void {
     this->is_autorepeat = true;

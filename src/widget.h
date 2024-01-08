@@ -10,6 +10,7 @@
 #include <bitmap.h>
 #include <checkboxshape.h>
 #include <events.h>
+#include <layout.h>
 
 #include <list>
 #include <memory>
@@ -37,12 +38,13 @@ struct WidgetCollection {
     auto focus_widget(std::shared_ptr<Widget> widget) -> void;
 };
 
-struct Widget : public std::enable_shared_from_this<Widget> {
+struct Widget : std::enable_shared_from_this<Widget>, LayouttItem {
     Bitmap content;
     Position position;
     WidgetCollection widgets;
     std::shared_ptr<Theme> theme;
     Frame frame{FrameStyles::NoFrame, FrameSize::SingleFrame};
+    std::shared_ptr<LayouttItem> layout;
 
     // TODO this should be a weak pointer
     PlatformWindow *window = nullptr;
@@ -69,10 +71,16 @@ struct Widget : public std::enable_shared_from_this<Widget> {
     virtual auto on_focus_change(bool new_state) -> void;
     virtual auto on_keyboard(const EventKeyboard &) -> EventPropagation;
     virtual auto on_remove() -> void;
+    virtual auto on_resize() -> void;
+    virtual auto size_hint() const -> Size override { return {0, 0}; };
+    virtual auto ignore_layout() const -> bool override { return !is_widget_visible; }
 
     // TODO - make sure this T derieves from `Widget`
     template <typename T> auto add(T widget) -> T {
         widgets.add(widget, window);
+        if (layout) {
+            layout->add(widget);
+        }
         widget->parent = this;
         return widget;
     }
@@ -82,10 +90,22 @@ struct Widget : public std::enable_shared_from_this<Widget> {
         return add(std::make_shared<T>(std::forward<Args>(args)...));
     };
 
-    auto get_theme() -> std::shared_ptr<Theme>;
+    auto get_theme() const -> std::shared_ptr<Theme>;
     auto show() -> void;
     auto hide() -> void;
     auto is_visible() const -> bool { return is_widget_visible; }
+
+    auto relayout(Position position, const Size size) -> void override {
+        this->position = position;
+        content.resize(size);
+        needs_redraw = true;
+
+        if (layout) {
+            layout->relayout(position, size);
+        }
+
+        on_resize();
+    }
 
     friend class PlatformWindow;
     friend class WidgetCollection;
@@ -99,9 +119,11 @@ struct PlatformWindow {
     std::string title;
     Widget main_widget;
 
+    bool is_visible = false;
     bool needs_redraw = false;
     Platform *platform = nullptr;
 
+    PlatformWindow();
     virtual ~PlatformWindow();
 
     auto focus_next_widget() -> void {
@@ -125,10 +147,14 @@ struct PlatformWindow {
             invalidate();
     }
 
+    virtual auto relayout() -> void {
+        main_widget.layout->relayout({0, 0}, main_widget.content.size);
+    }
+
     virtual auto draw() -> void;
     virtual auto on_keyboard(const EventKeyboard &) -> void;
     virtual auto on_mouse(const EventMouse &) -> void;
-    virtual auto on_resize(const EventResize &) -> void {}
+    virtual auto on_resize(const EventResize &) -> void;
     virtual auto can_close() -> bool { return true; }
     virtual auto invalidate() -> void;
     virtual auto on_close() -> void;
@@ -136,11 +162,26 @@ struct PlatformWindow {
     // TODO - make sure this T derieves from `Widget`
     template <typename T> auto add(T widget) -> T {
         main_widget.widgets.add(widget, this);
+        if (main_widget.layout) {
+            main_widget.layout->add(widget);
+        }
         return widget;
     };
 
     // TODO - make sure this T derieves from `Widget`
     template <typename T, typename... Args> auto add_new(Args &&...args) -> std::shared_ptr<T> {
         return add(std::make_shared<T>(std::forward<Args>(args)...));
+    };
+
+    // TODO - make sure this T derieves from `Widget`
+    template <typename T, typename... Args>
+    auto add_new_to_layout(std::shared_ptr<LayouttItem> layout, Args &&...args)
+        -> std::shared_ptr<T> {
+        auto widget = std::make_shared<T>(std::forward<Args>(args)...);
+        main_widget.widgets.add(widget, this);
+        if (layout) {
+            layout->add(widget);
+        }
+        return widget;
     };
 };

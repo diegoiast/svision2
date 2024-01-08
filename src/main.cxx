@@ -116,65 +116,76 @@ int main() {
         //        spdlog::info("timer");
     });
 
-    //    auto w2 = platform.open_window(300, 300, 640, 480, "test 2");
-    //    w2->content.background_color = 0x00FF00;
-    //    plat  form.show_window(w2);
+#if 0
+    auto w2 = platform.open_window(300, 300, 640, 480, "test 2");
+    w2->main_widget.content.background_color = 0x00FF00;
+    platform.show_window(w2);
+#endif
 
     auto w1 = platform.open_window(100, 100, 640, 480, "test 1");
-    w1->add_new<Label>(Position{10, 10}, Size{300, 20}, "test 1 - Hello world! glqi שלום עולם")
-        ->frame = {FrameStyles::Normal, FrameSize::SingleFrame};
+    auto l =
+        w1->add_new<Label>(Position{10, 10}, Size{300, 20}, "test 1 - Hello world! glqi שלום עולם");
+    l->frame = {FrameStyles::Normal, FrameSize::SingleFrame};
+    l->weight = 0.3;
     w1->add_new<TextField>(Position{10, 35}, Size{165, 30});
 
-    ;
+    auto center_layout = w1->main_widget.layout->add(std::make_shared<HorizontalLayout>());
+    auto l_left = center_layout->add(std::make_shared<VerticalLayout>());
+    auto l_right = center_layout->add(std::make_shared<VerticalLayout>());
 
-    auto ll = w1->add_new<ListView>(Position{10, 80}, Size{165, 100});
-    ll->adapter = std::make_shared<ListItemAdapter>(std::vector<std::string>{
-        "Option 1 (default)",
-        "Option 2",
-        "Option 3",
-        "Option 4",
-        "Option 5",
-        "Option 6",
-        "Option 7",
-        "Option 8",
-        "Option 9",
-        "Option 10",
-        "Option 11",
-        "Option 12 (last)",
-    });
+    w1->main_widget.layout->margin.set(5);
+    center_layout->padding.set_horitzonal(10);
 
-    auto rb = w1->add_new<RadioButtonGroup>(Position{400, 20}, 160,
-                                            std::vector<std::string>{
-                                                "Option 1",
-                                                "Option 2",
-                                                "Option 3",
-                                                "Option 4",
-                                            });
+    //    l_right->margin.set(5);
+    w1->add_new_to_layout<ListView>(l_left, Position{10, 80}, Size{165, 100})->adapter =
+        std::make_shared<ListItemAdapter>(std::vector<std::string>{
+            "Option 1 (default)",
+            "Option 2",
+            "Option 3",
+            "Option 4",
+            "Option 5",
+            "Option 6",
+            "Option 7",
+            "Option 8",
+            "Option 9",
+            "Option 10",
+            "Option 11",
+            "Option 12 (last)",
+        });
+    auto rb = w1->add_new_to_layout<RadioButtonGroup>(l_right, Position{400, 20}, 160,
+                                                      std::vector<std::string>{
+                                                          "Option 1",
+                                                          "Option 2",
+                                                          "Option 3",
+                                                          "Option 4",
+                                                      });
     rb->on_selected = [](int index, Checkbox &button) {
         spdlog::info("Selected item {} with text {}", index, button.text);
     };
     rb->radio_buttons[1]->is_enabled = false;
+    w1->add_new_to_layout<Combobox>(l_right, Position{10, 280}, 200,
+                                    std::vector<std::string>{
+                                        "Spring",
+                                        "Summer",
+                                        "Autumn/Fall",
+                                        "Winter",
+                                    });
 
-    auto debug_widget = w1->add_new<DebugWidget>(Position{400, 160}, Size{200, 40}, 0x22dd37);
-    auto cb = w1->add_new<Checkbox>(Position{400, 130}, 220, "Show/hide debug widget");
+    auto debug_widget =
+        w1->add_new_to_layout<DebugWidget>(l_right, Position{400, 160}, Size{200, 40}, 0x22dd37);
+    auto cb =
+        w1->add_new_to_layout<Checkbox>(l_right, Position{400, 130}, 220, "Show/hide debug widget");
     cb->on_checkbox_change = [debug_widget](const Checkbox &cb) {
         if (cb.is_checked) {
             debug_widget->show();
         } else {
             debug_widget->hide();
         }
+        // this is to trigger re-layout
+        debug_widget->window->relayout();
     };
     cb->set_checked(EventPropagation::handled);
-
-    w1->add_new<ScrollBar>(Position{615, 00}, 480, false)->set_values(100, 200, 200, 5);
-
-    w1->add_new<Combobox>(Position{10, 280}, 200,
-                          std::vector<std::string>{
-                              "Spring",
-                              "Summer",
-                              "Autumn/Fall",
-                              "Winter",
-                          });
+    debug_widget->weight = 0.5;
 
     std::shared_ptr<ScrollBar> scroll;
     std::shared_ptr<Spinbox> spin;
@@ -186,15 +197,28 @@ int main() {
     spin->set_values(1000, 2000, 200);
     spin->did_change = [&scroll](auto spinbox, auto value) { scroll->set_value(value); };
 
-    w1->add_new<Button>(Position{10, 420}, Size{200, 40}, "OK", true, [&platform]() {
-        spdlog::info("OK clicked!");
-        platform.exit_loop = true;
-    });
-    w1->add_new<Button>(Position{220, 420}, Size{200, 40}, "Cancel", false, [&platform]() {
-          static auto clicked_count = 0;
-          clicked_count++;
-          spdlog::info("Cancel clicke1d! count = {}", clicked_count);
-      })->set_auto_repeat(300, 700);
+    auto buttons_layout = w1->main_widget.layout->add(std::make_shared<HorizontalLayout>());
+    buttons_layout->margin.set_horitzonal(5);
+    buttons_layout->margin.set_vertical(5);
+    buttons_layout->padding.set_horitzonal(10);
+    buttons_layout->add(std::make_shared<HorizontalSpacer>())->weight = 2;
+
+    w1->add_new_to_layout<Button>(buttons_layout, Position{10, 420}, Size{200, 40}, "OK", true,
+                                  [&platform]() {
+                                      spdlog::info("OK clicked!");
+                                      platform.exit_loop = true;
+                                  });
+
+    std::shared_ptr<Button> cancel_button = w1->add_new_to_layout<Button>(
+        buttons_layout, Position{220, 420}, Size{200, 40}, "Cancel", false, [&cancel_button]() {
+            static auto clicked_count = 0;
+            clicked_count++;
+            spdlog::info("Cancel clicke1d! count = {}", clicked_count);
+            cancel_button->text = fmt::format("Cancel ({})", clicked_count);
+            cancel_button->invalidate();
+        });
+    cancel_button->set_auto_repeat(300, 700);
+
     platform.show_window(w1);
 
     t1.start();

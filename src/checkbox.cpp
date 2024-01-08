@@ -80,7 +80,14 @@ auto Checkbox::on_keyboard(const EventKeyboard &event) -> EventPropagation {
         return EventPropagation::handled;
     }
     return Widget::on_keyboard(event);
-};
+}
+
+auto Checkbox::size_hint() const -> Size {
+    auto hint = Size{};
+    auto font_height = this->get_theme()->font.text_size("X").height;
+    hint.height = font_height + 5;
+    return hint;
+}
 
 auto Checkbox::toggle() -> bool {
     this->is_checked = !this->is_checked;

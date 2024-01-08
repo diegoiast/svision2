@@ -34,6 +34,7 @@ struct Checkbox : Widget {
     virtual auto on_mouse_click(const EventMouse &event) -> EventPropagation override;
     virtual auto on_focus_change(bool new_state) -> void override;
     virtual auto on_keyboard(const EventKeyboard &) -> EventPropagation override;
+    virtual auto size_hint() const -> Size override;
 
     auto toggle() -> bool;
     auto set_checked(EventPropagation propagate) -> void;

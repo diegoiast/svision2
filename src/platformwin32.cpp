@@ -18,7 +18,7 @@
 #include "theme.h"
 #include "widget.h"
 
-int main(int arc, char *argv[]);
+extern "C" int main(int, char **);
 
 int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
     int argc = __argc;
@@ -27,6 +27,7 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
     LocalFree(argv);
     return result;
 }
+
 std::wstring StringToWideString(const std::string &narrowStr) {
     int wideStrLength = MultiByteToWideChar(CP_UTF8, 0, narrowStr.c_str(), -1, nullptr, 0);
     if (wideStrLength == 0) {

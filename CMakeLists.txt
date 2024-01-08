@@ -10,6 +10,30 @@ include(cmake/conan.cmake)
 include(cmake/CPM.cmake)
 include(cmake/CreateResources.cmake)
 
+# https://github.com/heavyai/heavydb/blob/72c90bc290b79dd30240da41c103a00720f6b050/CMakeLists.txt#L119C1-L140C8
+macro(set_alternate_linker linker)
+  find_program(LINKER_EXECUTABLE ld.${USE_ALTERNATE_LINKER} ${USE_ALTERNATE_LINKER})
+  if(LINKER_EXECUTABLE)
+    if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" AND "${CMAKE_CXX_COMPILER_VERSION}" VERSION_LESS 12.0.0)
+      add_link_options("-ld-path=${USE_ALTERNATE_LINKER}")
+    elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" AND "${CMAKE_CXX_COMPILER_VERSION}" VERSION_LESS 12.1.0 AND "${USE_ALTERNATE_LINKER}" STREQUAL "mold")
+      # LINKER_EXECUTABLE will be a full path to ld.mold, so we replace the end of the path, resulting in the relative
+      # libexec/mold dir, and tell GCC to look there first for an override version of executables, in this case, ld
+      string(REPLACE "bin/ld.mold" "libexec/mold" PATH_TO_LIBEXEC_MOLD ${LINKER_EXECUTABLE})
+      add_link_options("-B${PATH_TO_LIBEXEC_MOLD}")
+    else()
+      add_link_options("-fuse-ld=${USE_ALTERNATE_LINKER}")
+    endif()
+  else()
+    set(USE_ALTERNATE_LINKER "" CACHE STRING "Use alternate linker" FORCE)
+  endif()
+endmacro()
+
+set(USE_ALTERNATE_LINKER "mold" CACHE STRING "Use alternate linker. Leave empty for system default; alternatives are 'gold', 'lld', 'bfd', 'mold'")
+if(NOT "${USE_ALTERNATE_LINKER}" STREQUAL "")
+  set_alternate_linker(${USE_ALTERNATE_LINKER})
+endif()
+
 cpmaddpackage(
     NAME
     Format.cmake
@@ -56,6 +80,8 @@ set(SVISION_SOURCES
     src/fontproviderfreetype.h
     src/label.cpp
     src/label.h
+    src/layout.cpp
+    src/layout.h
     src/listview.cpp
     src/listview.h
     src/platform.cpp
@@ -105,7 +131,7 @@ add_executable (demo src/main.cxx )
 target_link_libraries(demo svision2)
 
 # Create a GUI application (no console)
-#set_target_properties(demo PROPERTIES WIN32_EXECUTABLE TRUE)
+set_target_properties(demo PROPERTIES WIN32_EXECUTABLE TRUE)
 
 # Unit tests
 include(CTest)

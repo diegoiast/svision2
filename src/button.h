@@ -42,6 +42,7 @@ struct Button : Widget {
     virtual auto on_mouse_click(const EventMouse &event) -> EventPropagation override;
     virtual auto on_focus_change(bool new_state) -> void override;
     virtual auto on_keyboard(const EventKeyboard &) -> EventPropagation override;
+    virtual auto size_hint() const -> Size override;
 
     auto set_auto_repeat(int64_t repeat_millies, int64_t repeat_start = 500) -> void;
     auto disable_auto_repeat() -> void;

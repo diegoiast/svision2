@@ -135,6 +135,9 @@ auto Bitmap::fill_rect(int x, int y, int w, int h, uint32_t c) -> void {
 
 auto Bitmap::fill_rect_gradient(int x, int y, int w, int h, uint32_t color1, uint32_t color2)
     -> void {
+    if (h == 0 || w == 0) {
+        return;
+    }
     auto gradient = Gradient(color1, color2, h);
     for (int row = 0; row < h; row++) {
         for (int col = 0; col < w; col++) {

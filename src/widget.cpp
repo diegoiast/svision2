@@ -6,6 +6,7 @@
  */
 
 #include "widget.h"
+#include "layout.h"
 #include "platform.h"
 #include "theme.h"
 
@@ -174,7 +175,7 @@ auto WidgetCollection::focus_next_widget() -> void {
     std::shared_ptr<Widget> best_focus_widget;
     std::shared_ptr<Widget> least_focus_widget;
     for (auto w : this->widgets) {
-        if (!w->can_focus) {
+        if (!w->can_focus || !w->is_visible()) {
             continue;
         }
 
@@ -220,7 +221,7 @@ auto WidgetCollection::focus_previous_widget() -> void {
     std::shared_ptr<Widget> best_focus_widget;
     std::shared_ptr<Widget> least_focus_widget;
     for (auto w : this->widgets) {
-        if (!w->can_focus) {
+        if (!w->can_focus || !w->is_visible()) {
             continue;
         }
 
@@ -262,7 +263,7 @@ auto WidgetCollection::focus_widget(std::shared_ptr<Widget> widget) -> void {
         return;
     }
 
-    if (!widget->can_focus) {
+    if (!widget->can_focus || !widget->is_visible()) {
         spdlog::info("Not focusing widget, has it has a no focus policy");
         return;
     }
@@ -389,7 +390,13 @@ auto Widget::on_keyboard(const EventKeyboard &) -> EventPropagation {
 
 auto Widget::on_remove() -> void{};
 
-auto Widget::get_theme() -> std::shared_ptr<Theme> {
+auto Widget::on_resize() -> void {
+    if (layout) {
+        layout->relayout({0, 0}, this->content.size);
+    }
+}
+
+auto Widget::get_theme() const -> std::shared_ptr<Theme> {
     if (theme)
         return theme;
 
@@ -416,6 +423,12 @@ auto Widget::hide() -> void {
     }
     is_widget_visible = false;
     invalidate();
+}
+
+PlatformWindow::PlatformWindow() {
+    main_widget.layout = std::make_shared<VerticalLayout>();
+    main_widget.layout->padding.set_vertical(5);
+    main_widget.layout->padding.set_horitzonal(5);
 }
 
 PlatformWindow::~PlatformWindow() { spdlog::info("Window done"); }
@@ -478,6 +491,14 @@ auto PlatformWindow::on_keyboard(const EventKeyboard &event) -> void {
 
 auto PlatformWindow::on_mouse(const EventMouse &event) -> void {
     main_widget.widgets.on_mouse(event);
+}
+
+auto PlatformWindow::on_resize(const EventResize &event) -> void {
+    spdlog::info("New window size: {}x{}", event.size.width, event.size.height);
+    if (main_widget.layout) {
+        main_widget.layout->relayout({0, 0}, event.size);
+        invalidate();
+    }
 }
 
 auto PlatformWindow::invalidate() -> void {

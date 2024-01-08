@@ -9,12 +9,13 @@
 #include "scrollbar.h"
 #include "theme.h"
 
-auto ListItemAdapter::get_widget(size_t) -> PWidget {
+auto ListItemAdapter::get_widget(size_t /*position*/, Theme &theme) -> PWidget {
+    auto font_size = theme.font.text_size("X") + 10;
     auto position = Position{0, 0};
-    auto size = Size{20, 20};
+    auto size = font_size;
     auto p = std::make_shared<ListItemWidget>(position, size, "");
     p->can_focus = true;
-    //    p->draw_background = false;
+    p->draw_background = false;
     return p;
 }
 
@@ -25,7 +26,6 @@ auto ListItemAdapter::set_content(PWidget widget, size_t position, ItemStatus st
 }
 
 ListView::ListView(Position position, Size size) : Widget(position, size, 0) {
-
     position.x = size.width - 24;
     position.y = 0;
     this->scrollbar = add_new<ScrollBar>(position, size.height, false);
@@ -39,12 +39,13 @@ ListView::ListView(Position position, Size size) : Widget(position, size, 0) {
 }
 
 auto ListView::draw() -> void {
-    get_theme()->draw_listview_background(content, has_focus, true);
+    auto &theme = *get_theme();
+    theme.draw_listview_background(content, has_focus, true);
     if (reserved_widgets.empty()) {
         did_adapter_update();
     }
 
-    auto first_widget = adapter->get_widget(0);
+    auto first_widget = adapter->get_widget(0, theme);
     //  TODO - get padding from frame - from, theme
     auto padding = 1;
     auto item_height = (first_widget->content.size.height);
@@ -82,8 +83,7 @@ auto ListView::draw() -> void {
     Widget::draw();
 
     auto frame_proxy = this->frame;
-    auto theme = get_theme();
-    if (can_focus && theme->modify_frame_on_hover()) {
+    if (can_focus && theme.modify_frame_on_hover()) {
         // Setting hover frame works only on selectable widgets
         if (frame_proxy.style == FrameStyles::Normal ||
             frame_proxy.style == FrameStyles::Reversed) {
@@ -96,7 +96,7 @@ auto ListView::draw() -> void {
         }
     }
     if (frame_proxy.style != FrameStyles::NoFrame) {
-        theme->draw_frame(content, {0, 0}, content.size, frame_proxy.style, frame_proxy.size);
+        theme.draw_frame(content, {0, 0}, content.size, frame_proxy.style, frame_proxy.size);
     }
 }
 
@@ -110,10 +110,9 @@ EventPropagation ListView::on_mouse_click(const EventMouse &event) {
         return p;
     }
 
-    auto first_widget = adapter->get_widget(0);
+    auto first_widget = adapter->get_widget(0, *get_theme());
     auto padding = 2;
     auto item_height = (first_widget->content.size.height);
-    auto widget_count = (this->content.size.height - padding) / item_height + 1;
     auto first_item = scrollbar->value / item_height;
     auto offset = -(scrollbar->value % item_height);
 
@@ -126,8 +125,8 @@ EventPropagation ListView::on_mouse_click(const EventMouse &event) {
     return EventPropagation::handled;
 }
 
-auto static ensure_item_in_viewport(ListView &l) {
-    auto first_widget = l.adapter->get_widget(0);
+auto static ensure_item_in_viewport(ListView &l, Theme &theme) {
+    auto first_widget = l.adapter->get_widget(0, theme);
     auto item_height = (first_widget->content.size.height);
     auto widget_count = l.content.size.height / item_height;
     auto first_visible_item = l.scrollbar->value / item_height;
@@ -185,7 +184,7 @@ auto ListView::on_keyboard(const EventKeyboard &event) -> EventPropagation {
     }
 
     if (old_item != this->current_item) {
-        ensure_item_in_viewport(*this);
+        ensure_item_in_viewport(*this, *get_theme());
         invalidate();
         if (this->on_item_selected) {
             this->on_item_selected(*this, current_item, SelectionReason::KeyboardMove);
@@ -198,9 +197,24 @@ auto ListView::on_keyboard(const EventKeyboard &event) -> EventPropagation {
     return result;
 }
 
+auto ListView::on_resize() -> void {
+    // TODO - read size from theme
+    auto width = 24;
+    auto position = Position{content.size.width - width, 0};
+
+    for (auto &w : reserved_widgets) {
+        w->hide();
+    }
+    this->reserved_widgets.clear();
+    this->scrollbar->position = position;
+    this->scrollbar->content.resize(width, content.size.height);
+    this->scrollbar->on_resize();
+}
+
 auto ListView::did_adapter_update() -> void {
     reserved_widgets.clear();
-    auto first_widget = adapter->get_widget(0);
+    auto &theme = *get_theme();
+    auto first_widget = adapter->get_widget(0, theme);
     auto item_height = first_widget->content.size.height;
     auto widget_count = (this->content.size.height - 2) / item_height + 1;
 
@@ -220,7 +234,7 @@ auto ListView::did_adapter_update() -> void {
         // different actions in a single line, and will become undebuggable
         // reserved_widgets.push_back(add(adapter->get_widget(widget_count)));
 
-        auto b = adapter->get_widget(widget_count);
+        auto b = adapter->get_widget(widget_count, theme);
         b->hide();
         this->add(b);
         this->reserved_widgets.push_back(b);

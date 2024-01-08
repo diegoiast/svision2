@@ -20,7 +20,7 @@ Combobox::Combobox(Position position, int width, const std::vector<std::string> 
     this->content.resize({width, 22});
     auto s = Size{22, 22};
     auto p = Position{width - s.width, 0};
-    add_new<Button>(p, s, "*", false, [this]() { show_popup(); });
+    this->popup_button = add_new<Button>(p, s, "*", false, [this]() { show_popup(); });
 }
 
 auto Combobox::get_value() const -> std::string {
@@ -104,7 +104,7 @@ struct ComboboxList : ListView {
         this->read_external_mouse_events = true;
     }
 
-    virtual auto on_mouse_click(const EventMouse &event) -> EventPropagation {
+    virtual auto on_mouse_click(const EventMouse &event) -> EventPropagation override {
         if (event.is_local) {
             return ListView::on_mouse_click(event);
         }
@@ -114,7 +114,7 @@ struct ComboboxList : ListView {
         return EventPropagation::handled;
     }
 
-    virtual auto on_keyboard(const EventKeyboard &event) -> EventPropagation {
+    virtual auto on_keyboard(const EventKeyboard &event) -> EventPropagation override {
         if (event.key == KeyCodes::Escape) {
             if (on_abort) {
                 on_abort(*this);
@@ -123,11 +123,30 @@ struct ComboboxList : ListView {
         }
         return ListView::on_keyboard(event);
     }
+
+    auto virtual ignore_layout() const -> bool override { return true; }
 };
 
+auto Combobox::size_hint() const -> Size {
+    // TODO: Size of text is not correct. We also need to calculate the yMin and yMax for example
+    // TODO: we need API in font provider to get the text height
+    auto s = get_theme()->font.text_size("X");
+    //    auto padding_x = this->padding.get_horizontal();
+    auto padding_y = this->padding.get_vertical();
+    return {0, s.height * 2 + padding_y};
+}
+
+auto Combobox::on_resize() -> void {
+    // TODO - find a better size - according to the theme + font size
+    //    auto button_size = content.size.height;
+    auto button_size = 22;
+    auto p = Position{content.size.width - button_size, 0};
+    popup_button->position = p;
+}
+
 auto Combobox::show_popup() -> void {
+    auto position = Position{this->position.x, this->position.y + this->content.size.height};
     if (!popup_list) {
-        auto position = Position{this->position.x, this->position.y + this->content.size.height};
         auto size = Size{this->content.size.width, 100};
         popup_list = window->add_new<ComboboxList>(position, size);
         popup_list->adapter = std::make_shared<ListItemAdapter>(strings);
@@ -152,6 +171,8 @@ auto Combobox::show_popup() -> void {
         popup_list->hide();
         window->focus_widget(shared_from_this());
     } else {
+        popup_list->position = position;
+        popup_list->show();
         window->focus_widget(popup_list);
     }
 }

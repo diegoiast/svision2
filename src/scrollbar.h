@@ -23,17 +23,19 @@ struct ScrollBar : Widget {
     int step = (maximum - minimum) / 10;
 
     auto draw() -> void override;
+    auto on_resize() -> void override;
+    auto size_hint() const -> Size override;
 
     auto set_value(int value) -> void;
     auto set_values(int minimum, int maximum, int value, int step = 0) -> void;
     auto step_up() -> void;
     auto step_down() -> void;
 
+    std::shared_ptr<Button> up_button = {};
+    std::shared_ptr<Button> down_button = {};
+
   private:
     auto update_thumb_size() -> void;
     int thumb_size = 0;
     int thumb_position = 0;
-
-    std::shared_ptr<Button> up_button = {};
-    std::shared_ptr<Button> down_button = {};
 };
