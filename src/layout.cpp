@@ -162,9 +162,8 @@ auto VerticalLayout::relayout(Position position, const Size size) -> void {
         } else {
             recommended_size.height = hint.height;
         }
-        // TODO - this breaks the display. I think the type hints is borked.
         if (hint.width > 0) {
-            //                recommended_size.width = hint.width;
+            recommended_size.width = hint.width;
         }
         position.y += padding.top;
         item->relayout(position, recommended_size);

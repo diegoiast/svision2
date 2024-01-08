@@ -207,7 +207,7 @@ auto TextField::size_hint() const -> Size {
     auto s = get_theme()->font.text_size(get_text());
     auto padding_x = this->padding.get_horizontal();
     auto padding_y = this->padding.get_vertical();
-    return {content.size.width + padding_x, s.height * 2 + padding_y};
+    return {0, s.height * 2 + padding_y};
 }
 
 auto TextField::select_all() -> void {

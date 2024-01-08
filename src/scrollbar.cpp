@@ -88,6 +88,7 @@ auto ScrollBar::draw() -> void {
     theme->draw_scrollbar_background(content);
     Widget::draw();
 
+    // TODO - move this code to the theme
     if (is_horizontal) {
         auto offset = down_button->content.size.width + thumb_position;
         content.fill_rect(offset, 0, thumb_size, content.size.height,
@@ -112,9 +113,9 @@ auto ScrollBar::on_resize() -> void {
 
 auto ScrollBar::size_hint() const -> Size {
     if (is_horizontal)
-        return {content.size.width, default_buttons_size};
+        return {0, default_buttons_size};
     else
-        return {default_buttons_size, content.size.height};
+        return {default_buttons_size, 0};
 }
 
 auto ScrollBar::set_value(int value) -> void {
