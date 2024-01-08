@@ -32,6 +32,10 @@ auto HorizontalLayout::relayout(Position position, const Size size) -> void {
         width -= padding.get_horizontal();
     }
 
+    if (widget_count != 0) {
+        width += padding.get_horizontal();
+    }
+
     recommended_size.width = width;
     recommended_size.height = size.height - margin.get_vertical();
     position.y += margin.top;
@@ -49,7 +53,7 @@ auto HorizontalLayout::relayout(Position position, const Size size) -> void {
 
     // Second pass - resize items. Width is computed, unless the
     // widget has a size hint. In such case - we enforce it.
-    for (auto item : sub_items) {
+    for (auto &item : sub_items) {
         if (item->ignore_layout()) {
             continue;
         }
@@ -64,16 +68,21 @@ auto HorizontalLayout::relayout(Position position, const Size size) -> void {
         if (hint.height > 0) {
             recommended_size.height = hint.height;
         }
-        position.x += padding.start;
+
+        if (item != *sub_items.begin()) {
+            position.x += padding.start;
+        }
         item->relayout(position, recommended_size);
         position.x += recommended_size.width;
-        position.x += padding.end;
+        if (item != *std::prev(sub_items.end())) {
+            position.x += padding.end;
+        }
     }
 }
 
 auto HorizontalLayout::size_hint() const -> Size {
     auto hint = Size{};
-    auto found = 0;
+    auto wideget_count = 0;
     auto has_auto_width = false;
     auto has_auto_height = false;
 
@@ -81,7 +90,7 @@ auto HorizontalLayout::size_hint() const -> Size {
         if (item->ignore_layout()) {
             continue;
         }
-        found++;
+        wideget_count++;
         auto item_hint = item->size_hint();
         if (item_hint.width != 0) {
             hint.width = std::max(item_hint.width, hint.width);
@@ -93,10 +102,13 @@ auto HorizontalLayout::size_hint() const -> Size {
         } else {
             has_auto_height = true;
         }
-        hint.width += this->padding.get_horizontal();
+        hint.width += padding.get_horizontal();
     }
 
-    if (found != 0) {
+    if (wideget_count != 0) {
+        // Reduce start/end padding. We count inner padding only.
+        hint.width += padding.get_horizontal();
+
         hint.width += margin.get_horizontal();
         hint.height += margin.get_vertical();
         if (has_auto_width) {
@@ -134,6 +146,10 @@ auto VerticalLayout::relayout(Position position, const Size size) -> void {
         height -= padding.get_vertical();
     }
 
+    if (widget_count != 0) {
+        height += padding.get_vertical();
+    }
+
     recommended_size.height = height;
     recommended_size.width = size.width - margin.get_horizontal();
     position.y += margin.top;
@@ -165,16 +181,21 @@ auto VerticalLayout::relayout(Position position, const Size size) -> void {
         if (hint.width > 0) {
             recommended_size.width = hint.width;
         }
-        position.y += padding.top;
+
+        if (item != *sub_items.begin()) {
+            position.y += padding.top;
+        }
         item->relayout(position, recommended_size);
         position.y += recommended_size.height;
-        position.y += padding.bottom;
+        if (item != *std::prev(sub_items.end())) {
+            position.y += padding.bottom;
+        }
     }
 }
 
 auto VerticalLayout::size_hint() const -> Size {
     auto hint = Size{};
-    auto found = 0;
+    auto widget_count = 0;
     auto has_auto_width = false;
     auto has_auto_height = false;
 
@@ -182,7 +203,7 @@ auto VerticalLayout::size_hint() const -> Size {
         if (item->ignore_layout()) {
             continue;
         }
-        found++;
+        widget_count++;
         auto item_hint = item->size_hint();
         if (item_hint.height != 0) {
             hint.height = std::max(item_hint.height, hint.height);
@@ -198,7 +219,10 @@ auto VerticalLayout::size_hint() const -> Size {
         hint.height += this->padding.get_vertical();
     }
 
-    if (found != 0) {
+    if (widget_count != 0) {
+        // Reduce start/end padding. We count inner padding only.
+        hint.width += padding.get_horizontal();
+
         hint.width += margin.get_horizontal();
         hint.height += margin.get_vertical();
         if (has_auto_width) {
