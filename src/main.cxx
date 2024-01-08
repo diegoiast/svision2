@@ -116,9 +116,12 @@ int main() {
         //        spdlog::info("timer");
     });
 
-    //    auto w2 = platform.open_window(300, 300, 640, 480, "test 2");
-    //    w2->content.background_color = 0x00FF00;
-    //    plat  form.show_window(w2);
+#if 0
+    auto w2 = platform.open_window(300, 300, 640, 480, "test 2");
+    w2->main_widget.content.background_color = 0x00FF00;
+    platform.show_window(w2);
+#endif
+
     auto w1 = platform.open_window(100, 100, 640, 480, "test 1");
 
     w1->add_new<Label>(Position{10, 10}, Size{300, 20}, "test 1 - Hello world! glqi שלום עולם")
@@ -164,23 +167,21 @@ int main() {
                                         "Winter",
                                     });
 
-    //    w1->add_new_to_layout<Label>(l_right, Position{10, 10}, Size{300, 20}, "12331");
-
-    /*
-    auto debug_widget = w1->add_new<DebugWidget>(Position{400, 160}, Size{200, 40}, 0x22dd37);
-    auto cb = w1->add_new<Checkbox>(Position{400, 130}, 220, "Show/hide debug widget");
+    auto debug_widget =
+        w1->add_new_to_layout<DebugWidget>(l_right, Position{400, 160}, Size{200, 40}, 0x22dd37);
+    auto cb =
+        w1->add_new_to_layout<Checkbox>(l_right, Position{400, 130}, 220, "Show/hide debug widget");
     cb->on_checkbox_change = [debug_widget](const Checkbox &cb) {
         if (cb.is_checked) {
             debug_widget->show();
         } else {
             debug_widget->hide();
         }
+        // this is to trigger re-layout
+        debug_widget->window->relayout();
     };
     cb->set_checked(EventPropagation::handled);
 
-    w1->add_new<ScrollBar>(Position{615, 00}, 480, false)->set_values(100, 200, 200, 5);
-
-     */
     std::shared_ptr<ScrollBar> scroll;
     std::shared_ptr<Spinbox> spin;
 

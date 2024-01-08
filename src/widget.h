@@ -73,6 +73,7 @@ struct Widget : std::enable_shared_from_this<Widget>, LayouttItem {
     virtual auto on_remove() -> void;
     virtual auto on_resize() -> void;
     virtual auto size_hint() const -> Size override { return {0, 0}; };
+    virtual auto ignore_layout() const -> bool override { return !is_widget_visible; }
 
     // TODO - make sure this T derieves from `Widget`
     template <typename T> auto add(T widget) -> T {
@@ -144,6 +145,10 @@ struct PlatformWindow {
         main_widget.widgets.focus_widget(widget);
         if (l != main_widget.widgets.focused_widget)
             invalidate();
+    }
+
+    virtual auto relayout() -> void {
+        main_widget.layout->relayout({0, 0}, main_widget.content.size);
     }
 
     virtual auto draw() -> void;
