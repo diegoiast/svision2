@@ -17,7 +17,10 @@ Random list of things to be implemented on this library
         2. Click on empty areas - step up/down
         3. Drag the barrel - change value (needs mouse drag support?)
         4. Scroll wheel support
-    7. Layout system (<https://www.qt.io/blog/responsive-layouts-in-qt>?)
+    7. Layout system 
+        1. Horizontal/Vertical layout
+        2. <https://www.qt.io/blog/responsive-layouts-in-qt>?
+        3. Other layouts?
     8. Menus
         1. sub-menu, popup-menu
         2. Window menu
@@ -30,6 +33,18 @@ Random list of things to be implemented on this library
         3. Message boxes
         4. Save/Open dir dialogs
         5. Choose dir dialog
+    10. Scrolling inside widget
+        1. Need to have an offset - from which the widget is dispalayed
+        2. All drawing will reduce from this offset
+        3. New widget with a scroll bar - to have a scroll area. (Horizontal
+           layout, with a main sub widget, and a scroll bar).
+    11. Textbox
+        1. Fix cursor movement, by measuing on screen text
+        2. Fix selection
+           1. We need to be able to select part of the text
+           2. When part of the text is selected - work uppon it (delete/replace text)
+           3. Properly display the selected area.
+           
 2. Infrastructure
     1. Mouse drag
     2. Mouse wheel support
@@ -74,6 +89,15 @@ Random list of things to be implemented on this library
         3. We need a way to extract messages into a translation templeate
         4. We eed to be able to merge a translation template, into a translation list
         5. Do we have avialable formats?
+    25. Minimum size
+        1. Widgets need to have a minimum size
+        2. Layouts need to have a minimum size (computing all sub items)
+        3. Windows need to have a minimum size
+           * problem: setting minimum size is trivial. Getting it on windows, is
+             not. Might need to cache the value, and the function return might
+             not be always read from the OS.
+        4. Do we need a maximum?
+    26. Relayout on first display on X11
 3. 3rd party porting
     1. Code to load images: I would like to be able to choose  which decoders to use:
             (libpng, libjpg) vs, <https://libspng.org/>, and stb (<https://github.com/nothings/stb>)
