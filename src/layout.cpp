@@ -25,11 +25,11 @@ auto HorizontalLayout::relayout(Position position, const Size size) -> void {
         auto hint = item->size_hint();
         if (hint.width <= 0) {
             widget_count++;
+            total_weight += item->weight;
         } else {
             width -= hint.width;
         }
         width -= padding.get_horizontal();
-        total_weight += item->weight;
     }
 
     recommended_size.width = width;
@@ -127,11 +127,11 @@ auto VerticalLayout::relayout(Position position, const Size size) -> void {
         auto hint = item->size_hint();
         if (hint.height <= 0) {
             widget_count++;
+            total_weight += item->weight;
         } else {
             height -= hint.height;
         }
         height -= padding.get_vertical();
-        total_weight += item->weight;
     }
 
     recommended_size.height = height;
@@ -158,8 +158,7 @@ auto VerticalLayout::relayout(Position position, const Size size) -> void {
         auto hint = item->size_hint();
         if (hint.height <= 0) {
             recommended_size.height = height / widget_count;
-            // TODO - this breaks the display.
-            // recommended_size.height = (height * item->weight) / total_weight;
+            recommended_size.height = (height * item->weight) / total_weight;
         } else {
             recommended_size.height = hint.height;
         }
