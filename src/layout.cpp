@@ -74,7 +74,9 @@ auto HorizontalLayout::relayout(Position position, const Size size) -> void {
 auto HorizontalLayout::size_hint() const -> Size {
     auto hint = Size{};
     auto found = 0;
-    auto has_auto_size = false;
+    auto has_auto_width = false;
+    auto has_auto_height = false;
+
     for (auto item : sub_items) {
         if (item->ignore_layout()) {
             continue;
@@ -83,11 +85,13 @@ auto HorizontalLayout::size_hint() const -> Size {
         auto item_hint = item->size_hint();
         if (item_hint.width != 0) {
             hint.width = std::max(item_hint.width, hint.width);
+        } else {
+            has_auto_width = true;
         }
         if (item_hint.height > 0) {
             hint.height = std::max(item_hint.height, hint.height);
         } else {
-            has_auto_size = true;
+            has_auto_height = true;
         }
         hint.width += this->padding.get_horizontal();
     }
@@ -95,7 +99,10 @@ auto HorizontalLayout::size_hint() const -> Size {
     if (found != 0) {
         hint.width += margin.get_horizontal();
         hint.height += margin.get_vertical();
-        if (has_auto_size) {
+        if (has_auto_width) {
+            hint.width = 0;
+        }
+        if (has_auto_height) {
             hint.height = 0;
         }
     }
@@ -151,6 +158,7 @@ auto VerticalLayout::relayout(Position position, const Size size) -> void {
         auto hint = item->size_hint();
         if (hint.height <= 0) {
             recommended_size.height = height / widget_count;
+            // TODO - this breaks the display.
             // recommended_size.height = (height * item->weight) / total_weight;
         } else {
             recommended_size.height = hint.height;
@@ -169,7 +177,9 @@ auto VerticalLayout::relayout(Position position, const Size size) -> void {
 auto VerticalLayout::size_hint() const -> Size {
     auto hint = Size{};
     auto found = 0;
-    auto has_auto_size = false;
+    auto has_auto_width = false;
+    auto has_auto_height = false;
+
     for (auto item : sub_items) {
         if (item->ignore_layout()) {
             continue;
@@ -178,11 +188,14 @@ auto VerticalLayout::size_hint() const -> Size {
         auto item_hint = item->size_hint();
         if (item_hint.height != 0) {
             hint.height = std::max(item_hint.height, hint.height);
+        } else {
+            has_auto_height = true;
         }
+
         if (item_hint.width != 0) {
             hint.width = std::max(item_hint.width, hint.width);
         } else {
-            has_auto_size = true;
+            has_auto_width = true;
         }
         hint.height += this->padding.get_vertical();
     }
@@ -190,8 +203,11 @@ auto VerticalLayout::size_hint() const -> Size {
     if (found != 0) {
         hint.width += margin.get_horizontal();
         hint.height += margin.get_vertical();
-        if (has_auto_size) {
+        if (has_auto_width) {
             hint.width = 0;
+        }
+        if (has_auto_height) {
+            hint.height = 0;
         }
     }
     return hint;

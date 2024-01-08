@@ -156,7 +156,7 @@ int main() {
         spdlog::info("Selected item {} with text {}", index, button.text);
     };
     rb->radio_buttons[1]->is_enabled = false;
-    w1->add_new_to_layout<Combobox>(l1, Position{10, 280}, 200,
+    w1->add_new_to_layout<Combobox>(l_right, Position{10, 280}, 200,
                                     std::vector<std::string>{
                                         "Spring",
                                         "Summer",
