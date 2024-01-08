@@ -4,7 +4,8 @@ This is SVision2. Another GUI library. A continuation of *SVision for MSDOS*: [S
 
 ![License](https://img.shields.io/github/license/elcuco/svision2.svg) <img src="https://img.shields.io/github/languages/top/elcuco/svision2.svg" alt="Languages"/> <img src="https://img.shields.io/github/repo-size/elcuco/svision2.svg" alt="Repository size"/> <img src="https://img.shields.io/github/commit-activity/y/elcuco/svision2" alt="Activity"/>
 
-![SVision2 - on Linux](sv2.png "Written in C++, Linux/Windows/OSX (?) support")
+[See full source for demo - src/main.cxx](src/main.cxx)
+[![SVision2 - on Linux](sv2.png "Written in C++, Linux/Windows/OSX (?) support")]((src/main.cxx))
 
 ## Goals
 
@@ -32,9 +33,7 @@ This is SVision2. Another GUI library. A continuation of *SVision for MSDOS*: [S
    constructor). Always uses `int foo = 0; Point location = {}`. So you can look for `=` and
    know when a member is assigned by default.
 * *WIP*: Gitlab mirror.
-* *TODO*: Github actions to verifying, and building code on merge.
-* *TODO*: For font management - use Freetype.
-* *TODO*: For text displaying - use Harfbuzz.
+* *TODO*: For text layout - use Harfbuzz.
 * *TODO*: This library should be a C++20 module.
 * *TODO*: This library should be on Conan, vcpkg, etc for easy consuming.
 
@@ -64,7 +63,7 @@ buy me a Mac, contact me. This is planned - and should be easy to port.
 
 The design of this toolkit is trivial: everything is a raster image. No GPU.
 Each widget has its own buffer it writes to it, and it gets painted
-into the parents
+into the parents.
 
 1. `src/platform-foo.{h,cpp}`: Implement a new `struct PlatformFOO : Platform`:
    1. `open_window()` returns your platform window (see bellow).
