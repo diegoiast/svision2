@@ -77,13 +77,3 @@ auto Stackwidget::get_page_count() const -> size_t {
     // TODO - this is wrong, as sub items can be layouts not only widgets
     return layout->sub_items.size();
 }
-
-auto Stackwidget::draw() -> void {
-    // TODO - why the fial?
-    Widget::draw();
-}
-
-auto Stackwidget::relayout(Position p, Size s) -> void {
-    // TODO - why the fial?
-    Widget::relayout(p, s);
-}
