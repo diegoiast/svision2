@@ -21,6 +21,7 @@
 #include <radiobuttongroup.h>
 #include <scrollbar.h>
 #include <spinbox.h>
+#include <stackwidget.h>
 #include <textfield.h>
 
 #include <spdlog/spdlog.h>
@@ -116,12 +117,33 @@ int main() {
         //        spdlog::info("timer");
     });
 
-#if 0
+#if 1
     auto w2 = platform.open_window(300, 300, 640, 480, "test 2");
     w2->main_widget.content.background_color = 0x00FF00;
+    w2->main_widget.layout->padding.set_horitzonal(1);
+
+    auto list = w2->add_new<Combobox>(Position{0, 0}, 0,
+                                      std::vector<std::string>{
+                                          "Widget 1",
+                                          "Widget 2",
+                                          "Widget 3",
+                                          "Widget 4",
+                                      });
+
+    auto stack = w2->add_new<Stackwidget>();
+    stack->add_new<Label>(Position{}, Size{}, "Widget 1");
+    stack->add_new<Label>(Position{}, Size{}, "Widget 2");
+    stack->add_new<Label>(Position{}, Size{}, "Widget 3");
+    stack->add_new<Label>(Position{}, Size{}, "Widget 4");
+
+    list->on_item_selected = [&stack](auto list, auto index /*, auto reason*/) {
+        stack->set_current_page(index);
+    };
+
     platform.show_window(w2);
 #endif
 
+#if 0
     auto w1 = platform.open_window(100, 100, 640, 480, "test 1");
     auto l =
         w1->add_new<Label>(Position{10, 10}, Size{300, 20}, "test 1 - Hello world! glqi שלום עולם");
@@ -218,8 +240,8 @@ int main() {
             cancel_button->invalidate();
         });
     cancel_button->set_auto_repeat(300, 700);
-
     platform.show_window(w1);
+#endif
 
     t1.start();
     platform.main_loop();

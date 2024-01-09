@@ -92,6 +92,8 @@ set(SVISION_SOURCES
     src/scrollbar.h
     src/spinbox.cpp
     src/spinbox.h
+    src/stackwidget.cpp
+    src/stackwidget.h
     src/theme.cpp
     src/theme.h
     src/timer.cpp
