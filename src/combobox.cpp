@@ -157,6 +157,9 @@ auto Combobox::show_popup() -> void {
                 reason == ListView::SelectionReason::Keyboard) {
                 this->popup_list->hide();
                 window->focus_widget(shared_from_this());
+                if (this->on_item_selected) {
+                    this->on_item_selected(*this, index);
+                }
             }
         };
         popup_list->on_abort = [this](auto &listview) {
