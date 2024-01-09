@@ -69,6 +69,10 @@ auto ListView::draw() -> void {
         }
         status.is_active = this->current_item == first_item;
         w->position = position;
+        if (size.height < 0)
+            size.height = 0;
+        if (size.width < 0)
+            size.width = 0;
         w->content.resize(size);
         adapter->set_content(w, first_item, status);
         if (!w->is_visible()) {
