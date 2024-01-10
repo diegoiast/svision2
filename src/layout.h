@@ -7,10 +7,11 @@
 
 #pragma once
 
+#include <functional>
 #include <list>
 #include <memory>
 #include <vector>
-#include <functional>
+
 
 #include "sizepoint.h"
 

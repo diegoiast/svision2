@@ -57,7 +57,7 @@ struct SingleWidgetVisible : LayoutItem {
 Stackwidget::Stackwidget(Position p, Size s) : Widget(p, s, 0) {
     this->layout = std::make_shared<SingleWidgetVisible>();
     this->layout->on_item_added = [](LayoutItem &layout, auto index) {
-        auto item =  layout.sub_items.back();
+        auto item = layout.sub_items.back();
         auto w = std::dynamic_pointer_cast<Widget>(item);
         if (w) {
             if (index == 0) {
