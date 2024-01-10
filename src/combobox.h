@@ -22,7 +22,7 @@ struct Combobox : Widget {
     std::vector<std::string> strings = {};
     std::function<void(Combobox &, int)> on_item_selected = {};
 
-    int selected_item = -1;
+    int selected_item = 0;
 
     Combobox(Position position, int width, const std::vector<std::string> &strings);
     auto get_value() const -> std::string;

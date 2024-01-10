@@ -428,7 +428,7 @@ auto Widget::hide() -> void {
 PlatformWindow::PlatformWindow() {
     main_widget.layout = std::make_shared<VerticalLayout>();
     main_widget.layout->padding.set_vertical(5);
-    main_widget.layout->padding.set_horitzonal(5);
+    main_widget.layout->padding.set_horizontal(5);
 }
 
 PlatformWindow::~PlatformWindow() { spdlog::info("Window done"); }

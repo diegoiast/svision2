@@ -8,9 +8,9 @@
 #include "stackwidget.h"
 #include "layout.h"
 
-struct SingleWidgetVisible : LayouttItem {
+struct SingleWidgetVisible : LayoutItem {
     virtual auto relayout(Position position, const Size size) -> void {
-        for (auto item : sub_items) {
+        for (auto &item : sub_items) {
             item->relayout(position, size);
         }
     };
@@ -23,7 +23,7 @@ struct SingleWidgetVisible : LayouttItem {
         }
 
         auto i = 0;
-        for (auto item : sub_items) {
+        for (auto &item : sub_items) {
             auto w = std::dynamic_pointer_cast<Widget>(item);
             if (w == nullptr) {
                 continue;
@@ -38,9 +38,9 @@ struct SingleWidgetVisible : LayouttItem {
         }
     };
 
-    auto get_current() const -> bool {
+    auto get_current() const -> int {
         auto i = 0;
-        for (auto &item : sub_items) {
+        for (const auto &item : sub_items) {
             i++;
             auto w = std::dynamic_pointer_cast<Widget>(item);
             if (w == nullptr) {
@@ -55,8 +55,18 @@ struct SingleWidgetVisible : LayouttItem {
 };
 
 Stackwidget::Stackwidget(Position p, Size s) : Widget(p, s, 0) {
-    // TODO - anything else?
     this->layout = std::make_shared<SingleWidgetVisible>();
+    this->layout->on_item_added = [](LayoutItem &layout, auto index) {
+        auto item =  layout.sub_items.back();
+        auto w = std::dynamic_pointer_cast<Widget>(item);
+        if (w) {
+            if (index == 0) {
+                w->show();
+            } else {
+                w->hide();
+            }
+        }
+    };
 }
 
 auto Stackwidget::get_current_page() const -> int {
