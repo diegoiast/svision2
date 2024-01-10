@@ -12,7 +12,6 @@
 #include <memory>
 #include <vector>
 
-
 #include "sizepoint.h"
 
 struct Widget;

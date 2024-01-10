@@ -138,7 +138,7 @@ int main() {
 
     list->on_item_selected = [&stack](auto list, auto index /*, auto reason*/) {
         stack->set_current_page(index);
-    };
+ };
 
     platform.show_window(w2);
 #endif
