@@ -69,7 +69,7 @@ Button::Button(Position pp, Size size, std::string text, bool is_default,
     this->on_button_click = on_button_click;
     this->can_focus = true;
     this->padding.set(10);
-    this->margin.set_horitzonal(10);
+    this->margin.set_horizontal(10);
 }
 
 auto Button::draw() -> void {

@@ -38,13 +38,13 @@ struct WidgetCollection {
     auto focus_widget(std::shared_ptr<Widget> widget) -> void;
 };
 
-struct Widget : std::enable_shared_from_this<Widget>, LayouttItem {
+struct Widget : std::enable_shared_from_this<Widget>, LayoutItem {
     Bitmap content;
     Position position;
     WidgetCollection widgets;
     std::shared_ptr<Theme> theme;
     Frame frame{FrameStyles::NoFrame, FrameSize::SingleFrame};
-    std::shared_ptr<LayouttItem> layout;
+    std::shared_ptr<LayoutItem> layout;
 
     // TODO this should be a weak pointer
     PlatformWindow *window = nullptr;
@@ -175,7 +175,7 @@ struct PlatformWindow {
 
     // TODO - make sure this T derieves from `Widget`
     template <typename T, typename... Args>
-    auto add_new_to_layout(std::shared_ptr<LayouttItem> layout, Args &&...args)
+    auto add_new_to_layout(std::shared_ptr<LayoutItem> layout, Args &&...args)
         -> std::shared_ptr<T> {
         auto widget = std::make_shared<T>(std::forward<Args>(args)...);
         main_widget.widgets.add(widget, this);

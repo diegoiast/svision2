@@ -21,6 +21,7 @@
 #include <radiobuttongroup.h>
 #include <scrollbar.h>
 #include <spinbox.h>
+#include <stackwidget.h>
 #include <textfield.h>
 
 #include <spdlog/spdlog.h>
@@ -116,12 +117,36 @@ int main() {
         //        spdlog::info("timer");
     });
 
-#if 0
+#if 1
     auto w2 = platform.open_window(300, 300, 640, 480, "test 2");
     w2->main_widget.content.background_color = 0x00FF00;
+    w2->main_widget.layout->padding.set_horizontal(1);
+
+    auto list = w2->add_new<Combobox>(Position{0, 0}, 0,
+                                      std::vector<std::string>{
+                                          "Widget 1",
+                                          "Widget 2",
+                                          "Widget 3",
+                                          "Widget 4",
+                                      });
+
+    auto stack = w2->add_new<Stackwidget>();
+    stack->add_new<Label>(Position{}, Size{}, "Widget 1");
+    stack->add_new<Label>(Position{}, Size{}, "Widget 2")->content.background_color =
+        MakeColor(0xaa, 0x22, 0x22);
+    stack->add_new<Label>(Position{}, Size{}, "Widget 3")->content.background_color =
+        MakeColor(0x33, 0xaa, 0x22);
+    stack->add_new<Label>(Position{}, Size{}, "Widget 4")->content.background_color =
+        MakeColor(0x33, 0x22, 0xaa);
+
+    list->on_item_selected = [&stack](auto list, auto index /*, auto reason*/) {
+        stack->set_current_page(index);
+    };
+
     platform.show_window(w2);
 #endif
 
+#if 1
     auto w1 = platform.open_window(100, 100, 640, 480, "test 1");
     auto l =
         w1->add_new<Label>(Position{10, 10}, Size{300, 20}, "test 1 - Hello world! glqi שלום עולם");
@@ -134,7 +159,7 @@ int main() {
     auto l_right = center_layout->add(std::make_shared<VerticalLayout>());
 
     w1->main_widget.layout->margin.set(5);
-    center_layout->padding.set_horitzonal(10);
+    center_layout->padding.set_horizontal(10);
 
     //    l_right->margin.set(5);
     w1->add_new_to_layout<ListView>(l_left, Position{10, 80}, Size{165, 100})->adapter =
@@ -198,9 +223,9 @@ int main() {
     spin->did_change = [&scroll](auto spinbox, auto value) { scroll->set_value(value); };
 
     auto buttons_layout = w1->main_widget.layout->add(std::make_shared<HorizontalLayout>());
-    buttons_layout->margin.set_horitzonal(5);
+    buttons_layout->margin.set_horizontal(5);
     buttons_layout->margin.set_vertical(5);
-    buttons_layout->padding.set_horitzonal(10);
+    buttons_layout->padding.set_horizontal(10);
     buttons_layout->add(std::make_shared<HorizontalSpacer>())->weight = 2;
 
     w1->add_new_to_layout<Button>(buttons_layout, Position{10, 420}, Size{200, 40}, "OK", true,
@@ -213,13 +238,13 @@ int main() {
         buttons_layout, Position{220, 420}, Size{200, 40}, "Cancel", false, [&cancel_button]() {
             static auto clicked_count = 0;
             clicked_count++;
-            spdlog::info("Cancel clicke1d! count = {}", clicked_count);
+            spdlog::info("Cancel Clicked! count = {}", clicked_count);
             cancel_button->text = fmt::format("Cancel ({})", clicked_count);
             cancel_button->invalidate();
         });
     cancel_button->set_auto_repeat(300, 700);
-
     platform.show_window(w1);
+#endif
 
     t1.start();
     platform.main_loop();

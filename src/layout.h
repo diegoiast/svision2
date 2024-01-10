@@ -7,11 +7,11 @@
 
 #pragma once
 
+#include <functional>
 #include <list>
 #include <memory>
+#include <sizepoint.h>
 #include <vector>
-
-#include "sizepoint.h"
 
 struct Widget;
 
@@ -21,7 +21,7 @@ struct LayoutParams {
     int start = 0;
     int end = 0;
 
-    auto set_horitzonal(int value) {
+    auto set_horizontal(int value) {
         start = value;
         end = value;
     }
@@ -42,10 +42,12 @@ struct LayoutParams {
     auto get_vertical() const -> auto { return top + bottom; }
 };
 
-struct LayouttItem {
-    std::list<std::shared_ptr<LayouttItem>> sub_items;
+struct LayoutItem {
+    std::list<std::shared_ptr<LayoutItem>> sub_items;
+    std::function<void(LayoutItem &, int)> on_item_added;
     LayoutParams padding = {};
     LayoutParams margin = {};
+
     double weight = 1;
 
     virtual auto relayout(Position posiition, const Size size) -> void = 0;
@@ -54,26 +56,29 @@ struct LayouttItem {
 
     template <typename T> auto add(T layoutItem) -> T {
         sub_items.push_back(layoutItem);
+        if (on_item_added) {
+            on_item_added(*this, sub_items.size() - 1);
+        }
         return layoutItem;
     };
 };
 
-struct HorizontalSpacer : LayouttItem {
+struct HorizontalSpacer : LayoutItem {
     virtual auto relayout(Position position, const Size size) -> void override{};
     virtual auto size_hint() const -> Size override { return {0, 1}; }
 };
 
-struct VerticalSpacer : LayouttItem {
+struct VerticalSpacer : LayoutItem {
     virtual auto relayout(Position position, const Size size) -> void override{};
     virtual auto size_hint() const -> Size override { return {1, 0}; }
 };
 
-struct HorizontalLayout : LayouttItem {
+struct HorizontalLayout : LayoutItem {
     virtual auto relayout(Position position, const Size size) -> void override;
     virtual auto size_hint() const -> Size override;
 };
 
-struct VerticalLayout : LayouttItem {
+struct VerticalLayout : LayoutItem {
     virtual auto relayout(Position position, const Size size) -> void override;
     virtual auto size_hint() const -> Size override;
 };

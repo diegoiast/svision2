@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <functional>
 #include <string>
 #include <vector>
 
@@ -18,8 +19,10 @@ class ComboboxList;
 
 struct Combobox : Widget {
     std::shared_ptr<ComboboxList> popup_list = {};
-    std::vector<std::string> strings;
-    int selected_item = -1;
+    std::vector<std::string> strings = {};
+    std::function<void(Combobox &, int)> on_item_selected = {};
+
+    int selected_item = 0;
 
     Combobox(Position position, int width, const std::vector<std::string> &strings);
     auto get_value() const -> std::string;
