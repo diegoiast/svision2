@@ -10,9 +10,8 @@
 #include <functional>
 #include <list>
 #include <memory>
+#include <sizepoint.h>
 #include <vector>
-
-#include "sizepoint.h"
 
 struct Widget;
 
