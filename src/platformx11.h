@@ -10,9 +10,8 @@
 #include <map>
 #include <memory>
 
-#include <X11/XKBlib.h>
+#include <X11/X.h>
 #include <X11/Xlib.h>
-#include <X11/keysym.h>
 
 #include <platform.h>
 
@@ -35,6 +34,8 @@ struct PlatformX11 : Platform {
     virtual auto open_window(int x, int y, int width, int height, const std::string &title)
         -> std::shared_ptr<PlatformWindow> override;
     virtual auto show_window(std::shared_ptr<PlatformWindow> window) -> void override;
+
+    virtual auto set_cursor(PlatformWindow &window, MouseCursor cursor) -> void override;
     virtual auto invalidate(PlatformWindow &window) -> void override;
     virtual auto main_loop() -> void override;
 };

@@ -180,7 +180,7 @@ static auto convert_mouse_cursor_to_win32(MouseCursor cursor) -> LPSTR {
         return IDC_ARROW;
     case MouseCursor::SplitVertical:
         return IDC_ARROW;
-    case MouseCursor::None:
+    case MouseCursor::NoCursor:
         return IDC_NO;
     case MouseCursor::Pointer:
         return IDC_HAND;
