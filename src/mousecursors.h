@@ -1,0 +1,30 @@
+#pragma once
+
+enum class MouseCursor {
+    Inherit,
+    Arrow,
+    Wait,
+    Buzy,
+    Beam,
+    SizeVertical,
+    SizeHorizonal,
+    SizeDiagonalRight,
+    SizeDiagonalLeft,
+    SizeAll,
+    SplitHorizontal,
+    SplitVertical,
+    None,
+    Pointer,
+    Forbidden,
+    WhatsThis,
+    Cross,
+
+    Normal = Arrow,
+    Blank = None,
+    Link = Pointer,
+    Edit = Beam,
+    SizeNS = SizeVertical,
+    SizeWE = SizeHorizonal,
+    SizeNWSE = SizeDiagonalLeft,
+    SizeNESW = SizeDiagonalRight,
+};

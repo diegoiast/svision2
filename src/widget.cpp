@@ -67,7 +67,7 @@ auto WidgetCollection::on_mouse(const EventMouse &event) -> EventPropagation {
                 result = EventPropagation::handled;
             }
 
-            // not handled by subwidgets, send this event to the widget itself
+            // not handled by sub-widgets, send this event to the widget itself
             switch (event.type) {
             case MouseEvents::Release: {
                 b = on_mouse_release(event, w);
@@ -154,6 +154,16 @@ auto WidgetCollection::on_mouse_press(const EventMouse &event, std::shared_ptr<W
         w->on_mouse_enter();
     }
     if (event.type == MouseEvents::MouseMove) {
+        spdlog::info("setting new cursor");
+
+        if (w->window) {
+            auto cursor = w->get_cursor();
+            auto &window = *w->window;
+            w->window->platform->set_cursor(window, cursor);
+        } else {
+            spdlog::warn("Widget without window!");
+        }
+
         w->on_hover(local_event);
         result = EventPropagation::handled;
     } else {
@@ -397,16 +407,31 @@ auto Widget::on_resize() -> void {
 }
 
 auto Widget::get_theme() const -> std::shared_ptr<Theme> {
-    if (theme)
+    if (theme) {
         return theme;
-
+    }
     auto p = parent;
     while (p) {
-        if (p->theme)
+        if (p->theme) {
             return p->theme;
+        }
         p = p->parent;
     }
     return window->main_widget.theme;
+}
+
+auto Widget::get_cursor() const -> MouseCursor {
+    if (mouse_cursor != MouseCursor::Inherit) {
+        return mouse_cursor;
+    }
+    auto p = parent;
+    while (p) {
+        if (p->mouse_cursor != MouseCursor::Inherit) {
+            return p->mouse_cursor;
+        }
+        p = p->parent;
+    }
+    return MouseCursor::Inherit;
 }
 
 auto Widget::show() -> void {
@@ -429,6 +454,7 @@ PlatformWindow::PlatformWindow() {
     main_widget.layout = std::make_shared<VerticalLayout>();
     main_widget.layout->padding.set_vertical(5);
     main_widget.layout->padding.set_horizontal(5);
+    main_widget.mouse_cursor = MouseCursor::Normal;
 }
 
 PlatformWindow::~PlatformWindow() { spdlog::info("Window done"); }

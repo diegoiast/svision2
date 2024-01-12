@@ -27,18 +27,20 @@
 #include <spdlog/spdlog.h>
 #include <timer.h>
 
-auto handle_event(std::shared_ptr<PlatformWindow> w, const Event &ev);
-auto handle_event(int window_id, int widget_id, const Event &ev);
+// TODO  future expansion, ideas
+// auto handle_event(std::shared_ptr<PlatformWindow> w, const Event &ev);
+// auto handle_event(int window_id, int widget_id, const Event &ev);
 
 struct DebugWidget : public Widget {
     bool state_pressed = false;
     Position pos = {0, 0};
     bool unclick_inside = false;
 
-    DebugWidget(Position position, Size size, uint32_t color) : Widget(position, size, color) {}
+    DebugWidget(Position position, Size size, uint32_t color) : Widget(position, size, color) {
+        this->mouse_cursor = MouseCursor::Cross;
+    }
 
     auto on_hover(const EventMouse &event) -> void {
-        // spdlog::info("Widget: Mouse over: {}x{}", event.x, event.y);
         pos.x = event.x;
         pos.y = event.y;
         invalidate();

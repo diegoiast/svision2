@@ -23,6 +23,7 @@ TextField::TextField(Position position, Size size) : Widget(position, size, 0) {
     this->can_focus = true;
     this->draw_background = false;
     this->frame = {FrameStyles::Reversed, FrameSize::SingleFrame};
+    this->mouse_cursor = MouseCursor::Edit;
 }
 
 TextField::~TextField() { timer.stop(); }

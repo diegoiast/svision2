@@ -24,11 +24,10 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
     int argc = __argc;
     char **argv = __argv;
     int result = main(argc, argv);
-    LocalFree(argv);
     return result;
 }
 
-std::wstring StringToWideString(const std::string &narrowStr) {
+static std::wstring StringToWideString(const std::string &narrowStr) {
     int wideStrLength = MultiByteToWideChar(CP_UTF8, 0, narrowStr.c_str(), -1, nullptr, 0);
     if (wideStrLength == 0) {
         return L"";
@@ -40,7 +39,7 @@ std::wstring StringToWideString(const std::string &narrowStr) {
     return wideStr;
 }
 
-auto convert_win32_mouse_event(UINT msg, WPARAM wParam, LPARAM lParam) -> EventMouse {
+static auto convert_win32_mouse_event(UINT msg, WPARAM wParam, LPARAM lParam) -> EventMouse {
     auto event = EventMouse();
     switch (msg) {
     case WM_LBUTTONDOWN:
@@ -109,7 +108,7 @@ auto convert_win32_mouse_event(UINT msg, WPARAM wParam, LPARAM lParam) -> EventM
 
 #include <platformwin32-keycodes.h>
 
-auto convert_win32_keyboard_event(UINT msg, WPARAM wParam, LPARAM lParam) -> EventKeyboard {
+static auto convert_win32_keyboard_event(UINT msg, WPARAM wParam, LPARAM lParam) -> EventKeyboard {
     auto event = EventKeyboard();
     event.modifiers = ((GetKeyState(VK_CONTROL) & 0x8000) >> 15) |
                       ((GetKeyState(VK_SHIFT) & 0x8000) >> 14) |
@@ -129,7 +128,7 @@ auto convert_win32_keyboard_event(UINT msg, WPARAM wParam, LPARAM lParam) -> Eve
     return event;
 }
 
-auto convert_win32_resize_event(UINT msg, WPARAM wParam, LPARAM lParam) -> EventResize {
+static auto convert_win32_resize_event(UINT msg, WPARAM wParam, LPARAM lParam) -> EventResize {
     auto event = EventResize();
 
     switch (msg) {
@@ -153,6 +152,47 @@ auto convert_win32_resize_event(UINT msg, WPARAM wParam, LPARAM lParam) -> Event
         break;
     }
     return event;
+}
+
+static auto convert_mouse_cursor_to_win32(MouseCursor cursor) -> LPSTR {
+    switch (cursor) {
+    case MouseCursor::Inherit:
+        return nullptr;
+    case MouseCursor::Arrow:
+        return IDC_ARROW;
+    case MouseCursor::Wait:
+        return IDC_APPSTARTING;
+    case MouseCursor::Buzy:
+        return IDC_WAIT;
+    case MouseCursor::Beam:
+        return IDC_IBEAM;
+    case MouseCursor::SizeVertical:
+        return IDC_SIZENS;
+    case MouseCursor::SizeHorizonal:
+        return IDC_SIZEWE;
+    case MouseCursor::SizeDiagonalRight:
+        return IDC_SIZENESW;
+    case MouseCursor::SizeDiagonalLeft:
+        return IDC_SIZENWSE;
+    case MouseCursor::SizeAll:
+        return IDC_SIZEALL;
+    case MouseCursor::SplitHorizontal:
+        return IDC_ARROW;
+    case MouseCursor::SplitVertical:
+        return IDC_ARROW;
+    case MouseCursor::None:
+        return IDC_NO;
+    case MouseCursor::Pointer:
+        return IDC_HAND;
+    case MouseCursor::Forbidden:
+        return IDC_NO;
+    case MouseCursor::WhatsThis:
+        return IDC_HELP;
+    case MouseCursor::Cross:
+        return IDC_CROSS;
+    default:
+        break;
+    }
 }
 
 struct PlatformWindowWin32 : public PlatformWindow {
@@ -228,8 +268,8 @@ static LRESULT CALLBACK svision_wndproc(HWND hwnd, UINT msg, WPARAM wParam, LPAR
         }
         break;
 
-        //      case WM_MOVE:
-        //      case WM_MOVING:
+    //      case WM_MOVE:
+    //      case WM_MOVING:
     case WM_SIZE:
         //      case WM_SIZING:
         {
@@ -303,6 +343,42 @@ auto PlatformWin32::init() -> void {
 
 auto PlatformWin32::done() -> void {}
 
+auto PlatformWin32::open_window(int x, int y, int width, int height, const std::string &title)
+    -> std::shared_ptr<PlatformWindow> {
+    auto hInstance = GetModuleHandle(nullptr);
+    auto window_rect = RECT{0, 0, width, height};
+    AdjustWindowRect(&window_rect, WS_OVERLAPPEDWINDOW, FALSE);
+
+    auto windowWidth = window_rect.right - window_rect.left;
+    auto windowHeight = window_rect.bottom - window_rect.top;
+
+    auto window = std::make_shared<PlatformWindowWin32>();
+    window->title = title;
+    window->hwnd = CreateWindowExW(WS_EX_CLIENTEDGE, WINDOW_CLASS_NAME,
+                                   StringToWideString(window->title).c_str(), WS_OVERLAPPEDWINDOW,
+                                   CW_USEDEFAULT, CW_USEDEFAULT, windowWidth, windowHeight, NULL,
+                                   NULL, hInstance, NULL);
+    if (window->hwnd == nullptr) {
+        return nullptr;
+    }
+    SetWindowLongPtr(window->hwnd, GWLP_USERDATA, (LONG_PTR)window.get());
+    window->main_widget.theme = default_theme;
+    window->platform = this;
+    return window;
+}
+
+auto PlatformWin32::show_window(std::shared_ptr<PlatformWindow> w) -> void {
+    auto window = std::dynamic_pointer_cast<PlatformWindowWin32>(w);
+    ShowWindow(window->hwnd, SW_NORMAL);
+    UpdateWindow(window->hwnd);
+}
+
+auto PlatformWin32::set_cursor(PlatformWindow &window, MouseCursor cursor) -> void {
+    spdlog::info("Setting new cursor - {}", (int)cursor);
+    auto c = convert_mouse_cursor_to_win32(cursor);
+    SetCursor(LoadCursor(NULL, c));
+}
+
 auto PlatformWin32::invalidate(PlatformWindow &w) -> void {
     auto window = static_cast<PlatformWindowWin32 *>(&w);
     InvalidateRect(window->hwnd, 0, 1);
@@ -324,34 +400,4 @@ auto PlatformWin32::main_loop() -> void {
             this->exit_loop = true;
         }
     }
-}
-
-auto PlatformWin32::open_window(int x, int y, int width, int height, const std::string &title)
-    -> std::shared_ptr<PlatformWindow> {
-    auto hInstance = GetModuleHandle(nullptr);
-    auto windowRect = RECT{0, 0, width, height};
-    AdjustWindowRect(&windowRect, WS_OVERLAPPEDWINDOW, FALSE);
-
-    auto windowWidth = windowRect.right - windowRect.left;
-    auto windowHeight = windowRect.bottom - windowRect.top;
-
-    auto window = std::make_shared<PlatformWindowWin32>();
-    window->title = title;
-    window->hwnd = CreateWindowExW(WS_EX_CLIENTEDGE, WINDOW_CLASS_NAME,
-                                   StringToWideString(window->title).c_str(), WS_OVERLAPPEDWINDOW,
-                                   CW_USEDEFAULT, CW_USEDEFAULT, windowWidth, windowHeight, NULL,
-                                   NULL, hInstance, NULL);
-    if (window->hwnd == nullptr) {
-        return nullptr;
-    }
-    SetWindowLongPtr(window->hwnd, GWLP_USERDATA, (LONG_PTR)window.get());
-    window->main_widget.theme = default_theme;
-    window->platform = this;
-    return window;
-}
-
-auto PlatformWin32::show_window(std::shared_ptr<PlatformWindow> w) -> void {
-    auto window = std::dynamic_pointer_cast<PlatformWindowWin32>(w);
-    ShowWindow(window->hwnd, SW_NORMAL);
-    UpdateWindow(window->hwnd);
 }

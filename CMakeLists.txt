@@ -84,6 +84,7 @@ set(SVISION_SOURCES
     src/layout.h
     src/listview.cpp
     src/listview.h
+    src/mousecursors.h
     src/platform.cpp
     src/platform.h
     src/radiobuttongroup.h
