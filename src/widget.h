@@ -150,6 +150,8 @@ struct PlatformWindow {
             invalidate();
     }
 
+    auto set_cursor(MouseCursor cursor) -> void;
+
     virtual auto relayout() -> void {
         main_widget.layout->relayout({0, 0}, main_widget.content.size);
     }

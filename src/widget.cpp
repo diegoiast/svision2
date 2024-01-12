@@ -152,18 +152,16 @@ auto WidgetCollection::on_mouse_press(const EventMouse &event, std::shared_ptr<W
     if (!w->mouse_over) {
         w->mouse_over = true;
         w->on_mouse_enter();
-    }
-    if (event.type == MouseEvents::MouseMove) {
-        spdlog::info("setting new cursor");
 
+        spdlog::info("setting new cursor");
         if (w->window) {
             auto cursor = w->get_cursor();
-            auto &window = *w->window;
-            w->window->platform->set_cursor(window, cursor);
+            w->window->set_cursor(cursor);
         } else {
-            spdlog::warn("Widget without window!");
+            spdlog::error("Widget without window!");
         }
-
+    }
+    if (event.type == MouseEvents::MouseMove) {
         w->on_hover(local_event);
         result = EventPropagation::handled;
     } else {
@@ -458,6 +456,14 @@ PlatformWindow::PlatformWindow() {
 }
 
 PlatformWindow::~PlatformWindow() { spdlog::info("Window done"); }
+
+auto PlatformWindow::set_cursor(MouseCursor cursor) -> void {
+    if (platform) {
+        platform->set_cursor(*this, cursor);
+    } else {
+        spdlog::error("Window without platform!");
+    }
+}
 
 auto PlatformWindow::draw() -> void {
     if (main_widget.content.background_color != 0)
