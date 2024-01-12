@@ -379,6 +379,10 @@ auto PlatformWin32::set_cursor(PlatformWindow &window, MouseCursor cursor) -> vo
     SetCursor(LoadCursor(NULL, c));
 }
 
+auto PlatformWin32::clear_cursor_cache() -> void {
+    // TODO
+}
+
 auto PlatformWin32::invalidate(PlatformWindow &w) -> void {
     auto window = static_cast<PlatformWindowWin32 *>(&w);
     InvalidateRect(window->hwnd, 0, 1);

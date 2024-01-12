@@ -174,7 +174,9 @@ struct PlatformWindowX11 : public PlatformWindow {
 
     virtual ~PlatformWindowX11() override {
         XFree(x11_image);
+        // TODO - should we call destory window?
         // XDestroyWindow(dpy, x11_window);
+        // TODO - should we free the graphics context?
         // XFreeGC(dpy, gc);
     }
 };
@@ -241,10 +243,24 @@ auto PlatformX11::show_window(std::shared_ptr<PlatformWindow> w) -> void {
 
 auto PlatformX11::set_cursor(PlatformWindow &window, MouseCursor cursor) -> void {
     auto x11_window = static_cast<PlatformWindowX11 *>(&window);
-    auto x11_cursor = convert_mouse_cursor_to_x11(cursor);
-    auto x11_font_cursor = XCreateFontCursor(this->dpy, x11_cursor);
+    Cursor x11_font_cursor;
+
+    if (cursor_cache.find(cursor) == cursor_cache.end()) {
+        auto x11_cursor = convert_mouse_cursor_to_x11(cursor);
+        x11_font_cursor = XCreateFontCursor(this->dpy, x11_cursor);
+        cursor_cache[cursor] = x11_font_cursor;
+        spdlog::info("Caching new X11 cursor - {}, ({} so far)", (int)cursor, cursor_cache.size());
+    } else {
+        x11_font_cursor = cursor_cache[cursor];
+    }
     XDefineCursor(dpy, x11_window->x11_window, x11_font_cursor);
-    XFreeCursor(dpy, x11_font_cursor);
+}
+
+auto PlatformX11::clear_cursor_cache() -> void {
+    for (const auto &[key, value] : cursor_cache) {
+        XFreeCursor(dpy, value);
+    }
+    cursor_cache.clear();
 }
 
 auto PlatformX11::invalidate(PlatformWindow &window) -> void {
@@ -280,11 +296,12 @@ auto PlatformX11::main_loop() -> void {
 
         switch (ev.type) {
         case Expose:
+            /*
             spdlog::info("Expose requested, selected widget is {}",
                          target_window->main_widget.widgets.focused_widget
                              ? target_window->main_widget.widgets.focused_widget->focus_index
                              : -1);
-
+            */
             target_window->needs_redraw = true;
             break;
 

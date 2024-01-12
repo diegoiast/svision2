@@ -153,7 +153,6 @@ auto WidgetCollection::on_mouse_press(const EventMouse &event, std::shared_ptr<W
         w->mouse_over = true;
         w->on_mouse_enter();
 
-        spdlog::info("setting new cursor");
         if (w->window) {
             auto cursor = w->get_cursor();
             w->window->set_cursor(cursor);

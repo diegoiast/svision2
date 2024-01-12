@@ -25,6 +25,8 @@ struct PlatformX11 : Platform {
     const char *default_font_file = SVISION_X11_TTF_PATH SVISION_X11_TTF_FILENAME;
 
     std::map<Window, std::shared_ptr<PlatformWindowX11>> windows;
+    std::map<MouseCursor, Cursor> cursor_cache;
+
     Display *dpy = nullptr;
     int screen = -1;
     Atom wmDeleteMessage = None;
@@ -36,6 +38,7 @@ struct PlatformX11 : Platform {
     virtual auto show_window(std::shared_ptr<PlatformWindow> window) -> void override;
 
     virtual auto set_cursor(PlatformWindow &window, MouseCursor cursor) -> void override;
+    virtual auto clear_cursor_cache() -> void override;
     virtual auto invalidate(PlatformWindow &window) -> void override;
     virtual auto main_loop() -> void override;
 };
