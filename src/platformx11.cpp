@@ -162,6 +162,7 @@ static auto convert_mouse_cursor_to_x11(MouseCursor cursor) -> int {
     default:
         break;
     }
+    return XC_left_ptr;
 }
 
 struct PlatformWindowX11 : public PlatformWindow {
