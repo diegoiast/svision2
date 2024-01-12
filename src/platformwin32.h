@@ -20,7 +20,7 @@ struct PlatformWin32 : Platform {
     virtual auto show_window(std::shared_ptr<PlatformWindow> window) -> void override;
 
     virtual auto set_cursor(PlatformWindow &window, MouseCursor cursor) -> void override;
-    virtual auto invalidate(PlatformWindow &window) -> void;
+    virtual auto invalidate(PlatformWindow &window) -> void override;
     virtual auto main_loop() -> void override;
 };
 
