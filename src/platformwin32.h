@@ -7,10 +7,12 @@
 
 #pragma once
 
+#include <map>
 #include <platform.h>
 
 struct PlatformWin32 : Platform {
     const std::string_view default_font_file = "c:\\Windows\\Fonts\\arial.ttf";
+    std::map<MouseCursor, void *> cursor_cache;
 
     PlatformWin32();
     virtual auto init() -> void override;

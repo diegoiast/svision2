@@ -374,13 +374,28 @@ auto PlatformWin32::show_window(std::shared_ptr<PlatformWindow> w) -> void {
 }
 
 auto PlatformWin32::set_cursor(PlatformWindow &window, MouseCursor cursor) -> void {
-    spdlog::info("Setting new cursor - {}", (int)cursor);
-    auto c = convert_mouse_cursor_to_win32(cursor);
-    SetCursor(LoadCursor(NULL, c));
+    auto x11_window = static_cast<PlatformWindowWin32 *>(&window);
+    HCURSOR win32_cursor;
+
+    if (cursor_cache.find(cursor) == cursor_cache.end()) {
+        auto c = convert_mouse_cursor_to_win32(cursor);
+        win32_cursor = LoadCursor(nullptr, c);
+        cursor_cache[cursor] = win32_cursor;
+        spdlog::info("Caching new win32 cursor - {}, ({} so far)", (int)cursor,
+                     cursor_cache.size());
+    } else {
+        win32_cursor = (HCURSOR)cursor_cache[cursor];
+    }
+
+    //  spdlog::info("Setting new cursor - {}", (int)cursor);
+    // auto c = convert_mouse_cursor_to_win32(cursor);
+    //    HCURSOR cc = LoadCursor(nullptr, c);
+    SetCursor(win32_cursor);
 }
 
 auto PlatformWin32::clear_cursor_cache() -> void {
-    // TODO
+    // win32 cursors do not need to be destroyed using `DestroyCursor()`
+    cursor_cache.clear();
 }
 
 auto PlatformWin32::invalidate(PlatformWindow &w) -> void {
