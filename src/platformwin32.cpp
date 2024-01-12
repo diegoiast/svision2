@@ -386,10 +386,6 @@ auto PlatformWin32::set_cursor(PlatformWindow &window, MouseCursor cursor) -> vo
     } else {
         win32_cursor = (HCURSOR)cursor_cache[cursor];
     }
-
-    //  spdlog::info("Setting new cursor - {}", (int)cursor);
-    // auto c = convert_mouse_cursor_to_win32(cursor);
-    //    HCURSOR cc = LoadCursor(nullptr, c);
     SetCursor(win32_cursor);
 }
 
