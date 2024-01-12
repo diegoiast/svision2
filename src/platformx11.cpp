@@ -174,7 +174,7 @@ struct PlatformWindowX11 : public PlatformWindow {
 
     virtual ~PlatformWindowX11() override {
         XFree(x11_image);
-        // TODO - should we call destory window?
+        // TODO - should we call destroy window?
         // XDestroyWindow(dpy, x11_window);
         // TODO - should we free the graphics context?
         // XFreeGC(dpy, gc);
