@@ -27,6 +27,9 @@ static auto point_in_rect(Position p, Size s, int x, int y) -> bool {
 auto WidgetCollection::add(std::shared_ptr<Widget> widget, PlatformWindow *window)
     -> std::shared_ptr<Widget> {
     widgets.push_back(widget);
+    if (window == nullptr) {
+        spdlog::warn("Adding widget without window");
+    }
     widget->window = window;
     if (widget->focus_index < 0) {
         if (window) {
@@ -40,7 +43,8 @@ auto WidgetCollection::add(std::shared_ptr<Widget> widget, PlatformWindow *windo
     return widget;
 }
 
-auto WidgetCollection::on_mouse(const EventMouse &event) -> EventPropagation {
+// TODO - if we move this widget collection back into widget, the last argument is no longer needed
+auto WidgetCollection::on_mouse(const EventMouse &event, Widget &myself) -> EventPropagation {
     auto widget_under_mouse = std::shared_ptr<Widget>();
     auto result = EventPropagation::propagate;
 
@@ -108,6 +112,10 @@ auto WidgetCollection::on_mouse(const EventMouse &event) -> EventPropagation {
         if (last_overed_widget) {
             last_overed_widget->mouse_over = true;
             last_overed_widget->on_mouse_enter();
+        } else {
+            if (myself.window) {
+                myself.window->set_cursor(myself.get_cursor());
+            }
         }
     }
     return result;
@@ -362,7 +370,7 @@ auto Widget::draw() -> void {
 }
 
 auto Widget::on_mouse(const EventMouse &event) -> EventPropagation {
-    return widgets.on_mouse(event);
+    return widgets.on_mouse(event, *this);
 }
 
 auto Widget::on_hover(const EventMouse &event) -> void {
@@ -452,12 +460,14 @@ PlatformWindow::PlatformWindow() {
     main_widget.layout->padding.set_vertical(5);
     main_widget.layout->padding.set_horizontal(5);
     main_widget.mouse_cursor = MouseCursor::Normal;
+    main_widget.window = this;
 }
 
 PlatformWindow::~PlatformWindow() { spdlog::info("Window done"); }
 
 auto PlatformWindow::set_cursor(MouseCursor cursor) -> void {
     if (platform) {
+        spdlog::info("Setting cursor: {}", (int)cursor);
         platform->set_cursor(*this, cursor);
     } else {
         spdlog::error("Window without platform!");
@@ -520,9 +530,7 @@ auto PlatformWindow::on_keyboard(const EventKeyboard &event) -> void {
     }
 }
 
-auto PlatformWindow::on_mouse(const EventMouse &event) -> void {
-    main_widget.widgets.on_mouse(event);
-}
+auto PlatformWindow::on_mouse(const EventMouse &event) -> void { main_widget.on_mouse(event); }
 
 auto PlatformWindow::on_resize(const EventResize &event) -> void {
     spdlog::info("New window size: {}x{}", event.size.width, event.size.height);

@@ -30,7 +30,7 @@ struct WidgetCollection {
 
     auto add(std::shared_ptr<Widget> widget, PlatformWindow *window) -> std::shared_ptr<Widget>;
 
-    auto on_mouse(const EventMouse &event) -> EventPropagation;
+    auto on_mouse(const EventMouse &event, Widget &myself) -> EventPropagation;
     auto on_mouse_release(const EventMouse &event, std::shared_ptr<Widget> w) -> EventPropagation;
     auto on_mouse_press(const EventMouse &event, std::shared_ptr<Widget> w) -> EventPropagation;
 
@@ -188,6 +188,7 @@ struct PlatformWindow {
         if (layout) {
             layout->add(widget);
         }
+        // TODO - this needs to be a setter - do we can set all children's window as well
         widget->parent = &main_widget;
         return widget;
     };
