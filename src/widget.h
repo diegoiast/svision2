@@ -11,6 +11,7 @@
 #include <checkboxshape.h>
 #include <events.h>
 #include <layout.h>
+#include <mousecursors.h>
 
 #include <list>
 #include <memory>
@@ -29,7 +30,7 @@ struct WidgetCollection {
 
     auto add(std::shared_ptr<Widget> widget, PlatformWindow *window) -> std::shared_ptr<Widget>;
 
-    auto on_mouse(const EventMouse &event) -> EventPropagation;
+    auto on_mouse(const EventMouse &event, Widget &myself) -> EventPropagation;
     auto on_mouse_release(const EventMouse &event, std::shared_ptr<Widget> w) -> EventPropagation;
     auto on_mouse_press(const EventMouse &event, std::shared_ptr<Widget> w) -> EventPropagation;
 
@@ -45,6 +46,7 @@ struct Widget : std::enable_shared_from_this<Widget>, LayoutItem {
     std::shared_ptr<Theme> theme;
     Frame frame{FrameStyles::NoFrame, FrameSize::SingleFrame};
     std::shared_ptr<LayoutItem> layout;
+    MouseCursor mouse_cursor = MouseCursor::Inherit;
 
     // TODO this should be a weak pointer
     PlatformWindow *window = nullptr;
@@ -75,7 +77,7 @@ struct Widget : std::enable_shared_from_this<Widget>, LayoutItem {
     virtual auto size_hint() const -> Size override { return {0, 0}; };
     virtual auto ignore_layout() const -> bool override { return !is_widget_visible; }
 
-    // TODO - make sure this T derieves from `Widget`
+    // TODO - make sure this T derives from `Widget`
     template <typename T> auto add(T widget) -> T {
         widgets.add(widget, window);
         if (layout) {
@@ -85,12 +87,13 @@ struct Widget : std::enable_shared_from_this<Widget>, LayoutItem {
         return widget;
     }
 
-    // TODO - make sure this T derieves from `Widget`
+    // TODO - make sure this T derives from `Widget`
     template <typename T, typename... Args> auto add_new(Args &&...args) -> std::shared_ptr<T> {
         return add(std::make_shared<T>(std::forward<Args>(args)...));
     };
 
     auto get_theme() const -> std::shared_ptr<Theme>;
+    auto get_cursor() const -> MouseCursor;
     auto show() -> void;
     auto hide() -> void;
     auto is_visible() const -> bool { return is_widget_visible; }
@@ -122,6 +125,7 @@ struct PlatformWindow {
     bool is_visible = false;
     bool needs_redraw = false;
     Platform *platform = nullptr;
+    MouseCursor overrideCursor = MouseCursor::Inherit;
 
     PlatformWindow();
     virtual ~PlatformWindow();
@@ -147,6 +151,9 @@ struct PlatformWindow {
             invalidate();
     }
 
+    auto set_cursor(MouseCursor cursor) -> void;
+    auto set_override_cursor(MouseCursor cursor) -> void;
+
     virtual auto relayout() -> void {
         main_widget.layout->relayout({0, 0}, main_widget.content.size);
     }
@@ -159,21 +166,22 @@ struct PlatformWindow {
     virtual auto invalidate() -> void;
     virtual auto on_close() -> void;
 
-    // TODO - make sure this T derieves from `Widget`
+    // TODO - make sure this T derives from `Widget`
     template <typename T> auto add(T widget) -> T {
         main_widget.widgets.add(widget, this);
         if (main_widget.layout) {
             main_widget.layout->add(widget);
         }
+        widget->parent = &main_widget;
         return widget;
     };
 
-    // TODO - make sure this T derieves from `Widget`
+    // TODO - make sure this T derives from `Widget`
     template <typename T, typename... Args> auto add_new(Args &&...args) -> std::shared_ptr<T> {
         return add(std::make_shared<T>(std::forward<Args>(args)...));
     };
 
-    // TODO - make sure this T derieves from `Widget`
+    // TODO - make sure this T derives from `Widget`
     template <typename T, typename... Args>
     auto add_new_to_layout(std::shared_ptr<LayoutItem> layout, Args &&...args)
         -> std::shared_ptr<T> {
@@ -182,6 +190,8 @@ struct PlatformWindow {
         if (layout) {
             layout->add(widget);
         }
+        // TODO - this needs to be a setter - do we can set all children's window as well
+        widget->parent = &main_widget;
         return widget;
     };
 };

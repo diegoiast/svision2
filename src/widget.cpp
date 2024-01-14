@@ -27,6 +27,9 @@ static auto point_in_rect(Position p, Size s, int x, int y) -> bool {
 auto WidgetCollection::add(std::shared_ptr<Widget> widget, PlatformWindow *window)
     -> std::shared_ptr<Widget> {
     widgets.push_back(widget);
+    if (window == nullptr) {
+        spdlog::warn("Adding widget without window");
+    }
     widget->window = window;
     if (widget->focus_index < 0) {
         if (window) {
@@ -40,7 +43,8 @@ auto WidgetCollection::add(std::shared_ptr<Widget> widget, PlatformWindow *windo
     return widget;
 }
 
-auto WidgetCollection::on_mouse(const EventMouse &event) -> EventPropagation {
+// TODO - if we move this widget collection back into widget, the last argument is no longer needed
+auto WidgetCollection::on_mouse(const EventMouse &event, Widget &myself) -> EventPropagation {
     auto widget_under_mouse = std::shared_ptr<Widget>();
     auto result = EventPropagation::propagate;
 
@@ -67,7 +71,7 @@ auto WidgetCollection::on_mouse(const EventMouse &event) -> EventPropagation {
                 result = EventPropagation::handled;
             }
 
-            // not handled by subwidgets, send this event to the widget itself
+            // not handled by sub-widgets, send this event to the widget itself
             switch (event.type) {
             case MouseEvents::Release: {
                 b = on_mouse_release(event, w);
@@ -108,6 +112,10 @@ auto WidgetCollection::on_mouse(const EventMouse &event) -> EventPropagation {
         if (last_overed_widget) {
             last_overed_widget->mouse_over = true;
             last_overed_widget->on_mouse_enter();
+        } else {
+            if (myself.window) {
+                myself.window->set_cursor(myself.get_cursor());
+            }
         }
     }
     return result;
@@ -152,6 +160,13 @@ auto WidgetCollection::on_mouse_press(const EventMouse &event, std::shared_ptr<W
     if (!w->mouse_over) {
         w->mouse_over = true;
         w->on_mouse_enter();
+
+        if (w->window) {
+            auto cursor = w->get_cursor();
+            w->window->set_cursor(cursor);
+        } else {
+            spdlog::error("Widget without window!");
+        }
     }
     if (event.type == MouseEvents::MouseMove) {
         w->on_hover(local_event);
@@ -355,7 +370,7 @@ auto Widget::draw() -> void {
 }
 
 auto Widget::on_mouse(const EventMouse &event) -> EventPropagation {
-    return widgets.on_mouse(event);
+    return widgets.on_mouse(event, *this);
 }
 
 auto Widget::on_hover(const EventMouse &event) -> void {
@@ -397,16 +412,31 @@ auto Widget::on_resize() -> void {
 }
 
 auto Widget::get_theme() const -> std::shared_ptr<Theme> {
-    if (theme)
+    if (theme) {
         return theme;
-
+    }
     auto p = parent;
     while (p) {
-        if (p->theme)
+        if (p->theme) {
             return p->theme;
+        }
         p = p->parent;
     }
     return window->main_widget.theme;
+}
+
+auto Widget::get_cursor() const -> MouseCursor {
+    if (mouse_cursor != MouseCursor::Inherit) {
+        return mouse_cursor;
+    }
+    auto p = parent;
+    while (p) {
+        if (p->mouse_cursor != MouseCursor::Inherit) {
+            return p->mouse_cursor;
+        }
+        p = p->parent;
+    }
+    return MouseCursor::Inherit;
 }
 
 auto Widget::show() -> void {
@@ -429,9 +459,40 @@ PlatformWindow::PlatformWindow() {
     main_widget.layout = std::make_shared<VerticalLayout>();
     main_widget.layout->padding.set_vertical(5);
     main_widget.layout->padding.set_horizontal(5);
+    main_widget.mouse_cursor = MouseCursor::Normal;
+    main_widget.window = this;
 }
 
 PlatformWindow::~PlatformWindow() { spdlog::info("Window done"); }
+
+auto PlatformWindow::set_cursor(MouseCursor cursor) -> void {
+    static auto currentCursor = MouseCursor::Inherit;
+    if (overrideCursor != MouseCursor::Inherit) {
+        cursor = overrideCursor;
+    }
+
+    assert(cursor != MouseCursor::Inherit);
+    if (cursor == currentCursor) {
+        return;
+    }
+
+    if (platform) {
+        spdlog::info("Setting cursor: {}", (int)cursor);
+        platform->set_cursor(*this, cursor);
+    } else {
+        spdlog::error("Window without platform!");
+    }
+    currentCursor = cursor;
+}
+
+auto PlatformWindow::set_override_cursor(MouseCursor cursor) -> void {
+    if (this->overrideCursor == cursor) {
+        return;
+    }
+
+    this->overrideCursor = cursor;
+    set_override_cursor(cursor);
+}
 
 auto PlatformWindow::draw() -> void {
     if (main_widget.content.background_color != 0)
@@ -489,9 +550,7 @@ auto PlatformWindow::on_keyboard(const EventKeyboard &event) -> void {
     }
 }
 
-auto PlatformWindow::on_mouse(const EventMouse &event) -> void {
-    main_widget.widgets.on_mouse(event);
-}
+auto PlatformWindow::on_mouse(const EventMouse &event) -> void { main_widget.on_mouse(event); }
 
 auto PlatformWindow::on_resize(const EventResize &event) -> void {
     spdlog::info("New window size: {}x{}", event.size.width, event.size.height);

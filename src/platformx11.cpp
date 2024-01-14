@@ -10,7 +10,9 @@
 #include <X11/XKBlib.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
+#include <X11/cursorfont.h>
 #include <X11/keysym.h>
+
 #include <spdlog/spdlog.h>
 
 #include "events.h"
@@ -119,6 +121,50 @@ auto convert_x11_configure_event(const XEvent &ev) -> EventResize {
     return event;
 }
 
+static auto convert_mouse_cursor_to_x11(MouseCursor cursor) -> int {
+    switch (cursor) {
+    case MouseCursor::Inherit:
+        return 0;
+    case MouseCursor::Arrow:
+        return XC_left_ptr;
+    case MouseCursor::Wait:
+        // TODO - wrong icon
+        return XC_watch;
+    case MouseCursor::Buzy:
+        return XC_watch;
+    case MouseCursor::Beam:
+        return XC_xterm;
+    case MouseCursor::SizeVertical:
+        return XC_bottom_side;
+    case MouseCursor::SizeHorizonal:
+        return XC_right_tee;
+    case MouseCursor::SizeDiagonalRight:
+        return XC_bottom_right_corner;
+    case MouseCursor::SizeDiagonalLeft:
+        return XC_bottom_left_corner;
+    case MouseCursor::SizeAll:
+        return XC_sizing;
+    case MouseCursor::SplitHorizontal:
+        return XC_sb_h_double_arrow;
+    case MouseCursor::SplitVertical:
+        return XC_sb_v_double_arrow;
+    case MouseCursor::NoCursor:
+        // hopefully this is undefined, and gets us an empty cursor
+        return 11;
+    case MouseCursor::Pointer:
+        return XC_hand2;
+    case MouseCursor::Forbidden:
+        return XC_pirate;
+    case MouseCursor::WhatsThis:
+        return XC_question_arrow;
+    case MouseCursor::Cross:
+        return XC_tcross;
+    default:
+        break;
+    }
+    return XC_left_ptr;
+}
+
 struct PlatformWindowX11 : public PlatformWindow {
     Window x11_window;
     XImage *x11_image = nullptr;
@@ -128,7 +174,9 @@ struct PlatformWindowX11 : public PlatformWindow {
 
     virtual ~PlatformWindowX11() override {
         XFree(x11_image);
+        // TODO - should we call destroy window?
         // XDestroyWindow(dpy, x11_window);
+        // TODO - should we free the graphics context?
         // XFreeGC(dpy, gc);
     }
 };
@@ -193,17 +241,38 @@ auto PlatformX11::show_window(std::shared_ptr<PlatformWindow> w) -> void {
     XSync(dpy, window->x11_window);
 }
 
-auto PlatformX11::invalidate(PlatformWindow &window) -> void {
-    auto windowX11 = static_cast<PlatformWindowX11 *>(&window);
+auto PlatformX11::set_cursor(PlatformWindow &window, MouseCursor cursor) -> void {
+    auto x11_window = static_cast<PlatformWindowX11 *>(&window);
+    Cursor x11_font_cursor;
 
+    if (cursor_cache.find(cursor) == cursor_cache.end()) {
+        auto x11_cursor = convert_mouse_cursor_to_x11(cursor);
+        x11_font_cursor = XCreateFontCursor(this->dpy, x11_cursor);
+        cursor_cache[cursor] = x11_font_cursor;
+        spdlog::info("Caching new X11 cursor - {}, ({} so far)", (int)cursor, cursor_cache.size());
+    } else {
+        x11_font_cursor = cursor_cache[cursor];
+    }
+    XDefineCursor(dpy, x11_window->x11_window, x11_font_cursor);
+}
+
+auto PlatformX11::clear_cursor_cache() -> void {
+    for (const auto &[key, value] : cursor_cache) {
+        XFreeCursor(dpy, value);
+    }
+    cursor_cache.clear();
+}
+
+auto PlatformX11::invalidate(PlatformWindow &window) -> void {
+    auto x11_window = static_cast<PlatformWindowX11 *>(&window);
     if (window.needs_redraw) {
         return;
     }
 
     XEvent exppp;
     exppp.type = Expose;
-    exppp.xexpose.window = windowX11->x11_window;
-    XSendEvent(dpy, windowX11->x11_window, False, ExposureMask, &exppp);
+    exppp.xexpose.window = x11_window->x11_window;
+    XSendEvent(dpy, x11_window->x11_window, False, ExposureMask, &exppp);
     XFlush(dpy);
 }
 
@@ -227,11 +296,12 @@ auto PlatformX11::main_loop() -> void {
 
         switch (ev.type) {
         case Expose:
+            /*
             spdlog::info("Expose requested, selected widget is {}",
                          target_window->main_widget.widgets.focused_widget
                              ? target_window->main_widget.widgets.focused_widget->focus_index
                              : -1);
-
+            */
             target_window->needs_redraw = true;
             break;
 
