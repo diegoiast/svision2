@@ -125,6 +125,7 @@ struct PlatformWindow {
     bool is_visible = false;
     bool needs_redraw = false;
     Platform *platform = nullptr;
+    MouseCursor overrideCursor = MouseCursor::Inherit;
 
     PlatformWindow();
     virtual ~PlatformWindow();
@@ -151,6 +152,7 @@ struct PlatformWindow {
     }
 
     auto set_cursor(MouseCursor cursor) -> void;
+    auto set_override_cursor(MouseCursor cursor) -> void;
 
     virtual auto relayout() -> void {
         main_widget.layout->relayout({0, 0}, main_widget.content.size);

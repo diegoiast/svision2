@@ -466,12 +466,32 @@ PlatformWindow::PlatformWindow() {
 PlatformWindow::~PlatformWindow() { spdlog::info("Window done"); }
 
 auto PlatformWindow::set_cursor(MouseCursor cursor) -> void {
+    static auto currentCursor = MouseCursor::Inherit;
+    if (overrideCursor != MouseCursor::Inherit) {
+        cursor = overrideCursor;
+    }
+
+    assert(cursor != MouseCursor::Inherit);
+    if (cursor == currentCursor) {
+        return;
+    }
+
     if (platform) {
         spdlog::info("Setting cursor: {}", (int)cursor);
         platform->set_cursor(*this, cursor);
     } else {
         spdlog::error("Window without platform!");
     }
+    currentCursor = cursor;
+}
+
+auto PlatformWindow::set_override_cursor(MouseCursor cursor) -> void {
+    if (this->overrideCursor == cursor) {
+        return;
+    }
+
+    this->overrideCursor = cursor;
+    set_override_cursor(cursor);
 }
 
 auto PlatformWindow::draw() -> void {
