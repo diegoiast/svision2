@@ -95,6 +95,8 @@ set(SVISION_SOURCES
     src/spinbox.h
     src/stackwidget.cpp
     src/stackwidget.h
+    src/tabheader.cpp
+    src/tabheader.h
     src/theme.cpp
     src/theme.h
     src/timer.cpp
