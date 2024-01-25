@@ -22,6 +22,7 @@
 #include <scrollbar.h>
 #include <spinbox.h>
 #include <stackwidget.h>
+#include <tabheader.h>
 #include <textfield.h>
 
 #include <spdlog/spdlog.h>
@@ -124,13 +125,16 @@ int main() {
     w2->main_widget.content.background_color = 0x00FF00;
     w2->main_widget.layout->padding.set_horizontal(1);
 
-    auto list = w2->add_new<Combobox>(Position{0, 0}, 0,
-                                      std::vector<std::string>{
-                                          "Widget 1",
-                                          "Widget 2",
-                                          "Widget 3",
-                                          "Widget 4",
-                                      });
+    auto list_names = std::vector<std::string_view>{
+        "Tab 1",
+        "Tab 2",
+        "Tab 3",
+        "‎Tab‎ 4",
+    };
+
+    auto list = w2->add_new<Combobox>(Position{0, 0}, 0, list_names);
+    auto tab_header = w2->add_new<TabHeader>();
+    tab_header->names = list_names;
 
     auto stack = w2->add_new<Stackwidget>();
     stack->add_new<Label>(Position{}, Size{}, "Widget 1");
@@ -148,7 +152,7 @@ int main() {
     platform.show_window(w2);
 #endif
 
-#if 1
+#if 0
     auto w1 = platform.open_window(100, 100, 640, 480, "test 1");
     auto l =
         w1->add_new<Label>(Position{10, 10}, Size{300, 20}, "test 1 - Hello world! glqi שלום עולם");
@@ -165,7 +169,7 @@ int main() {
 
     //    l_right->margin.set(5);
     w1->add_new_to_layout<ListView>(l_left, Position{10, 80}, Size{165, 100})->adapter =
-        std::make_shared<ListItemAdapter>(std::vector<std::string>{
+        std::make_shared<ListItemAdapter>(std::vector<std::string_view>{
             "Option 1 (default)",
             "Option 2",
             "Option 3",
@@ -191,7 +195,7 @@ int main() {
     };
     rb->radio_buttons[1]->is_enabled = false;
     w1->add_new_to_layout<Combobox>(l_right, Position{10, 280}, 200,
-                                    std::vector<std::string>{
+                                    std::vector<std::string_view>{
                                         "Spring",
                                         "Summer",
                                         "Autumn/Fall",

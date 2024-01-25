@@ -19,13 +19,13 @@ class ComboboxList;
 
 struct Combobox : Widget {
     std::shared_ptr<ComboboxList> popup_list = {};
-    std::vector<std::string> strings = {};
+    std::vector<std::string_view> strings = {};
     std::function<void(Combobox &, int)> on_item_selected = {};
 
     int selected_item = 0;
 
-    Combobox(Position position, int width, const std::vector<std::string> &strings);
-    auto get_value() const -> std::string;
+    Combobox(Position position, int width, const std::vector<std::string_view> &strings);
+    auto get_value() const -> std::string_view;
     auto get_item() const -> int { return selected_item; }
     virtual auto draw() -> void override;
     virtual auto on_mouse(const EventMouse &) -> EventPropagation override;
