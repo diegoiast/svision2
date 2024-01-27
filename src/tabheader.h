@@ -7,10 +7,12 @@
 
 #pragma once
 
+#include <vector>
 #include <widget.h>
 
 struct TabHeader : Widget {
     std::vector<std::string_view> names;
+    std::function<void(TabHeader &, int)> on_item_selected = {};
 
     TabHeader();
 
@@ -21,8 +23,15 @@ struct TabHeader : Widget {
     auto get_active_tab() const -> int { return active_tab; }
 
     virtual auto draw() -> void override;
+    virtual auto on_mouse_click(const EventMouse &event) -> EventPropagation override;
     virtual auto size_hint() const -> Size override;
 
   private:
+    struct TabOffsets {
+        int offset;
+        int width;
+    };
+    std::vector<TabOffsets> tab_offset;
+
     int active_tab = 0;
 };

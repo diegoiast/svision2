@@ -127,7 +127,7 @@ int main() {
 
     auto list_names = std::vector<std::string_view>{
         "Tab 1",
-        "Tab 2",
+        "Tab with very long name",
         "Tab 3",
         "‎Tab‎ 4",
     };
@@ -145,7 +145,10 @@ int main() {
     stack->add_new<Label>(Position{}, Size{}, "Widget 4")->content.background_color =
         MakeColor(0x33, 0x22, 0xaa);
 
-    list->on_item_selected = [&stack](auto list, auto index /*, auto reason*/) {
+    list->on_item_selected = [&stack](auto &combo, auto index /*, auto reason*/) {
+        stack->set_current_page(index);
+    };
+    tab_header->on_item_selected = [&stack](auto &tab_header, auto index /*, auto reason*/) {
         stack->set_current_page(index);
     };
 

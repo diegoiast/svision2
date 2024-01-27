@@ -7,6 +7,7 @@
 
 #include "tabheader.h"
 #include "theme.h"
+#include <spdlog/spdlog.h>
 
 TabHeader::TabHeader() : Widget() {
     //
@@ -45,6 +46,9 @@ auto TabHeader::draw() -> void {
     theme->draw_widget_background(content, has_focus);
 
     this->content.fill(0);
+    this->tab_offset.clear();
+    this->tab_offset.resize(names.size());
+
     auto i = 0;
     for (auto s : names) {
         auto is_active_tab = i == this->active_tab;
@@ -59,10 +63,29 @@ auto TabHeader::draw() -> void {
                                 tab_size.height + padding_y * 2, bg_color);
 
         font.write(this->content, {offset + padding_x, padding_y}, s, 0x00);
+        this->tab_offset[i] = {offset, tab_size.width + padding_x};
         offset += tab_size.width;
         offset += padding_x + padding_x;
         i++;
     }
+}
+
+auto TabHeader::on_mouse_click(const EventMouse &event) -> EventPropagation {
+    if (event.pressed) {
+        auto index = 0;
+        for (const auto &offset : tab_offset) {
+            if (event.x > offset.offset && event.x < offset.offset + offset.width) {
+                this->needs_redraw = true;
+                this->active_tab = index;
+                if (this->on_item_selected) {
+                    on_item_selected(*this, index);
+                }
+                return EventPropagation::handled;
+            }
+            index++;
+        }
+    }
+    return Widget::on_mouse_click(event);
 }
 
 auto TabHeader::size_hint() const -> Size {
