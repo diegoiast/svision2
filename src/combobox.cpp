@@ -179,3 +179,11 @@ auto Combobox::show_popup() -> void {
         window->focus_widget(popup_list);
     }
 }
+
+auto Combobox::set_active_index(int index) -> void {
+    if (index == this->selected_item) {
+        return;
+    }
+    this->selected_item = index;
+    this->invalidate();
+}

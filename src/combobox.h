@@ -35,6 +35,8 @@ struct Combobox : Widget {
     virtual auto on_resize() -> void override;
 
     auto show_popup() -> void;
+    auto set_active_index(int index) -> void;
+    auto get_active_index() const -> int { return selected_item; }
 
   private:
     std::shared_ptr<Button> popup_button = nullptr;

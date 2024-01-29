@@ -145,11 +145,14 @@ int main() {
     stack->add_new<Label>(Position{}, Size{}, "Widget 4")->content.background_color =
         MakeColor(0x33, 0x22, 0xaa);
 
-    list->on_item_selected = [&stack](auto &combo, auto index /*, auto reason*/) {
+    list->on_item_selected = [&stack, &tab_header, &list](auto &c, auto index /*, auto reason*/) {
         stack->set_current_page(index);
+        tab_header->set_active_tab(index);
     };
-    tab_header->on_item_selected = [&stack](auto &tab_header, auto index /*, auto reason*/) {
+    tab_header->on_item_selected = [&stack, &tab_header, &list](auto &t,
+                                                                auto index /*, auto reason*/) {
         stack->set_current_page(index);
+        list->set_active_index(index);
     };
 
     platform.show_window(w2);

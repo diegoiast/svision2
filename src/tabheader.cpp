@@ -21,8 +21,14 @@ auto TabHeader::add_tab(const std::string_view name) -> int {
 auto TabHeader::remove_tab(int index) -> void { this->names.erase(this->names.begin() + index); }
 
 auto TabHeader::set_active_tab(int index) -> void {
+    if (this->active_tab == index) {
+        return;
+    }
     this->active_tab = index;
     this->invalidate();
+    if (this->on_item_selected) {
+        on_item_selected(*this, index);
+    }
 }
 
 auto TabHeader::get_tab_string(int index) const -> std::string_view {
