@@ -63,7 +63,7 @@ auto TabHeader::draw() -> void {
                                 tab_size.height + padding_y * 2, bg_color);
 
         font.write(this->content, {offset + padding_x, padding_y}, s, 0x00);
-        this->tab_offset[i] = {offset, tab_size.width + padding_x};
+        this->tab_offset[i] = {offset, tab_size.width + padding_x + padding_x};
         offset += tab_size.width;
         offset += padding_x + padding_x;
         i++;
