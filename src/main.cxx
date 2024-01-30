@@ -123,7 +123,7 @@ int main() {
 #if 1
     auto w2 = platform.open_window(300, 300, 640, 480, "test 2");
     w2->main_widget.content.background_color = 0x00FF00;
-    w2->main_widget.layout->padding.set_horizontal(1);
+    w2->main_widget.layout->padding.set_vertical(0);
 
     auto list_names = std::vector<std::string_view>{
         "Tab 1",
