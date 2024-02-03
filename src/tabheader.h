@@ -24,6 +24,7 @@ struct TabHeader : Widget {
 
     virtual auto draw() -> void override;
     virtual auto on_mouse_click(const EventMouse &event) -> EventPropagation override;
+    virtual auto on_hover(const EventMouse &event) -> void override;
     virtual auto size_hint() const -> Size override;
 
   private:
@@ -34,4 +35,5 @@ struct TabHeader : Widget {
     std::vector<TabOffsets> tab_offset;
 
     int active_tab = 0;
+    int hover_tab = -1;
 };

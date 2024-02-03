@@ -45,7 +45,6 @@ auto TabHeader::draw() -> void {
     auto theme = get_theme();
     auto offset = 0;
     auto &font = theme->font;
-
     auto active_bg = theme->colors.window_background;
     auto non_active_bg = Darker(theme->colors.window_background);
 
@@ -56,6 +55,7 @@ auto TabHeader::draw() -> void {
     auto i = 0;
     for (auto s : names) {
         auto is_active_tab = i == this->active_tab;
+        auto is_hover = i == this->hover_tab && mouse_over;
         auto padding_x = default_padding_x;
         auto padding_y = 5;
 
@@ -71,7 +71,8 @@ auto TabHeader::draw() -> void {
                               FrameStyles::Hover, FrameSize::SingleFrame);
         }
 
-        font.write(this->content, {offset + padding_x, padding_y}, s, 0x00);
+        font.write(this->content, {offset + padding_x, padding_y}, s,
+                   is_hover ? Lighter(0x010101, 0.3) : 0x00);
         this->tab_offset[i] = {offset, tab_size.width + padding_x + padding_x};
         offset += tab_size.width;
         offset += padding_x + padding_x;
@@ -98,6 +99,25 @@ auto TabHeader::on_mouse_click(const EventMouse &event) -> EventPropagation {
         }
     }
     return Widget::on_mouse_click(event);
+}
+
+auto TabHeader::on_hover(const EventMouse &event) -> void {
+    auto hover_tab = -1;
+    auto index = 0;
+    for (const auto &offset : tab_offset) {
+        if (event.x > offset.offset && event.x < offset.offset + offset.width) {
+            //            this->needs_redraw = true;
+            hover_tab = index;
+        }
+        index++;
+    }
+
+    if (hover_tab >= 0 and hover_tab != this->hover_tab) {
+        this->hover_tab = hover_tab;
+        auto t = get_tab_string(hover_tab);
+        spdlog::info("Mouse under {}", t);
+        invalidate();
+    }
 }
 
 auto TabHeader::size_hint() const -> Size {
