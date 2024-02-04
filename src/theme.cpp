@@ -375,6 +375,11 @@ void ThemeRedmond::draw_listview_item(Bitmap &content, const std::string_view te
     font.write(content, padding, text, text_color);
 }
 
+auto ThemeRedmond::draw_tabs(Bitmap &content, const std::vector<std::string_view> &names,
+                             int selecetd_index, int hover_index) -> std::vector<TabHeaderOffsets> {
+    // TODO
+}
+
 auto ThemeVision::draw_widget_background(Bitmap &content, bool has_focus) -> void {
     content.fill(colors.window_background);
 };
@@ -626,6 +631,11 @@ void ThemeVision::draw_listview_item(Bitmap &content, const std::string_view tex
     font.write(content, centered, text, text_color);
 }
 
+auto ThemeVision::draw_tabs(Bitmap &content, const std::vector<std::string_view> &names,
+                            int selecetd_index, int hover_index) -> std::vector<TabHeaderOffsets> {
+    // TODO
+}
+
 auto ThemePlasma::draw_widget_background(Bitmap &content, bool has_focus) -> void {
     content.fill(colors.window_background);
 }
@@ -828,4 +838,51 @@ void ThemePlasma::draw_listview_item(Bitmap &content, const std::string_view tex
     auto text_size = font.text_size(text);
     auto centered = content.size.centeredY(text_size, text_padding);
     font.write(content, centered, text, text_color);
+}
+
+auto ThemePlasma::draw_tabs(Bitmap &content, const std::vector<std::string_view> &names,
+                            int selecetd_index, int hover_index) -> std::vector<TabHeaderOffsets> {
+
+    auto has_focus = true;
+    auto tab_offset = std::vector<TabHeaderOffsets>();
+    auto mouse_over = true;
+    auto default_padding_y = 10;
+    auto default_padding_x = 20;
+
+    auto offset = 0;
+    auto active_bg = colors.window_background;
+    auto non_active_bg = Darker(colors.window_background);
+
+    draw_widget_background(content, has_focus);
+    tab_offset.clear();
+    tab_offset.resize(names.size());
+    auto i = 0;
+    for (auto s : names) {
+        auto is_active_tab = i == selecetd_index;
+        auto is_hover = i == hover_index && mouse_over;
+        auto padding_x = default_padding_x;
+        auto padding_y = 5;
+
+        auto tab_size = font.text_size(s);
+        auto bg_color = i == selecetd_index ? active_bg : non_active_bg;
+        auto position_y = is_active_tab ? 0 : padding_y;
+
+        content.fill_rect(offset, position_y, tab_size.width + padding_x * 2,
+                          tab_size.height + padding_y * 2, bg_color);
+        if (is_active_tab) {
+            draw_frame(content, {offset, position_y},
+                       {tab_size.width + padding_x * 2, tab_size.height + padding_y * 2 + 5},
+                       FrameStyles::Hover, FrameSize::SingleFrame);
+        }
+
+        font.write(content, {offset + padding_x, padding_y}, s,
+                   is_hover ? Lighter(0x010101, 0.3) : 0x00);
+        tab_offset[i] = {offset, tab_size.width + padding_x + padding_x};
+        offset += tab_size.width;
+        offset += padding_x + padding_x;
+        i++;
+    }
+
+    content.fill_rect(0, content.size.height - 1, content.size.width, 2, active_bg);
+    return tab_offset;
 }

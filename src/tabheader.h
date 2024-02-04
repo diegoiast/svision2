@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <theme.h>
 #include <vector>
 #include <widget.h>
 
@@ -28,11 +29,7 @@ struct TabHeader : Widget {
     virtual auto size_hint() const -> Size override;
 
   private:
-    struct TabOffsets {
-        int offset;
-        int width;
-    };
-    std::vector<TabOffsets> tab_offset;
+    std::vector<TabHeaderOffsets> tab_offset;
 
     int active_tab = 0;
     int hover_tab = -1;
