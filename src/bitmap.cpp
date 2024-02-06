@@ -127,7 +127,7 @@ auto Bitmap::resize(int width, int height) -> void {
 
 auto Bitmap::fill_rect(int x, int y, int w, int h, uint32_t c) -> void {
     w = std::min(w, size.width);
-    h = std::min(h gc, size.height);
+    h = std::min(h, size.height);
     for (int row = 0; row < h; row++) {
         for (int col = 0; col < w; col++) {
             put_pixel(x + col, y + row, c);
