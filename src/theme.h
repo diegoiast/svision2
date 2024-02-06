@@ -73,8 +73,9 @@ struct Theme {
     virtual auto draw_scrollbar_background(Bitmap &content) -> void = 0;
     virtual auto draw_button(Bitmap &content, bool has_focus, bool is_default, bool is_enabled,
                              ButtonStates state, const std::string &text) -> void = 0;
-    virtual auto draw_checkbox(Bitmap &content, bool has_focus, bool is_enabled, bool is_checked,
-                               ButtonStates state, const std::string &text, CheckboxShape shape)
+    virtual auto draw_checkbox(Bitmap &content, bool has_focus, bool is_enabled,
+                               bool is_checked, ButtonStates state,
+                               const std::string &text, CheckboxShape shape)
         -> void = 0;
 
     // TODO - missing disabled state
@@ -83,10 +84,10 @@ struct Theme {
     virtual auto draw_listview_background(Bitmap &content, const bool has_focus,
                                           bool draw_background) -> void = 0;
     virtual auto draw_listview_item(Bitmap &content, const std::string_view text,
-                                    const ItemStatus status, bool is_hover) -> void = 0;
-    virtual auto draw_tabs(Bitmap &content, const std::vector<std::string_view> &names,
-                           int selecetd_index, int hover_index)
-        -> std::vector<TabHeaderOffsets> = 0;
+                                    const ItemStatus status, const bool is_hover) -> void = 0;
+    virtual auto draw_tabs(Bitmap &content, const bool has_focus,
+                           const std::vector<std::string_view> &names, int selecetd_index,
+                           int hover_index) -> std::vector<TabHeaderOffsets> = 0;
 
     virtual auto needs_frame_for_focus() const -> bool = 0;
     virtual auto scrollbar_size() const -> int = 0;
@@ -114,13 +115,15 @@ struct ThemeRedmond : Theme {
     virtual auto draw_listview_background(Bitmap &content, const bool has_focus,
                                           bool draw_background) -> void override;
     virtual auto draw_listview_item(Bitmap &content, const std::string_view text,
-                                    const ItemStatus status, bool is_hover) -> void override;
+                                    const ItemStatus status, const bool is_hover) -> void override;
 
-    virtual auto draw_tabs(Bitmap &content, const std::vector<std::string_view> &names,
-                           int selecetd_index, int hover_index)
-        -> std::vector<TabHeaderOffsets> override;
+    virtual auto draw_tabs(Bitmap &content, const bool has_focus,
+                           const std::vector<std::string_view> &names, int selecetd_index,
+                           int hover_index) -> std::vector<TabHeaderOffsets> override;
 
-    virtual auto needs_frame_for_focus() const -> bool override { return true; };
+    virtual auto needs_frame_for_focus() const -> bool override {
+      return true;
+    };
     virtual auto scrollbar_size() const -> int override { return 24; };
 
     virtual auto modify_frame_on_hover() const -> bool override { return false; }
@@ -148,10 +151,10 @@ struct ThemeVision : Theme {
     virtual auto draw_listview_background(Bitmap &content, const bool has_focus,
                                           bool draw_background) -> void override;
     virtual auto draw_listview_item(Bitmap &content, const std::string_view text,
-                                    const ItemStatus status, bool is_hover) -> void override;
-    virtual auto draw_tabs(Bitmap &content, const std::vector<std::string_view> &names,
-                           int selecetd_index, int hover_index)
-        -> std::vector<TabHeaderOffsets> override;
+                                    const ItemStatus status, const bool is_hover) -> void override;
+    virtual auto draw_tabs(Bitmap &content, const bool has_focus,
+                           const std::vector<std::string_view> &names, int selecetd_index,
+                           int hover_index) -> std::vector<TabHeaderOffsets> override;
 
     virtual auto needs_frame_for_focus() const -> bool override { return false; };
     virtual auto scrollbar_size() const -> int override { return 16; };
@@ -179,10 +182,10 @@ struct ThemePlasma : Theme {
     virtual auto draw_listview_background(Bitmap &content, const bool has_focus,
                                           const bool draw_background) -> void override;
     virtual auto draw_listview_item(Bitmap &content, const std::string_view text,
-                                    const ItemStatus status, bool is_hover) -> void override;
-    virtual auto draw_tabs(Bitmap &content, const std::vector<std::string_view> &names,
-                           int selecetd_index, int hover_index)
-        -> std::vector<TabHeaderOffsets> override;
+                                    const ItemStatus status, const bool is_hover) -> void override;
+    virtual auto draw_tabs(Bitmap &content, const bool has_focus,
+                           const std::vector<std::string_view> &names, int selecetd_index,
+                           int hover_index) -> std::vector<TabHeaderOffsets> override;
 
     virtual auto needs_frame_for_focus() const -> bool override { return false; };
     virtual auto scrollbar_size() const -> int override { return 16; };

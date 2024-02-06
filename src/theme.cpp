@@ -363,7 +363,7 @@ auto ThemeRedmond::draw_listview_background(Bitmap &content, const bool has_focu
 }
 
 void ThemeRedmond::draw_listview_item(Bitmap &content, const std::string_view text,
-                                      const ItemStatus status, bool is_hover) {
+                                      const ItemStatus status, const bool is_hover) {
     auto padding = Position{5, 5};
 
     auto text_color = status.is_active ? colors.text_selection_color : colors.text_color;
@@ -375,8 +375,9 @@ void ThemeRedmond::draw_listview_item(Bitmap &content, const std::string_view te
     font.write(content, padding, text, text_color);
 }
 
-auto ThemeRedmond::draw_tabs(Bitmap &content, const std::vector<std::string_view> &names,
-                             int selecetd_index, int hover_index) -> std::vector<TabHeaderOffsets> {
+auto ThemeRedmond::draw_tabs(Bitmap &content, const bool has_focus,
+                             const std::vector<std::string_view> &names, int selecetd_index,
+                             int hover_index) -> std::vector<TabHeaderOffsets> {
     // TODO
 }
 
@@ -616,7 +617,7 @@ auto ThemeVision::draw_listview_background(Bitmap &content, const bool has_focus
 }
 
 void ThemeVision::draw_listview_item(Bitmap &content, const std::string_view text,
-                                     const ItemStatus status, bool is_hover) {
+                                     const ItemStatus status, const bool is_hover) {
     auto text_color = status.is_active ? colors.text_selection_color : colors.text_color;
     auto background_color =
         status.is_active ? colors.text_selection_background : colors.input_background_normal;
@@ -631,8 +632,9 @@ void ThemeVision::draw_listview_item(Bitmap &content, const std::string_view tex
     font.write(content, centered, text, text_color);
 }
 
-auto ThemeVision::draw_tabs(Bitmap &content, const std::vector<std::string_view> &names,
-                            int selecetd_index, int hover_index) -> std::vector<TabHeaderOffsets> {
+auto ThemeVision::draw_tabs(Bitmap &content, const bool has_focus,
+                            const std::vector<std::string_view> &names, int selecetd_index,
+                            int hover_index) -> std::vector<TabHeaderOffsets> {
     // TODO
 }
 
@@ -825,7 +827,7 @@ auto ThemePlasma::draw_listview_background(Bitmap &content, const bool has_focus
 }
 
 void ThemePlasma::draw_listview_item(Bitmap &content, const std::string_view text,
-                                     const ItemStatus status, bool is_hover) {
+                                     const ItemStatus status, const bool is_hover) {
 
     auto text_color = status.is_active ? colors.text_selection_color : colors.text_color;
     auto background_color =
@@ -840,12 +842,11 @@ void ThemePlasma::draw_listview_item(Bitmap &content, const std::string_view tex
     font.write(content, centered, text, text_color);
 }
 
-auto ThemePlasma::draw_tabs(Bitmap &content, const std::vector<std::string_view> &names,
-                            int selecetd_index, int hover_index) -> std::vector<TabHeaderOffsets> {
+auto ThemePlasma::draw_tabs(Bitmap &content, const bool has_focus,
+                            const std::vector<std::string_view> &names, int selecetd_index,
+                            int hover_index) -> std::vector<TabHeaderOffsets> {
 
-    auto has_focus = true;
     auto tab_offset = std::vector<TabHeaderOffsets>();
-    auto mouse_over = true;
     auto default_padding_y = 10;
     auto default_padding_x = 20;
 
@@ -859,7 +860,7 @@ auto ThemePlasma::draw_tabs(Bitmap &content, const std::vector<std::string_view>
     auto i = 0;
     for (auto s : names) {
         auto is_active_tab = i == selecetd_index;
-        auto is_hover = i == hover_index && mouse_over;
+        auto is_hover = i == hover_index;
         auto padding_x = default_padding_x;
         auto padding_y = 5;
 
