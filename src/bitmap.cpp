@@ -223,6 +223,12 @@ auto Bitmap::line_thikness(int x0, int y0, int x1, int y1, int thickness, uint32
 
 auto Bitmap::draw_rectangle(int x, int y, int width, int height, uint32_t color1, uint32_t color2)
     -> void {
+    if (x + width > size.width) {
+        width = size.width - x;
+    }
+    if (y + height > size.height) {
+        height = size.height - y;
+    }
     line(x + 0, y + 0, x + width - 2, y + 0, color1);
     line(x + 0, y + 0, x + 0, y + height - 2, color1);
     line(x + width - 1, y + 0, x + width - 1, y + height - 1, color2);

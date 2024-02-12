@@ -10,7 +10,8 @@
 #include <spdlog/spdlog.h>
 
 TabHeader::TabHeader() : Widget() {
-    //
+    // TODO - this padding is just wrong
+    this->padding.set(10);
 }
 
 auto TabHeader::add_tab(const std::string_view name) -> int {
@@ -83,10 +84,12 @@ auto TabHeader::on_hover(const EventMouse &event) -> void {
 
 auto TabHeader::size_hint() const -> Size {
     // TODO?
-    auto default_padding_y = 10;
+    //    auto default_padding_y = 10;
+    //    auto padding_x = this->padding.get_horizontal();
+    auto padding_y = this->padding.get_vertical();
 
     auto hint = this->get_theme()->font.text_size("X");
     hint.width = 0;
-    hint.height += default_padding_y * 2;
+    hint.height += padding_y;
     return hint;
 }
