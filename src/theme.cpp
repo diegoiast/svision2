@@ -7,6 +7,33 @@
 
 #include "theme.h"
 
+// TODO - can we move this to Theme?
+auto draw_all_tabs(Bitmap &content, Theme &theme, bool has_focus, int selected_index,
+                   int hover_index, const std::vector<std::string_view> &names,
+                   std::function<int(int, bool, bool, std::string_view)> draw_single_tab)
+    -> std::vector<TabHeaderOffsets> {
+    auto tab_offset = std::vector<TabHeaderOffsets>();
+
+    auto offset = 0;
+    auto active_bg = Lighter(theme.colors.window_background);
+
+    theme.draw_widget_background(content, has_focus);
+    tab_offset.clear();
+    tab_offset.resize(names.size());
+    auto i = 0;
+    for (auto tab_name : names) {
+        auto is_active_tab = i == selected_index;
+        auto is_hover = i == hover_index;
+        auto size = draw_single_tab(offset, is_active_tab, is_hover, tab_name);
+        tab_offset[i] = {offset, size};
+        offset += size;
+        i++;
+    }
+
+    content.fill_rect(0, content.size.height - 1, content.size.width, 2, active_bg);
+    return tab_offset;
+}
+
 auto Theme::draw_frame(Bitmap &content, Position position, Size size, FrameStyles style,
                        FrameSize frame_size) -> void {
 
@@ -846,16 +873,12 @@ auto ThemePlasma::draw_tabs(Bitmap &content, const bool has_focus,
                             const std::vector<std::string_view> &names, int selecetd_index,
                             int hover_index) -> std::vector<TabHeaderOffsets> {
 
-    auto tab_offset = std::vector<TabHeaderOffsets>();
-
-    auto offset = 0;
-    auto active_bg = Lighter(colors.window_background);
-    auto draw_single_tab = [this, &content, active_bg](int offset, bool is_active_tab,
-                                                       bool is_hover, std::string_view tab_name,
-                                                       FontProvider &font) -> int {
+    auto draw_single_tab = [&content, this](int offset, bool is_active_tab, bool is_hover,
+                                            std::string_view tab_name) {
         // TODO - padding should come from the widget definition
         auto padding_x = 10;
         auto padding_y = 10;
+        auto active_bg = Lighter(colors.window_background);
         auto tab_size = font.text_size(tab_name);
         if (is_active_tab) {
             content.fill_rect(offset, 0, tab_size.width + padding_x * 2,
@@ -873,19 +896,6 @@ auto ThemePlasma::draw_tabs(Bitmap &content, const bool has_focus,
         return tab_size.width + padding_x * 2;
     };
 
-    draw_widget_background(content, has_focus);
-    tab_offset.clear();
-    tab_offset.resize(names.size());
-    auto i = 0;
-    for (auto tab_name : names) {
-        auto is_active_tab = i == selecetd_index;
-        auto is_hover = i == hover_index;
-        auto size = draw_single_tab(offset, is_active_tab, is_hover, tab_name, font);
-        tab_offset[i] = {offset, size};
-        offset += size;
-        i++;
-    }
-
-    content.fill_rect(0, content.size.height - 1, content.size.width, 2, active_bg);
-    return tab_offset;
+    return draw_all_tabs(content, *this, has_focus, selecetd_index, hover_index, names,
+                         draw_single_tab);
 }
