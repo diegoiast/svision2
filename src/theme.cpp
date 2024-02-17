@@ -7,33 +7,6 @@
 
 #include "theme.h"
 
-// TODO - can we move this to Theme?
-auto draw_all_tabs(Bitmap &content, Theme &theme, bool has_focus, int selected_index,
-                   int hover_index, const std::vector<std::string_view> &names,
-                   std::function<int(int, bool, bool, std::string_view)> draw_single_tab)
-    -> std::vector<TabHeaderOffsets> {
-    auto tab_offset = std::vector<TabHeaderOffsets>();
-
-    auto offset = 0;
-    auto active_bg = Lighter(theme.colors.window_background);
-
-    theme.draw_widget_background(content, has_focus);
-    tab_offset.clear();
-    tab_offset.resize(names.size());
-    auto i = 0;
-    for (auto tab_name : names) {
-        auto is_active_tab = i == selected_index;
-        auto is_hover = i == hover_index;
-        auto size = draw_single_tab(offset, is_active_tab, is_hover, tab_name);
-        tab_offset[i] = {offset, size};
-        offset += size;
-        i++;
-    }
-
-    content.fill_rect(0, content.size.height - 1, content.size.width, 2, active_bg);
-    return tab_offset;
-}
-
 auto Theme::draw_frame(Bitmap &content, Position position, Size size, FrameStyles style,
                        FrameSize frame_size) -> void {
 
@@ -99,6 +72,30 @@ auto Theme::draw_frame(Bitmap &content, Position position, Size size, FrameStyle
     case FrameStyles::NoFrame:
         break;
     }
+}
+
+auto Theme::draw_tabs(Bitmap &content, bool has_focus, int selected_index, int hover_index,
+                      const std::vector<std::string_view> &names) -> std::vector<TabHeaderOffsets> {
+    auto tab_offset = std::vector<TabHeaderOffsets>();
+
+    auto offset = 0;
+    auto active_bg = Lighter(colors.window_background);
+
+    draw_widget_background(content, has_focus);
+    tab_offset.clear();
+    tab_offset.resize(names.size());
+    auto i = 0;
+    for (auto tab_name : names) {
+        auto is_active_tab = i == selected_index;
+        auto is_hover = i == hover_index;
+        auto size = draw_single_tab(content, offset, is_active_tab, is_hover, tab_name);
+        tab_offset[i] = {offset, size};
+        offset += size;
+        i++;
+    }
+
+    content.fill_rect(0, content.size.height - 1, content.size.width, 2, active_bg);
+    return tab_offset;
 }
 
 auto ThemeRedmond::get_light_colors() -> ColorStyle {
@@ -402,10 +399,9 @@ void ThemeRedmond::draw_listview_item(Bitmap &content, const std::string_view te
     font.write(content, padding, text, text_color);
 }
 
-auto ThemeRedmond::draw_tabs(Bitmap &content, const bool has_focus,
-                             const std::vector<std::string_view> &names, int selecetd_index,
-                             int hover_index) -> std::vector<TabHeaderOffsets> {
-    // TODO
+auto ThemeRedmond::draw_single_tab(Bitmap &content, const int offset, const bool is_active,
+                                   const bool is_hover, const std::string_view name) -> int {
+    // todo
 }
 
 auto ThemeVision::draw_widget_background(Bitmap &content, bool has_focus) -> void {
@@ -659,9 +655,8 @@ void ThemeVision::draw_listview_item(Bitmap &content, const std::string_view tex
     font.write(content, centered, text, text_color);
 }
 
-auto ThemeVision::draw_tabs(Bitmap &content, const bool has_focus,
-                            const std::vector<std::string_view> &names, int selecetd_index,
-                            int hover_index) -> std::vector<TabHeaderOffsets> {
+auto ThemeVision::draw_single_tab(Bitmap &content, const int offset, const bool is_active,
+                                  const bool is_hover, const std::string_view name) -> int {
     // TODO
 }
 
@@ -869,33 +864,27 @@ void ThemePlasma::draw_listview_item(Bitmap &content, const std::string_view tex
     font.write(content, centered, text, text_color);
 }
 
-auto ThemePlasma::draw_tabs(Bitmap &content, const bool has_focus,
-                            const std::vector<std::string_view> &names, int selecetd_index,
-                            int hover_index) -> std::vector<TabHeaderOffsets> {
+auto ThemePlasma::draw_single_tab(Bitmap &content, const int offset, const bool is_active,
+                                  const bool is_hover, const std::string_view name) -> int {
 
-    auto draw_single_tab = [&content, this](int offset, bool is_active_tab, bool is_hover,
-                                            std::string_view tab_name) {
-        // TODO - padding should come from the widget definition
-        auto padding_x = 10;
-        auto padding_y = 10;
-        auto active_bg = Lighter(colors.window_background);
-        auto tab_size = font.text_size(tab_name);
-        if (is_active_tab) {
-            content.fill_rect(offset, 0, tab_size.width + padding_x * 2,
-                              tab_size.height + padding_y * 2, active_bg);
-            draw_frame(content, {offset, 0},
-                       {tab_size.width + padding_x * 2, tab_size.height + padding_y * 2},
-                       FrameStyles::Normal, FrameSize::SingleFrame);
-        }
-        if (is_active_tab) {
-            is_hover = false;
-        }
-        font.write(content, {offset + padding_x, padding_y}, tab_name,
-                   is_hover ? Lighter(colors.button_selected_text, 0.3)
+    // TODO - padding should come from the widget definition
+    auto padding_x = 10;
+    auto padding_y = 10;
+    auto active_bg = Lighter(colors.window_background);
+    auto tab_size = font.text_size(name);
+    auto is_tab_hover = is_hover;
+    if (is_active) {
+        content.fill_rect(offset, 0, tab_size.width + padding_x * 2,
+                          tab_size.height + padding_y * 2, active_bg);
+        draw_frame(content, {offset, 0},
+                   {tab_size.width + padding_x * 2, tab_size.height + padding_y * 2},
+                   FrameStyles::Normal, FrameSize::SingleFrame);
+    }
+    if (is_active) {
+        is_tab_hover = false;
+    }
+    font.write(content, {offset + padding_x, padding_y}, name,
+               is_tab_hover ? Lighter(colors.button_selected_text, 0.3)
                             : colors.button_selected_text);
-        return tab_size.width + padding_x * 2;
-    };
-
-    return draw_all_tabs(content, *this, has_focus, selecetd_index, hover_index, names,
-                         draw_single_tab);
+    return tab_size.width + padding_x * 2;
 }

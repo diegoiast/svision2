@@ -42,7 +42,7 @@ auto TabHeader::get_tab_string(int index) const -> std::string_view {
 auto TabHeader::draw() -> void {
     auto theme = get_theme();
     auto hover_tab_index = mouse_over ? hover_tab : -1;
-    tab_offset = theme->draw_tabs(content, has_focus, names, active_tab, hover_tab_index);
+    tab_offset = theme->draw_tabs(content, has_focus, active_tab, hover_tab_index, names);
 }
 
 auto TabHeader::on_mouse_click(const EventMouse &event) -> EventPropagation {
