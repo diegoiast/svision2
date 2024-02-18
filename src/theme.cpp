@@ -45,7 +45,7 @@ auto Theme::draw_frame(Bitmap &content, Position position, Size size, FrameStyle
         case FrameSize::TrippleFrame:
             // Not really supported
         case FrameSize::DoubleFrame:
-            content.draw_rectangle(1, 1, size.width - 2, size.height - 2,
+            content.draw_rectangle(position.x + 1, position.y + 1, size.width - 2, size.height - 2,
                                    colors.frame_disabled_color3, colors.frame_disabled_color4);
         case FrameSize::SingleFrame:
             content.draw_rectangle(position.x, position.y, size.width, size.height,
@@ -59,8 +59,8 @@ auto Theme::draw_frame(Bitmap &content, Position position, Size size, FrameStyle
         case FrameSize::TrippleFrame:
             // Not really supported
         case FrameSize::DoubleFrame:
-            content.draw_rectangle(1, 1, size.width - 2, size.height - 2, colors.frame_hover_color3,
-                                   colors.frame_hover_color4);
+            content.draw_rectangle(position.x + 1, position.y + 1, size.width - 2, size.height - 2,
+                                   colors.frame_hover_color3, colors.frame_hover_color4);
         case FrameSize::SingleFrame:
             content.draw_rectangle(position.x, position.y, size.width, size.height,
                                    colors.frame_hover_color1, colors.frame_hover_color2);
@@ -79,9 +79,12 @@ auto Theme::draw_tabs(Bitmap &content, bool has_focus, int selected_index, int h
     auto tab_offset = std::vector<TabHeaderOffsets>();
 
     auto offset = 0;
-    auto active_bg = Lighter(colors.window_background);
+    auto bottom_frame_color1 = colors.frame_normal_color3;
+    auto bottom_frame_color2 = colors.window_background;
 
     draw_widget_background(content, has_focus);
+    content.fill_rect(0, content.size.height - 2, content.size.width, 2, bottom_frame_color2);
+    content.fill_rect(0, content.size.height - 3, content.size.width, 1, bottom_frame_color1);
     tab_offset.clear();
     tab_offset.resize(names.size());
     auto i = 0;
@@ -94,7 +97,6 @@ auto Theme::draw_tabs(Bitmap &content, bool has_focus, int selected_index, int h
         i++;
     }
 
-    content.fill_rect(0, content.size.height - 1, content.size.width, 2, active_bg);
     return tab_offset;
 }
 
@@ -401,7 +403,32 @@ void ThemeRedmond::draw_listview_item(Bitmap &content, const std::string_view te
 
 auto ThemeRedmond::draw_single_tab(Bitmap &content, const int offset, const bool is_active,
                                    const bool is_hover, const std::string_view name) -> int {
-    // todo
+    // TODO - padding should come from the widget definition
+    auto padding_x = 10;
+    auto padding_y = 10;
+    auto active_bg = (colors.window_background);
+    auto is_tab_hover = is_hover;
+    auto tab_size = font.text_size(name);
+    tab_size.width += padding_x * 2;
+    tab_size.height += padding_y * 2;
+
+    if (is_active) {
+        content.fill_rect(offset, 0, tab_size.width, tab_size.height, active_bg);
+        draw_frame(content, {offset, 0}, {tab_size.width, tab_size.height}, FrameStyles::Normal,
+                   FrameSize::SingleFrame);
+        content.fill_rect(offset, tab_size.height - 1, tab_size.width, 2, active_bg);
+
+    } else {
+        if (is_hover) {
+            content.fill_rect(offset, 0, tab_size.width, tab_size.height - 3,
+                              Lighter(active_bg, 0.05));
+        }
+    }
+    if (is_active) {
+        is_tab_hover = false;
+    }
+    font.write(content, {offset + padding_x, padding_y}, name, colors.text_color);
+    return tab_size.width;
 }
 
 auto ThemeVision::draw_widget_background(Bitmap &content, bool has_focus) -> void {
@@ -870,15 +897,27 @@ auto ThemePlasma::draw_single_tab(Bitmap &content, const int offset, const bool 
     // TODO - padding should come from the widget definition
     auto padding_x = 10;
     auto padding_y = 10;
-    auto active_bg = Lighter(colors.window_background);
-    auto tab_size = font.text_size(name);
     auto is_tab_hover = is_hover;
+    auto active_bg = colors.window_background;
+    auto tab_size = font.text_size(name);
+
+    tab_size.width += padding_x * 2;
+    tab_size.height += padding_y * 2;
+
     if (is_active) {
-        content.fill_rect(offset, 0, tab_size.width + padding_x * 2,
-                          tab_size.height + padding_y * 2, active_bg);
-        draw_frame(content, {offset, 0},
-                   {tab_size.width + padding_x * 2, tab_size.height + padding_y * 2},
-                   FrameStyles::Normal, FrameSize::SingleFrame);
+        content.fill_rect(offset, 0, tab_size.width, tab_size.height, active_bg);
+        //        draw_frame(content, {offset, 0}, {tab_size.width, tab_size.height},
+        //        FrameStyles::Hover,
+        //                   FrameSize::SingleFrame);
+        content.fill_rect(offset, 0, tab_size.width, 3, colors.frame_hover_color3);
+        content.fill_rect(offset, tab_size.height - 2, tab_size.width, 2, active_bg);
+    } else {
+        content.fill_rect(offset, 0, tab_size.width, tab_size.height, Darker(active_bg));
+        auto bottom_frame_color1 = colors.frame_normal_color3;
+        auto bottom_frame_color2 = colors.window_background;
+
+        content.fill_rect(offset, tab_size.height - 2, tab_size.width, 2, bottom_frame_color2);
+        content.fill_rect(offset, tab_size.height - 3, tab_size.width, 1, bottom_frame_color1);
     }
     if (is_active) {
         is_tab_hover = false;
@@ -886,5 +925,5 @@ auto ThemePlasma::draw_single_tab(Bitmap &content, const int offset, const bool 
     font.write(content, {offset + padding_x, padding_y}, name,
                is_tab_hover ? Lighter(colors.button_selected_text, 0.3)
                             : colors.button_selected_text);
-    return tab_size.width + padding_x * 2;
+    return tab_size.width;
 }
