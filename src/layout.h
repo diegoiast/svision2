@@ -15,33 +15,6 @@
 
 struct Widget;
 
-struct LayoutParams {
-    int top = 0;
-    int bottom = 0;
-    int start = 0;
-    int end = 0;
-
-    auto set_horizontal(int value) {
-        start = value;
-        end = value;
-    }
-
-    auto set_vertical(int value) {
-        top = value;
-        bottom = value;
-    }
-
-    auto set(int value) {
-        top = value;
-        bottom = value;
-        start = value;
-        end = value;
-    }
-
-    auto get_horizontal() const -> auto { return start + end; }
-    auto get_vertical() const -> auto { return top + bottom; }
-};
-
 struct LayoutItem {
     std::list<std::shared_ptr<LayoutItem>> sub_items;
     std::function<void(LayoutItem &, int)> on_item_added;

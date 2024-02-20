@@ -75,7 +75,8 @@ auto Theme::draw_frame(Bitmap &content, Position position, Size size, FrameStyle
 }
 
 auto Theme::draw_tabs(Bitmap &content, bool has_focus, int selected_index, int hover_index,
-                      const std::vector<std::string_view> &names) -> std::vector<TabHeaderOffsets> {
+                      const LayoutParams &padding, const std::vector<std::string_view> &names)
+    -> std::vector<TabHeaderOffsets> {
     auto tab_offset = std::vector<TabHeaderOffsets>();
 
     auto offset = 0;
@@ -91,7 +92,7 @@ auto Theme::draw_tabs(Bitmap &content, bool has_focus, int selected_index, int h
     for (auto tab_name : names) {
         auto is_active_tab = i == selected_index;
         auto is_hover = i == hover_index;
-        auto size = draw_single_tab(content, offset, is_active_tab, is_hover, tab_name);
+        auto size = draw_single_tab(content, offset, is_active_tab, is_hover, padding, tab_name);
         tab_offset[i] = {offset, size};
         offset += size;
         i++;
@@ -402,15 +403,14 @@ void ThemeRedmond::draw_listview_item(Bitmap &content, const std::string_view te
 }
 
 auto ThemeRedmond::draw_single_tab(Bitmap &content, const int offset, const bool is_active,
-                                   const bool is_hover, const std::string_view name) -> int {
-    // TODO - padding should come from the widget definition
-    auto padding_x = 10;
-    auto padding_y = 10;
+                                   const bool is_hover, const LayoutParams &padding,
+                                   const std::string_view name) -> int {
     auto active_bg = (colors.window_background);
     auto is_tab_hover = is_hover;
     auto tab_size = font.text_size(name);
-    tab_size.width += padding_x * 2;
-    tab_size.height += padding_y * 2;
+
+    tab_size.width += padding.get_horizontal();
+    tab_size.height += padding.get_vertical();
 
     if (is_active) {
         content.fill_rect(offset, 0, tab_size.width, tab_size.height, active_bg);
@@ -427,7 +427,7 @@ auto ThemeRedmond::draw_single_tab(Bitmap &content, const int offset, const bool
     if (is_active) {
         is_tab_hover = false;
     }
-    font.write(content, {offset + padding_x, padding_y}, name, colors.text_color);
+    font.write(content, {offset + padding.start, padding.top}, name, colors.text_color);
     return tab_size.width;
 }
 
@@ -683,7 +683,8 @@ void ThemeVision::draw_listview_item(Bitmap &content, const std::string_view tex
 }
 
 auto ThemeVision::draw_single_tab(Bitmap &content, const int offset, const bool is_active,
-                                  const bool is_hover, const std::string_view name) -> int {
+                                  const bool is_hover, const LayoutParams &padding,
+                                  const std::string_view name) -> int {
     // TODO
 }
 
@@ -892,17 +893,13 @@ void ThemePlasma::draw_listview_item(Bitmap &content, const std::string_view tex
 }
 
 auto ThemePlasma::draw_single_tab(Bitmap &content, const int offset, const bool is_active,
-                                  const bool is_hover, const std::string_view name) -> int {
-
-    // TODO - padding should come from the widget definition
-    auto padding_x = 10;
-    auto padding_y = 10;
+                                  const bool is_hover, const LayoutParams &padding,
+                                  const std::string_view name) -> int {
     auto is_tab_hover = is_hover;
     auto active_bg = colors.window_background;
     auto tab_size = font.text_size(name);
-
-    tab_size.width += padding_x * 2;
-    tab_size.height += padding_y * 2;
+    tab_size.width += padding.get_horizontal();
+    tab_size.height += padding.get_vertical();
 
     if (is_active) {
         content.fill_rect(offset, 0, tab_size.width, tab_size.height, active_bg);
@@ -922,7 +919,7 @@ auto ThemePlasma::draw_single_tab(Bitmap &content, const int offset, const bool 
     if (is_active) {
         is_tab_hover = false;
     }
-    font.write(content, {offset + padding_x, padding_y}, name,
+    font.write(content, {offset + padding.start, padding.top}, name,
                is_tab_hover ? Lighter(colors.button_selected_text, 0.3)
                             : colors.button_selected_text);
     return tab_size.width;
