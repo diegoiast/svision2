@@ -75,9 +75,8 @@ struct Theme {
     virtual auto draw_scrollbar_background(Bitmap &content) -> void = 0;
     virtual auto draw_button(Bitmap &content, bool has_focus, bool is_default, bool is_enabled,
                              ButtonStates state, const std::string &text) -> void = 0;
-    virtual auto draw_checkbox(Bitmap &content, bool has_focus, bool is_enabled,
-                               bool is_checked, ButtonStates state,
-                               const std::string &text, CheckboxShape shape)
+    virtual auto draw_checkbox(Bitmap &content, bool has_focus, bool is_enabled, bool is_checked,
+                               ButtonStates state, const std::string &text, CheckboxShape shape)
         -> void = 0;
 
     // TODO - missing disabled state
@@ -121,9 +120,7 @@ struct ThemeRedmond : Theme {
     virtual auto draw_single_tab(Bitmap &content, const int offset, const bool is_active,
                                  const bool is_hover, const std::string_view name) -> int override;
 
-    virtual auto needs_frame_for_focus() const -> bool override {
-      return true;
-    };
+    virtual auto needs_frame_for_focus() const -> bool override { return true; };
     virtual auto scrollbar_size() const -> int override { return 24; };
 
     virtual auto modify_frame_on_hover() const -> bool override { return false; }
