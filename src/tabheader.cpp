@@ -7,6 +7,7 @@
 
 #include "tabheader.h"
 #include "theme.h"
+#include <iso646.h>
 #include <spdlog/spdlog.h>
 
 TabHeader::TabHeader() : Widget() {
