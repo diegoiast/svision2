@@ -138,6 +138,10 @@ auto TextField::on_keyboard(const EventKeyboard &event) -> EventPropagation {
         }
         result = EventPropagation::handled;
         break;
+    case KeyCodes::Escape:
+        select_none();
+        invalidate();
+        break;
     default:
         // TODO handle non ascii input
         auto is_control_pressed = event.is_control_pressed();
