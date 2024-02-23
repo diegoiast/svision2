@@ -44,8 +44,8 @@ auto TextField::draw() -> void {
     // TODO - unmanaged color writing in a widget
     // TODO handle partial selection
     if (selection_width != 0) {
-        content.fill_rect(padding.start - 1, padding.get_vertical() - 1, selection_width + 1,
-                          content.size.height - padding.get_vertical() - 2,
+        content.fill_rect(padding.start, padding.top, selection_width,
+                          content.size.height - padding.get_vertical(),
                           theme->colors.text_selection_background);
     }
     theme->font.write(content, Position{padding.start, center_y}, display_text,
@@ -53,8 +53,8 @@ auto TextField::draw() -> void {
 
     if (this->cursor_on && this->has_focus) {
         auto position_x = padding.start + (cursor_position - display_from) * 8;
-        content.draw_rectangle(position_x, padding.get_vertical(), 1,
-                               content.size.height - padding.get_vertical() * 2, 0, 0);
+        content.draw_rectangle(position_x, padding.top, 1,
+                               content.size.height - padding.get_vertical(), 0, 0);
     }
 }
 
@@ -181,8 +181,7 @@ auto TextField::on_mouse_click(const EventMouse &event) -> EventPropagation {
         return EventPropagation::propagate;
     }
 
-    auto padding = 5;
-    auto pos = (event.x - padding) / 8;
+    auto pos = (event.x - padding.start) / 8;
     cursor_position = display_from + pos;
     cursor_position = std::min((size_t)cursor_position, text.length());
     cursor_on = true;
@@ -206,9 +205,7 @@ auto TextField::on_remove() -> void { timer.stop(); }
 auto TextField::size_hint() const -> Size {
     // TODO: Size of text is not correct. We also need to calculate the yMin and yMax for example
     auto s = get_theme()->font.text_size(get_text());
-    auto padding_x = this->padding.get_horizontal();
-    auto padding_y = this->padding.get_vertical();
-    return {0, s.height * 2 + padding_y};
+    return {0, s.height + padding.get_vertical()};
 }
 
 auto TextField::select_all() -> void {
@@ -231,13 +228,13 @@ auto TextField::get_selected_text() -> const std::string {
 }
 
 auto TextField::ensure_cursor_visible() -> void {
-    auto padding = 5;
-    auto max_x_position = content.size.width - padding * 2;
-    auto cursor_visual_position = (cursor_position - display_from) * 8 + padding;
+    auto padding_y = this->padding.get_horizontal();
+    auto max_x_position = content.size.width - padding_y;
+    auto cursor_visual_position = (cursor_position - display_from) * 8 + padding_y;
 
     while (cursor_visual_position > max_x_position) {
         display_from++;
-        cursor_visual_position = (cursor_position - display_from) * 8 + padding;
+        cursor_visual_position = (cursor_position - display_from) * 8 + padding_y;
     }
     while (display_from > cursor_position) {
         display_from = cursor_position - 1;
