@@ -193,6 +193,7 @@ struct PlatformWindow {
         }
         // TODO - this needs to be a setter - do we can set all children's window as well
         widget->parent = &main_widget;
+        widget->padding = platform->default_theme->defaultPadding;
         return widget;
     };
 };

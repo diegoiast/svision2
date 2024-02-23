@@ -128,20 +128,19 @@ struct ComboboxList : ListView {
 };
 
 auto Combobox::size_hint() const -> Size {
-    // TODO: Size of text is not correct. We also need to calculate the yMin and yMax for example
-    // TODO: we need API in font provider to get the text height
     auto s = get_theme()->font.text_size("X");
-    //    auto padding_x = this->padding.get_horizontal();
-    auto padding_y = this->padding.get_vertical();
-    return {0, s.height * 2 + padding_y};
+    return {0, s.height + this->padding.get_vertical()};
 }
 
 auto Combobox::on_resize() -> void {
-    // TODO - find a better size - according to the theme + font size
-    //    auto button_size = content.size.height;
-    auto button_size = 22;
-    auto p = Position{content.size.width - button_size, 0};
-    popup_button->position = p;
+    auto s = get_theme()->font.text_size("X");
+    s.height += padding.get_vertical();
+    s.width = s.height;
+
+    auto p = Position{content.size.width - s.height, 0};
+    this->popup_button->position = p;
+    this->popup_button->content.resize(s);
+    this->popup_button->invalidate();
 }
 
 auto Combobox::show_popup() -> void {
