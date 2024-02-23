@@ -153,6 +153,11 @@ auto ThemeRedmond::get_dark_colors() -> ColorStyle {
     return colors;
 }
 
+ThemeRedmond::ThemeRedmond(FontProvider &f) : Theme(f) {
+    colors = get_light_colors();
+    defaultPadding.set_vertical(5);
+}
+
 auto ThemeRedmond::draw_widget_background(Bitmap &content, bool has_focus) -> void {
     content.fill(colors.window_background);
 }

@@ -103,7 +103,7 @@ struct ThemeRedmond : Theme {
     static auto get_light_colors() -> ColorStyle;
     static auto get_dark_colors() -> ColorStyle;
 
-    explicit ThemeRedmond(FontProvider &f) : Theme(f) { colors = get_light_colors(); }
+    explicit ThemeRedmond(FontProvider &f);
 
     virtual auto init() -> void override{};
     virtual auto draw_widget_background(Bitmap &content, bool has_focus) -> void override;

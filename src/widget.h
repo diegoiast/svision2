@@ -12,14 +12,14 @@
 #include <events.h>
 #include <layout.h>
 #include <mousecursors.h>
+#include <platform.h>
+#include <theme.h>
 
 #include <list>
 #include <memory>
 #include <string>
 
 struct Theme;
-struct Platform;
-struct PlatformWindow;
 struct Widget;
 
 struct WidgetCollection {
@@ -173,6 +173,7 @@ struct PlatformWindow {
             main_widget.layout->add(widget);
         }
         widget->parent = &main_widget;
+        widget->padding = platform->default_theme->defaultPadding;
         return widget;
     };
 
