@@ -691,6 +691,7 @@ auto ThemeVision::draw_single_tab(Bitmap &content, const int offset, const bool 
                                   const bool is_hover, const LayoutParams &padding,
                                   const std::string_view name) -> int {
     // TODO
+    return 0;
 }
 
 auto ThemePlasma::draw_widget_background(Bitmap &content, bool has_focus) -> void {
