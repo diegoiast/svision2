@@ -78,8 +78,8 @@ struct Theme {
     virtual auto draw_button(Bitmap &content, bool has_focus, bool is_default, bool is_enabled,
                              ButtonStates state, const std::string &text) -> void = 0;
     virtual auto draw_checkbox(Bitmap &content, bool has_focus, bool is_enabled, bool is_checked,
-                               ButtonStates state, const std::string &text, CheckboxShape shape)
-        -> void = 0;
+                               ButtonStates state, const std::string &text, CheckboxShape shape,
+                               const LayoutParams &padding) -> void = 0;
 
     // TODO - missing disabled state
     virtual auto draw_input_background(Bitmap &content, const bool has_focus) -> void = 0;
@@ -112,8 +112,8 @@ struct ThemeRedmond : Theme {
     virtual auto draw_button(Bitmap &content, bool has_focus, bool is_default, bool is_enabled,
                              ButtonStates state, const std::string &text) -> void override;
     virtual auto draw_checkbox(Bitmap &content, bool has_focus, bool is_enabled, bool is_checked,
-                               ButtonStates state, const std::string &text, CheckboxShape shape)
-        -> void override;
+                               ButtonStates state, const std::string &text, CheckboxShape shape,
+                               const LayoutParams &padding) -> void override;
     virtual auto draw_input_background(Bitmap &content, const bool has_focus) -> void override;
     virtual auto draw_listview_background(Bitmap &content, const bool has_focus,
                                           bool draw_background) -> void override;
@@ -146,8 +146,8 @@ struct ThemeVision : Theme {
     virtual auto draw_button(Bitmap &content, bool has_focus, bool is_default, bool is_enabled,
                              ButtonStates state, const std::string &text) -> void override;
     virtual auto draw_checkbox(Bitmap &content, bool has_focus, bool is_enabled, bool is_checked,
-                               ButtonStates state, const std::string &text, CheckboxShape shape)
-        -> void override;
+                               ButtonStates state, const std::string &text, CheckboxShape shape,
+                               const LayoutParams &padding) -> void override;
     virtual auto draw_input_background(Bitmap &content, const bool has_focus) -> void override;
     virtual auto draw_listview_background(Bitmap &content, const bool has_focus,
                                           bool draw_background) -> void override;
@@ -177,8 +177,8 @@ struct ThemePlasma : Theme {
     virtual auto draw_button(Bitmap &content, bool has_focus, bool is_default, bool is_enabled,
                              ButtonStates state, const std::string &text) -> void override;
     virtual auto draw_checkbox(Bitmap &content, bool has_focus, bool is_enabled, bool is_checked,
-                               ButtonStates state, const std::string &text, CheckboxShape shape)
-        -> void override;
+                               ButtonStates state, const std::string &text, CheckboxShape shape,
+                               const LayoutParams &padding) -> void override;
     virtual auto draw_input_background(Bitmap &content, const bool has_focus) -> void override;
     virtual auto draw_listview_background(Bitmap &content, const bool has_focus,
                                           const bool draw_background) -> void override;

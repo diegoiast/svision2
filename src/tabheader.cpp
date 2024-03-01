@@ -88,7 +88,7 @@ auto TabHeader::size_hint() const -> Size {
     // TODO?
     //    auto default_padding_y = 10;
     //    auto padding_x = this->padding.get_horizontal();
-    auto padding_y = this->padding.get_vertical();
+    auto padding_y = this->get_padding().get_vertical();
 
     auto hint = this->get_theme()->font.text_size("X");
     hint.width = 0;

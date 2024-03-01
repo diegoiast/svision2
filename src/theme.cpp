@@ -244,8 +244,8 @@ auto ThemeRedmond::draw_button(Bitmap &content, bool has_focus, bool is_default,
 }
 
 auto ThemeRedmond::draw_checkbox(Bitmap &content, bool has_focus, bool is_enabled, bool is_checked,
-                                 ButtonStates state, const std::string &text, CheckboxShape shape)
-    -> void {
+                                 ButtonStates state, const std::string &text, CheckboxShape shape,
+                                 const LayoutParams &padding) -> void {
     auto background_color = colors.input_background_normal;
     auto foreground_color = colors.text_color;
     auto checkbox_size = content.size.height;
@@ -298,11 +298,12 @@ auto ThemeRedmond::draw_checkbox(Bitmap &content, bool has_focus, bool is_enable
         break;
     }
 
-    auto text_padding = 2;
     auto text_size = font.text_size(text);
-    auto content_rect = content.size - (text_padding);
+    auto content_rect = content.size;
     auto centered = content_rect.centeredY(text_size);
-    centered.x += checkbox_size + text_padding;
+    content_rect.width -= padding.get_horizontal();
+    content_rect.height -= padding.get_vertical();
+    centered.x += checkbox_size + padding.start;
     font.write(content, centered, text, is_enabled ? foreground_color : colors.text_color_disabled);
 
     if (is_checked) {
@@ -489,8 +490,8 @@ auto ThemeVision::draw_button(Bitmap &content, bool has_focus, bool is_default, 
 }
 
 auto ThemeVision::draw_checkbox(Bitmap &content, bool has_focus, bool is_enabled, bool is_checked,
-                                ButtonStates state, const std::string &text, CheckboxShape shape)
-    -> void {
+                                ButtonStates state, const std::string &text, CheckboxShape shape,
+                                const LayoutParams &padding3) -> void {
     auto background_color = colors.window_background;
     auto checkbox_size = content.size.height;
     auto checkbox_color = colors.frame_hover_color1;
@@ -774,8 +775,8 @@ auto ThemePlasma::draw_button(Bitmap &content, bool has_focus, bool is_default, 
 }
 
 auto ThemePlasma::draw_checkbox(Bitmap &content, bool has_focus, bool is_enabled, bool is_checked,
-                                ButtonStates state, const std::string &text, CheckboxShape shape)
-    -> void {
+                                ButtonStates state, const std::string &text, CheckboxShape shape,
+                                const LayoutParams &padding3) -> void {
     auto background_color = colors.window_background;
     auto foreground_color = colors.text_color;
     auto checkbox_size = content.size.height;
@@ -811,7 +812,7 @@ auto ThemePlasma::draw_checkbox(Bitmap &content, bool has_focus, bool is_enabled
     content.fill(background_color);
     {
         auto padding = 3;
-        auto p = Position{padding, padding};
+        auto p = Position{0, 1};
         auto w = Size{checkbox_size - padding * 2, checkbox_size - padding * 2};
         auto m = checkbox_size / 2;
 
@@ -839,9 +840,9 @@ auto ThemePlasma::draw_checkbox(Bitmap &content, bool has_focus, bool is_enabled
         }
     }
 
-    {
+    if (0) {
         auto padding = 5;
-        auto p = Position{padding, padding};
+        auto p = Position{2, 3};
         auto w = Size{checkbox_size - padding * 2, checkbox_size - padding * 2};
         auto m = checkbox_size / 2;
 
@@ -857,7 +858,8 @@ auto ThemePlasma::draw_checkbox(Bitmap &content, bool has_focus, bool is_enabled
         }
     }
 
-    auto centered = Position{checkbox_size + 5, 5};
+    auto centered = Position{content.size.height + padding3.start, 0};
+    //    content.size.centeredY(centered, padding3.start);
     font.write(content, centered, text, is_enabled ? foreground_color : colors.text_color_disabled);
 }
 

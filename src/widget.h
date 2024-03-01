@@ -97,6 +97,7 @@ struct Widget : std::enable_shared_from_this<Widget>, LayoutItem {
     auto show() -> void;
     auto hide() -> void;
     auto is_visible() const -> bool { return is_widget_visible; }
+    auto get_padding() const -> LayoutParams;
 
     auto relayout(Position position, const Size size) -> void override {
         this->position = position;
@@ -173,7 +174,6 @@ struct PlatformWindow {
             main_widget.layout->add(widget);
         }
         widget->parent = &main_widget;
-        widget->padding = platform->default_theme->defaultPadding;
         return widget;
     };
 
@@ -193,7 +193,6 @@ struct PlatformWindow {
         }
         // TODO - this needs to be a setter - do we can set all children's window as well
         widget->parent = &main_widget;
-        widget->padding = platform->default_theme->defaultPadding;
         return widget;
     };
 };

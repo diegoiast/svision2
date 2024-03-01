@@ -457,6 +457,16 @@ auto Widget::hide() -> void {
     invalidate();
 }
 
+auto Widget::get_padding() const -> LayoutParams {
+    if (padding.is_valid()) {
+        return padding;
+    }
+    if (theme) {
+        return theme->defaultPadding;
+    }
+    return {};
+}
+
 PlatformWindow::PlatformWindow() {
     main_widget.layout = std::make_shared<VerticalLayout>();
     main_widget.layout->padding.set_vertical(5);

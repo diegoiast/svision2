@@ -9,9 +9,6 @@
 #include "theme.h"
 #include <button.h>
 
-// TODO - this should be part of the theme.
-auto constexpr default_buttons_size = 24;
-
 auto make_buttons(ScrollBar &sb, int length, bool horizontal) {
     // todo
     // TODO button size is found in the theme. Theme is not set up until the
@@ -20,6 +17,8 @@ auto make_buttons(ScrollBar &sb, int length, bool horizontal) {
     // event exist yet.
     // TODO button text should be images (?). However - buttons do not support
     // images yet.
+    auto default_buttons_size =
+        horizontal ? sb.get_padding().get_vertical() : sb.get_padding().get_horizontal();
     auto button_size = Size{default_buttons_size, default_buttons_size};
 
     if (horizontal) {
@@ -113,9 +112,9 @@ auto ScrollBar::on_resize() -> void {
 
 auto ScrollBar::size_hint() const -> Size {
     if (is_horizontal)
-        return {0, default_buttons_size};
+        return {0, get_padding().get_vertical()};
     else
-        return {default_buttons_size, 0};
+        return {get_padding().get_horizontal(), 0};
 }
 
 auto ScrollBar::set_value(int value) -> void {

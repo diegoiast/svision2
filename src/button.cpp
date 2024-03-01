@@ -157,12 +157,10 @@ auto Button::on_keyboard(const EventKeyboard &event) -> EventPropagation {
 }
 
 Size Button::size_hint() const {
-    //    return {0, 0};
     // TODO: Size of text is not correct. We also need to calculate the yMin and yMax for example
     auto s = get_theme()->font.text_size(text);
-    auto padding_x = this->padding.get_horizontal();
-    auto padding_y = this->padding.get_vertical();
-    //    return {s.width + padding_x, s.height * 2 + padding_y};
+    auto p = get_padding();
+    auto padding_y = p.get_vertical();
     return {0, s.height * 1 + padding_y};
 }
 

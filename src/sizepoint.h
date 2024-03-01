@@ -122,4 +122,5 @@ struct LayoutParams {
 
     auto get_horizontal() const -> auto { return start + end; }
     auto get_vertical() const -> auto { return top + bottom; }
+    auto is_valid() const -> bool { return top != 0 && bottom != 0 && start != 0 && end != 0; }
 };

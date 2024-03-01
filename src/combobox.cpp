@@ -129,7 +129,7 @@ struct ComboboxList : ListView {
 
 auto Combobox::size_hint() const -> Size {
     auto s = get_theme()->font.text_size("X");
-    return {0, s.height + this->padding.get_vertical()};
+    return {0, s.height + this->get_padding().get_vertical()};
 }
 
 auto Combobox::on_resize() -> void {
