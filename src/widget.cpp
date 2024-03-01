@@ -424,7 +424,10 @@ auto Widget::get_theme() const -> std::shared_ptr<Theme> {
         }
         p = p->parent;
     }
-    return window->main_widget.theme;
+    if (window) {
+        window->main_widget.theme;
+    }
+    return {};
 }
 
 auto Widget::get_cursor() const -> MouseCursor {
@@ -461,8 +464,9 @@ auto Widget::get_padding() const -> LayoutParams {
     if (padding.is_valid()) {
         return padding;
     }
-    if (theme) {
-        return theme->defaultPadding;
+    auto t = get_theme();
+    if (t) {
+        return t->defaultPadding;
     }
     return {};
 }
