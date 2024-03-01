@@ -15,7 +15,8 @@ auto on_radio_button_selected(RadioButtonGroup &group, Checkbox &checkbox) -> vo
     for (auto &cb : group.radio_buttons) {
         if (cb.get() == &checkbox) {
             cb->set_checked(EventPropagation::handled);
-            group.on_selected(index, checkbox);
+            if (group.on_selected)
+                group.on_selected(index, checkbox);
         } else {
             cb->set_unchecked(EventPropagation::handled);
         }
