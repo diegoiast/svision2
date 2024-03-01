@@ -155,7 +155,8 @@ auto ThemeRedmond::get_dark_colors() -> ColorStyle {
 
 ThemeRedmond::ThemeRedmond(FontProvider &f) : Theme(f) {
     colors = get_light_colors();
-    defaultPadding.set_vertical(5);
+    defaultPadding.set_vertical(2);
+    defaultPadding.set_horizontal(5);
 }
 
 auto ThemeRedmond::draw_widget_background(Bitmap &content, bool has_focus) -> void {
@@ -840,7 +841,7 @@ auto ThemePlasma::draw_checkbox(Bitmap &content, bool has_focus, bool is_enabled
         }
     }
 
-    if (0) {
+    {
         auto padding = 5;
         auto p = Position{2, 3};
         auto w = Size{checkbox_size - padding * 2, checkbox_size - padding * 2};
@@ -858,8 +859,8 @@ auto ThemePlasma::draw_checkbox(Bitmap &content, bool has_focus, bool is_enabled
         }
     }
 
-    auto centered = Position{content.size.height + padding3.start, 0};
-    //    content.size.centeredY(centered, padding3.start);
+    auto centered = content.size.centeredY(padding3);
+    centered.x = checkbox_size;
     font.write(content, centered, text, is_enabled ? foreground_color : colors.text_color_disabled);
 }
 
