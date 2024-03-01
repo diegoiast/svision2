@@ -27,6 +27,7 @@ struct WidgetCollection {
     std::shared_ptr<Widget> last_overed_widget;
     std::shared_ptr<Widget> focused_widget;
     int max_focus_index = 1;
+    bool debug = true;
 
     auto add(std::shared_ptr<Widget> widget, PlatformWindow *window) -> std::shared_ptr<Widget>;
 
