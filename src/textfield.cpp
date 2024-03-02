@@ -19,7 +19,6 @@ TextField::TextField(Position position, Size size) : Widget(position, size, 0) {
         invalidate();
     };
     timer.initialize();
-    this->padding.set(5);
     this->can_focus = true;
     this->draw_background = false;
     this->frame = {FrameStyles::Reversed, FrameSize::SingleFrame};
