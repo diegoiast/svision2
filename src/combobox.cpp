@@ -134,7 +134,7 @@ auto Combobox::size_hint() const -> Size {
 
 auto Combobox::on_resize() -> void {
     auto s = get_theme()->font.text_size("X");
-    s.height += padding.get_vertical();
+    s.height += get_padding().get_vertical();
     s.width = s.height;
 
     auto p = Position{content.size.width - s.height, 0};
