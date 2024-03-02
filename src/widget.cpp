@@ -507,7 +507,6 @@ auto PlatformWindow::set_cursor(MouseCursor cursor) -> void {
     }
 
     if (platform) {
-        spdlog::info("Setting cursor: {}", (int)cursor);
         platform->set_cursor(*this, cursor);
     } else {
         spdlog::error("Window without platform!");
