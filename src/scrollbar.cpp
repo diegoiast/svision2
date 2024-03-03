@@ -10,11 +10,6 @@
 #include <button.h>
 
 auto make_buttons(ScrollBar &sb, int length, bool horizontal) {
-    // todo
-    // TODO button size is found in the theme. Theme is not set up until the
-    // widget is added to window. Which means - all this code should be called
-    // inside a callback which gets called when added to a window. No such
-    // event exist yet.
     // TODO button text should be images (?). However - buttons do not support
     // images yet.
     auto default_buttons_size =
@@ -62,6 +57,9 @@ auto make_buttons(ScrollBar &sb, int length, bool horizontal) {
             sb.up_button->content.resize(button_size);
         }
     }
+
+    sb.up_button->invalidate();
+    sb.down_button->invalidate();
 }
 
 ScrollBar::ScrollBar(Position position, int length, bool horizontal, int maximum)
