@@ -398,8 +398,7 @@ auto ThemeRedmond::draw_listview_background(Bitmap &content, const bool has_focu
 
 void ThemeRedmond::draw_listview_item(Bitmap &content, const std::string_view text,
                                       const ItemStatus status, const bool is_hover) {
-    auto padding = Position{5, 5};
-
+    auto padding = Position{defaultPadding.start, defaultPadding.top};
     auto text_color = status.is_active ? colors.text_selection_color : colors.text_color;
     auto background_color =
         status.is_active ? colors.text_selection_background : colors.input_background_normal;
