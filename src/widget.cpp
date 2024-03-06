@@ -480,7 +480,7 @@ auto Widget::get_padding() const -> LayoutParams {
     }
     auto t = get_theme();
     if (t) {
-        return t->defaultPadding;
+        return t->get_padding(padding_style);
     }
     return {};
 }

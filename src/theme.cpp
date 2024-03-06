@@ -437,6 +437,18 @@ auto ThemeRedmond::draw_single_tab(Bitmap &content, const int offset, const bool
     return tab_size.width;
 }
 
+LayoutParams ThemeRedmond::get_padding(PaddingStyle t) {
+    switch (t) {
+    case PaddingStyle::Button:
+        return {8, 8, 8, 8};
+    case PaddingStyle::ScrollBar:
+        return {10, 10, 10, 10};
+    case PaddingStyle::TabHeader:
+        return {5, 5, 10, 10};
+    }
+    return defaultPadding;
+}
+
 auto ThemeVision::draw_widget_background(Bitmap &content, bool has_focus) -> void {
     content.fill(colors.window_background);
 }
@@ -931,4 +943,20 @@ auto ThemePlasma::draw_single_tab(Bitmap &content, const int offset, const bool 
                is_tab_hover ? Lighter(colors.button_selected_text, 0.3)
                             : colors.button_selected_text);
     return tab_size.width;
+}
+
+LayoutParams ThemePlasma::get_padding(PaddingStyle t) {
+    switch (t) {
+    case PaddingStyle::Button:
+        return {10, 10, 10, 10};
+    case PaddingStyle::Checkbox:
+        return {5, 5, 5, 5};
+    case PaddingStyle::Label:
+        return {5, 5, 5, 5};
+    case PaddingStyle::ScrollBar:
+        return {12, 12, 12, 12};
+    case PaddingStyle::TabHeader:
+        return {10, 10, 10, 10};
+    }
+    return defaultPadding;
 }

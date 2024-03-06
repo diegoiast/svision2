@@ -68,6 +68,7 @@ Button::Button(Position pp, Size size, std::string text, bool is_default,
     this->is_default = is_default;
     this->on_button_click = on_button_click;
     this->can_focus = true;
+    this->padding_style = PaddingStyle::Button;
 }
 
 auto Button::draw() -> void {

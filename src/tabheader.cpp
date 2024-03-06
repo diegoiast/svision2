@@ -10,11 +10,7 @@
 #include <iso646.h>
 #include <spdlog/spdlog.h>
 
-TabHeader::TabHeader() : Widget() {
-    // TODO - this padding is just wrong
-    this->padding.set_horizontal(10);
-    this->padding.set_vertical(10);
-}
+TabHeader::TabHeader() : Widget() { this->padding_style = PaddingStyle::TabHeader; }
 
 auto TabHeader::add_tab(const std::string_view name) -> int {
     this->names.push_back(name);
@@ -44,7 +40,8 @@ auto TabHeader::get_tab_string(int index) const -> std::string_view {
 auto TabHeader::draw() -> void {
     auto theme = get_theme();
     auto hover_tab_index = mouse_over ? hover_tab : -1;
-    tab_offset = theme->draw_tabs(content, has_focus, active_tab, hover_tab_index, padding, names);
+    tab_offset =
+        theme->draw_tabs(content, has_focus, active_tab, hover_tab_index, get_padding(), names);
 }
 
 auto TabHeader::on_mouse_click(const EventMouse &event) -> EventPropagation {
@@ -85,11 +82,7 @@ auto TabHeader::on_hover(const EventMouse &event) -> void {
 }
 
 auto TabHeader::size_hint() const -> Size {
-    // TODO?
-    //    auto default_padding_y = 10;
-    //    auto padding_x = this->padding.get_horizontal();
     auto padding_y = this->get_padding().get_vertical();
-
     auto hint = this->get_theme()->font.text_size("X");
     hint.width = 0;
     hint.height += padding_y;

@@ -58,6 +58,8 @@ struct TabHeaderOffsets {
     int width;
 };
 
+enum class PaddingStyle { Label, Button, Checkbox, ScrollBar, TabHeader };
+
 struct Theme {
     ColorStyle colors = {};
     FontProvider &font;
@@ -96,6 +98,10 @@ struct Theme {
     virtual auto scrollbar_size() const -> int = 0;
 
     virtual auto modify_frame_on_hover() const -> bool { return true; }
+
+    virtual auto get_padding(PaddingStyle t = PaddingStyle::Label) -> LayoutParams {
+        return defaultPadding;
+    }
 };
 
 // A windows 9x look and feel based theme
@@ -128,6 +134,7 @@ struct ThemeRedmond : Theme {
     virtual auto scrollbar_size() const -> int override { return 24; };
 
     virtual auto modify_frame_on_hover() const -> bool override { return false; }
+    virtual auto get_padding(PaddingStyle t = PaddingStyle::Label) -> LayoutParams override;
 };
 
 struct ThemeVision : Theme {
@@ -190,4 +197,5 @@ struct ThemePlasma : Theme {
 
     virtual auto needs_frame_for_focus() const -> bool override { return false; };
     virtual auto scrollbar_size() const -> int override { return 16; };
+    virtual auto get_padding(PaddingStyle t = PaddingStyle::Label) -> LayoutParams override;
 };

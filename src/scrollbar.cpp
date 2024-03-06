@@ -77,6 +77,7 @@ ScrollBar::ScrollBar(Position position, int length, bool horizontal, int maximum
     this->is_horizontal = horizontal;
     this->maximum = maximum;
     this->update_thumb_size();
+    this->padding_style = PaddingStyle::ScrollBar;
 }
 
 auto ScrollBar::draw() -> void {

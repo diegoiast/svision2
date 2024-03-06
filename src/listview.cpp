@@ -10,7 +10,8 @@
 #include "theme.h"
 
 auto ListItemAdapter::get_widget(size_t /*position*/, std::shared_ptr<Theme> theme) -> PWidget {
-    auto font_size = theme->font.text_size("X") + theme->defaultPadding.get_vertical();
+    auto font_size =
+        theme->font.text_size("X") + theme->get_padding(PaddingStyle::Label).get_vertical();
     auto position = Position{0, 0};
     auto size = font_size;
     auto p = std::make_shared<ListItemWidget>(position, size, "");

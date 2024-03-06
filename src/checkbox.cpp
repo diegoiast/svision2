@@ -16,6 +16,7 @@ Checkbox::Checkbox(Position p, int length, std::string text,
     this->on_checkbox_change = on_checkbox_change;
     this->can_focus = true;
     this->content.resize({length, 22});
+    this->padding_style = PaddingStyle::Checkbox;
 }
 
 auto Checkbox::draw() -> void {

@@ -48,6 +48,7 @@ struct Widget : std::enable_shared_from_this<Widget>, LayoutItem {
     Frame frame{FrameStyles::NoFrame, FrameSize::SingleFrame};
     std::shared_ptr<LayoutItem> layout;
     MouseCursor mouse_cursor = MouseCursor::Inherit;
+    PaddingStyle padding_style = PaddingStyle::Label;
 
     // TODO this should be a weak pointer
     PlatformWindow *window = nullptr;
