@@ -6,7 +6,7 @@ Random list of things to be implemented on this library
     1. ~~List view~~
     2. ~~Combo box~~
     3. ~~StackWidget~~
-    4. TabView
+    4. TabView/TabWidget
     5. Toolbar
         1. Actions
         2. Clickacble actions
@@ -44,11 +44,17 @@ Random list of things to be implemented on this library
            1. We need to be able to select part of the text
            2. When part of the text is selected - work uppon it (delete/replace text)
            3. Properly display the selected area.
+    12. Buttons
+        1. Bitmap on buttons
+        1. Open menu on click
 
 2. Infrastructure
     1. Mouse drag
     1. Mouse wheel support
-    1. ~~`widget::add<Widget>.. (constructor )` (is this possible at all?)~~
+    1. keyboard 
+        1. Fix Unicode support (adding several char* on input, per unicode point)
+        1. Propagate keyboard events
+    1. ~~`widget::add<Widget>.. (constructor)` (is this possible at all?)~~
     1. All *getters* should return a reference
     1. All *callbacks* should have a reference to the widget as first argument
     1. Override functions for the library, callbacks for the consumers of the API
@@ -59,6 +65,7 @@ Random list of things to be implemented on this library
         1. Add GTK based theme
         1. Add Aqua (old OSX) theme
         1. Add OSX theme
+        1. Add Material (Andorid) theme
         1. Add support for a 'transparent color' (currently 0 paints black)
         1. Finish dark color support
         1. Missing API: when to use dark themes
@@ -103,3 +110,8 @@ Random list of things to be implemented on this library
             (libpng, libjpg) vs, <https://libspng.org/>, and stb (<https://github.com/nothings/stb>)
     2. HTML widget - <https://github.com/litehtml/litehtml>
     3. TextEditor - <https://www.scintilla.org/>
+4. Demos
+    0. Demo/reference app
+    1. Freetype rendering demo
+    2. CopyPasta - clipboard manager, ala CopyQ
+    3. SVComm - Nortoma/Midnight/Total Commander clone - dual panel file manager
