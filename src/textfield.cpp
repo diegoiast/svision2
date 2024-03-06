@@ -32,9 +32,10 @@ auto TextField::draw() -> void {
     Widget::draw();
 
     auto text_size = theme->font.text_size(text);
+    auto p = get_padding();
 
     // TODO - we need to find where the text clips - properly
-    auto display_text_logical = (content.size.width - padding.get_horizontal()) / 8;
+    auto display_text_logical = (content.size.width - p.get_horizontal()) / 8;
     auto display_text = this->text.substr(display_from, display_from + display_text_logical);
     auto center_y = (content.size.height - text_size.height) / 2;
     auto selection_width = (selection.end - selection.start) - display_from;
@@ -43,17 +44,14 @@ auto TextField::draw() -> void {
     // TODO - unmanaged color writing in a widget
     // TODO handle partial selection
     if (selection_width != 0) {
-        content.fill_rect(padding.start, padding.top, selection_width,
-                          content.size.height - padding.get_vertical(),
+        content.fill_rect(p.start, p.top, selection_width, content.size.height - p.get_vertical(),
                           theme->colors.text_selection_background);
     }
-    theme->font.write(content, Position{padding.start, center_y}, display_text,
-                      theme->colors.text_color);
+    theme->font.write(content, Position{p.start, center_y}, display_text, theme->colors.text_color);
 
     if (this->cursor_on && this->has_focus) {
-        auto position_x = padding.start + (cursor_position - display_from) * 8;
-        content.draw_rectangle(position_x, padding.top, 1,
-                               content.size.height - padding.get_vertical(), 0, 0);
+        auto position_x = p.start + (cursor_position - display_from) * 8;
+        content.draw_rectangle(position_x, p.top, 1, content.size.height - p.get_vertical(), 0, 0);
     }
 }
 

@@ -38,7 +38,7 @@ auto Combobox::draw() -> void {
 
     auto text = get_value();
     auto theme = get_theme();
-    auto text_padding = 5;
+    auto text_padding = get_padding().get_horizontal();
     auto color = has_focus ? theme->colors.text_selection_color : theme->colors.text_color;
     auto text_size = theme->font.text_size(text);
     auto centered = content.size.centeredY(text_size, text_padding);
