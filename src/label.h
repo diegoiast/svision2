@@ -23,7 +23,7 @@ struct Label : public Widget {
 
         auto theme = get_theme();
         auto color = theme->colors.text_color;
-        auto text_padding = 5;
+        auto text_padding = theme->get_padding().get_horizontal();
         auto text_size = theme->font.text_size(text);
         auto centered = content.size.centered(text_size, text_padding);
         theme->font.write(content, centered, text, color);

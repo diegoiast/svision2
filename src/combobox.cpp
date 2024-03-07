@@ -10,7 +10,7 @@
 #include "listview.h"
 #include "theme.h"
 
-Combobox::Combobox(Position position, int width, const std::vector<std::string> &strings)
+Combobox::Combobox(Position position, int width, const std::vector<std::string_view> &strings)
     : Widget(position, {0, 0}, 0) {
     this->strings = strings;
     this->can_focus = true;
@@ -23,7 +23,7 @@ Combobox::Combobox(Position position, int width, const std::vector<std::string> 
     this->popup_button = add_new<Button>(p, s, "*", false, [this]() { show_popup(); });
 }
 
-auto Combobox::get_value() const -> std::string {
+auto Combobox::get_value() const -> std::string_view {
     if (this->selected_item < 0) {
         return {};
     }
@@ -38,7 +38,7 @@ auto Combobox::draw() -> void {
 
     auto text = get_value();
     auto theme = get_theme();
-    auto text_padding = 5;
+    auto text_padding = get_padding().get_horizontal();
     auto color = has_focus ? theme->colors.text_selection_color : theme->colors.text_color;
     auto text_size = theme->font.text_size(text);
     auto centered = content.size.centeredY(text_size, text_padding);
@@ -128,20 +128,19 @@ struct ComboboxList : ListView {
 };
 
 auto Combobox::size_hint() const -> Size {
-    // TODO: Size of text is not correct. We also need to calculate the yMin and yMax for example
-    // TODO: we need API in font provider to get the text height
     auto s = get_theme()->font.text_size("X");
-    //    auto padding_x = this->padding.get_horizontal();
-    auto padding_y = this->padding.get_vertical();
-    return {0, s.height * 2 + padding_y};
+    return {0, s.height + this->get_padding().get_vertical()};
 }
 
 auto Combobox::on_resize() -> void {
-    // TODO - find a better size - according to the theme + font size
-    //    auto button_size = content.size.height;
-    auto button_size = 22;
-    auto p = Position{content.size.width - button_size, 0};
-    popup_button->position = p;
+    auto s = get_theme()->font.text_size("X");
+    s.height += get_padding().get_vertical();
+    s.width = s.height;
+
+    auto p = Position{content.size.width - s.height, 0};
+    this->popup_button->position = p;
+    this->popup_button->content.resize(s);
+    this->popup_button->invalidate();
 }
 
 auto Combobox::show_popup() -> void {
@@ -178,4 +177,12 @@ auto Combobox::show_popup() -> void {
         popup_list->show();
         window->focus_widget(popup_list);
     }
+}
+
+auto Combobox::set_active_index(int index) -> void {
+    if (index == this->selected_item) {
+        return;
+    }
+    this->selected_item = index;
+    this->invalidate();
 }

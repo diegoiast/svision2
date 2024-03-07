@@ -193,6 +193,7 @@ static auto convert_mouse_cursor_to_win32(MouseCursor cursor) -> LPSTR {
     default:
         break;
     }
+    return nullptr;
 }
 
 struct PlatformWindowWin32 : public PlatformWindow {

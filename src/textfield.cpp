@@ -19,7 +19,6 @@ TextField::TextField(Position position, Size size) : Widget(position, size, 0) {
         invalidate();
     };
     timer.initialize();
-    this->padding.set(5);
     this->can_focus = true;
     this->draw_background = false;
     this->frame = {FrameStyles::Reversed, FrameSize::SingleFrame};
@@ -33,9 +32,10 @@ auto TextField::draw() -> void {
     Widget::draw();
 
     auto text_size = theme->font.text_size(text);
+    auto p = get_padding();
 
     // TODO - we need to find where the text clips - properly
-    auto display_text_logical = (content.size.width - padding.get_horizontal()) / 8;
+    auto display_text_logical = (content.size.width - p.get_horizontal()) / 8;
     auto display_text = this->text.substr(display_from, display_from + display_text_logical);
     auto center_y = (content.size.height - text_size.height) / 2;
     auto selection_width = (selection.end - selection.start) - display_from;
@@ -44,17 +44,14 @@ auto TextField::draw() -> void {
     // TODO - unmanaged color writing in a widget
     // TODO handle partial selection
     if (selection_width != 0) {
-        content.fill_rect(padding.start - 1, padding.get_vertical() - 1, selection_width + 1,
-                          content.size.height - padding.get_vertical() - 2,
+        content.fill_rect(p.start, p.top, selection_width, content.size.height - p.get_vertical(),
                           theme->colors.text_selection_background);
     }
-    theme->font.write(content, Position{padding.start, center_y}, display_text,
-                      theme->colors.text_color);
+    theme->font.write(content, Position{p.start, center_y}, display_text, theme->colors.text_color);
 
     if (this->cursor_on && this->has_focus) {
-        auto position_x = padding.start + (cursor_position - display_from) * 8;
-        content.draw_rectangle(position_x, padding.get_vertical(), 1,
-                               content.size.height - padding.get_vertical() * 2, 0, 0);
+        auto position_x = p.start + (cursor_position - display_from) * 8;
+        content.draw_rectangle(position_x, p.top, 1, content.size.height - p.get_vertical(), 0, 0);
     }
 }
 
@@ -138,6 +135,10 @@ auto TextField::on_keyboard(const EventKeyboard &event) -> EventPropagation {
         }
         result = EventPropagation::handled;
         break;
+    case KeyCodes::Escape:
+        select_none();
+        invalidate();
+        break;
     default:
         // TODO handle non ascii input
         auto is_control_pressed = event.is_control_pressed();
@@ -181,8 +182,7 @@ auto TextField::on_mouse_click(const EventMouse &event) -> EventPropagation {
         return EventPropagation::propagate;
     }
 
-    auto padding = 5;
-    auto pos = (event.x - padding) / 8;
+    auto pos = (event.x - padding.start) / 8;
     cursor_position = display_from + pos;
     cursor_position = std::min((size_t)cursor_position, text.length());
     cursor_on = true;
@@ -206,9 +206,7 @@ auto TextField::on_remove() -> void { timer.stop(); }
 auto TextField::size_hint() const -> Size {
     // TODO: Size of text is not correct. We also need to calculate the yMin and yMax for example
     auto s = get_theme()->font.text_size(get_text());
-    auto padding_x = this->padding.get_horizontal();
-    auto padding_y = this->padding.get_vertical();
-    return {0, s.height * 2 + padding_y};
+    return {0, s.height + this->get_padding().get_vertical()};
 }
 
 auto TextField::select_all() -> void {
@@ -231,13 +229,13 @@ auto TextField::get_selected_text() -> const std::string {
 }
 
 auto TextField::ensure_cursor_visible() -> void {
-    auto padding = 5;
-    auto max_x_position = content.size.width - padding * 2;
-    auto cursor_visual_position = (cursor_position - display_from) * 8 + padding;
+    auto padding_y = this->padding.get_horizontal();
+    auto max_x_position = content.size.width - padding_y;
+    auto cursor_visual_position = (cursor_position - display_from) * 8 + padding_y;
 
     while (cursor_visual_position > max_x_position) {
         display_from++;
-        cursor_visual_position = (cursor_position - display_from) * 8 + padding;
+        cursor_visual_position = (cursor_position - display_from) * 8 + padding_y;
     }
     while (display_from > cursor_position) {
         display_from = cursor_position - 1;

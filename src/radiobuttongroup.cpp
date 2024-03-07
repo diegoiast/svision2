@@ -15,7 +15,9 @@ auto on_radio_button_selected(RadioButtonGroup &group, Checkbox &checkbox) -> vo
     for (auto &cb : group.radio_buttons) {
         if (cb.get() == &checkbox) {
             cb->set_checked(EventPropagation::handled);
-            group.on_selected(index, checkbox);
+            if (group.on_selected) {
+                group.on_selected(index, checkbox);
+            }
         } else {
             cb->set_unchecked(EventPropagation::handled);
         }
@@ -29,7 +31,6 @@ RadioButtonGroup::RadioButtonGroup(Position position, int width,
     auto p = Position{0, 0};
     auto height = 0;
     this->layout = std::make_shared<VerticalLayout>();
-    this->layout->padding.set_vertical(2);
     mouse_cursor = MouseCursor::Link;
 
     for (auto &item : items) {
@@ -37,8 +38,8 @@ RadioButtonGroup::RadioButtonGroup(Position position, int width,
         cb->shape = CheckboxShape::RadioButton;
         cb->on_checkbox_change = [this](Checkbox &cb) { on_radio_button_selected(*this, cb); };
         radio_buttons.push_back(cb);
-        p.y += cb->content.size.height + padding.get_vertical();
-        height += cb->content.size.height + padding.get_vertical();
+        p.y += cb->content.size.height + get_padding().get_vertical();
+        height += cb->content.size.height + get_padding().get_vertical();
     }
     content.resize(width, height);
 }

@@ -53,14 +53,25 @@ struct ColorStyle {
     int32_t text_selection_background_hover = 0;
 };
 
+struct TabHeaderOffsets {
+    int offset;
+    int width;
+};
+
+enum class PaddingStyle { Label, Button, Checkbox, ScrollBar, TabHeader };
+
 struct Theme {
     ColorStyle colors = {};
     FontProvider &font;
+    LayoutParams defaultPadding = {10, 10, 10, 10};
 
     explicit Theme(FontProvider &f) : font(f) {}
 
     auto draw_frame(Bitmap &content, Position position, Size size, FrameStyles style,
                     FrameSize frame_size) -> void;
+    auto draw_tabs(Bitmap &content, bool has_focus, int selected_index, int hover_index,
+                   const LayoutParams &padding, const std::vector<std::string_view> &names)
+        -> std::vector<TabHeaderOffsets>;
 
     virtual auto init() -> void = 0;
     virtual auto draw_widget_background(Bitmap &content, bool has_focus) -> void = 0;
@@ -69,8 +80,8 @@ struct Theme {
     virtual auto draw_button(Bitmap &content, bool has_focus, bool is_default, bool is_enabled,
                              ButtonStates state, const std::string &text) -> void = 0;
     virtual auto draw_checkbox(Bitmap &content, bool has_focus, bool is_enabled, bool is_checked,
-                               ButtonStates state, const std::string &text, CheckboxShape shape)
-        -> void = 0;
+                               ButtonStates state, const std::string &text, CheckboxShape shape,
+                               const LayoutParams &padding) -> void = 0;
 
     // TODO - missing disabled state
     virtual auto draw_input_background(Bitmap &content, const bool has_focus) -> void = 0;
@@ -78,12 +89,19 @@ struct Theme {
     virtual auto draw_listview_background(Bitmap &content, const bool has_focus,
                                           bool draw_background) -> void = 0;
     virtual auto draw_listview_item(Bitmap &content, const std::string_view text,
-                                    const ItemStatus status, bool is_hover) -> void = 0;
+                                    const ItemStatus status, const bool is_hover) -> void = 0;
+    virtual auto draw_single_tab(Bitmap &content, const int offset, const bool is_active,
+                                 const bool is_hover, const LayoutParams &padding,
+                                 const std::string_view name) -> int = 0;
 
     virtual auto needs_frame_for_focus() const -> bool = 0;
     virtual auto scrollbar_size() const -> int = 0;
 
     virtual auto modify_frame_on_hover() const -> bool { return true; }
+
+    virtual auto get_padding(PaddingStyle t = PaddingStyle::Label) -> LayoutParams {
+        return defaultPadding;
+    }
 };
 
 // A windows 9x look and feel based theme
@@ -91,7 +109,7 @@ struct ThemeRedmond : Theme {
     static auto get_light_colors() -> ColorStyle;
     static auto get_dark_colors() -> ColorStyle;
 
-    explicit ThemeRedmond(FontProvider &f) : Theme(f) { colors = get_light_colors(); }
+    explicit ThemeRedmond(FontProvider &f);
 
     virtual auto init() -> void override{};
     virtual auto draw_widget_background(Bitmap &content, bool has_focus) -> void override;
@@ -100,18 +118,23 @@ struct ThemeRedmond : Theme {
     virtual auto draw_button(Bitmap &content, bool has_focus, bool is_default, bool is_enabled,
                              ButtonStates state, const std::string &text) -> void override;
     virtual auto draw_checkbox(Bitmap &content, bool has_focus, bool is_enabled, bool is_checked,
-                               ButtonStates state, const std::string &text, CheckboxShape shape)
-        -> void override;
+                               ButtonStates state, const std::string &text, CheckboxShape shape,
+                               const LayoutParams &padding) -> void override;
     virtual auto draw_input_background(Bitmap &content, const bool has_focus) -> void override;
     virtual auto draw_listview_background(Bitmap &content, const bool has_focus,
                                           bool draw_background) -> void override;
     virtual auto draw_listview_item(Bitmap &content, const std::string_view text,
-                                    const ItemStatus status, bool is_hover) -> void override;
+                                    const ItemStatus status, const bool is_hover) -> void override;
+
+    virtual auto draw_single_tab(Bitmap &content, const int offset, const bool is_active,
+                                 const bool is_hover, const LayoutParams &padding,
+                                 const std::string_view name) -> int override;
 
     virtual auto needs_frame_for_focus() const -> bool override { return true; };
     virtual auto scrollbar_size() const -> int override { return 24; };
 
     virtual auto modify_frame_on_hover() const -> bool override { return false; }
+    virtual auto get_padding(PaddingStyle t = PaddingStyle::Label) -> LayoutParams override;
 };
 
 struct ThemeVision : Theme {
@@ -130,13 +153,16 @@ struct ThemeVision : Theme {
     virtual auto draw_button(Bitmap &content, bool has_focus, bool is_default, bool is_enabled,
                              ButtonStates state, const std::string &text) -> void override;
     virtual auto draw_checkbox(Bitmap &content, bool has_focus, bool is_enabled, bool is_checked,
-                               ButtonStates state, const std::string &text, CheckboxShape shape)
-        -> void override;
+                               ButtonStates state, const std::string &text, CheckboxShape shape,
+                               const LayoutParams &padding) -> void override;
     virtual auto draw_input_background(Bitmap &content, const bool has_focus) -> void override;
     virtual auto draw_listview_background(Bitmap &content, const bool has_focus,
                                           bool draw_background) -> void override;
     virtual auto draw_listview_item(Bitmap &content, const std::string_view text,
-                                    const ItemStatus status, bool is_hover) -> void override;
+                                    const ItemStatus status, const bool is_hover) -> void override;
+    virtual auto draw_single_tab(Bitmap &content, const int offset, const bool is_active,
+                                 const bool is_hover, const LayoutParams &padding,
+                                 const std::string_view name) -> int override;
 
     virtual auto needs_frame_for_focus() const -> bool override { return false; };
     virtual auto scrollbar_size() const -> int override { return 16; };
@@ -158,14 +184,18 @@ struct ThemePlasma : Theme {
     virtual auto draw_button(Bitmap &content, bool has_focus, bool is_default, bool is_enabled,
                              ButtonStates state, const std::string &text) -> void override;
     virtual auto draw_checkbox(Bitmap &content, bool has_focus, bool is_enabled, bool is_checked,
-                               ButtonStates state, const std::string &text, CheckboxShape shape)
-        -> void override;
+                               ButtonStates state, const std::string &text, CheckboxShape shape,
+                               const LayoutParams &padding) -> void override;
     virtual auto draw_input_background(Bitmap &content, const bool has_focus) -> void override;
     virtual auto draw_listview_background(Bitmap &content, const bool has_focus,
                                           const bool draw_background) -> void override;
     virtual auto draw_listview_item(Bitmap &content, const std::string_view text,
-                                    const ItemStatus status, bool is_hover) -> void override;
+                                    const ItemStatus status, const bool is_hover) -> void override;
+    virtual auto draw_single_tab(Bitmap &content, const int offset, const bool is_active,
+                                 const bool is_hover, const LayoutParams &padding,
+                                 const std::string_view name) -> int override;
 
     virtual auto needs_frame_for_focus() const -> bool override { return false; };
     virtual auto scrollbar_size() const -> int override { return 16; };
+    virtual auto get_padding(PaddingStyle t = PaddingStyle::Label) -> LayoutParams override;
 };

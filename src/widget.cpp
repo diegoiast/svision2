@@ -24,6 +24,17 @@ static auto point_in_rect(Position p, Size s, int x, int y) -> bool {
     return true;
 }
 
+auto dump_widget(const std::shared_ptr<Widget> w) -> void {
+    auto hint = w->size_hint();
+    auto padding = w->get_padding();
+    spdlog::info("-------- widget = class = {}, index {}", typeid(*w).name(), w->focus_index);
+    spdlog::info("size      = {}x{}", w->content.size.width, w->content.size.height);
+    spdlog::info("position  = {}x{}", w->position.x, w->position.y);
+    spdlog::info("size hint = {}x{}", hint.width, hint.height);
+    spdlog::info("padding   = {}x{}", padding.get_horizontal(), padding.get_horizontal());
+    spdlog::info("=====================");
+}
+
 auto WidgetCollection::add(std::shared_ptr<Widget> widget, PlatformWindow *window)
     -> std::shared_ptr<Widget> {
     widgets.push_back(widget);
@@ -176,6 +187,9 @@ auto WidgetCollection::on_mouse_press(const EventMouse &event, std::shared_ptr<W
             w->window->focus_widget(w);
         }
         result = w->on_mouse_click(local_event);
+        if (debug && event.button == 2) {
+            dump_widget(w);
+        }
     }
     last_overed_widget = w;
     return result;
@@ -383,6 +397,7 @@ auto Widget::on_mouse_enter() -> void {
     for (auto w : widgets.widgets) {
         w->on_mouse_enter();
     }
+    // TODO - this is not needed strictly, we can remove when we fix listview
     invalidate();
 }
 
@@ -390,6 +405,7 @@ auto Widget::on_mouse_leave() -> void {
     for (auto w : widgets.widgets) {
         w->on_mouse_leave();
     }
+    // TODO - this is not needed strictly, we can remove when we fix listview
     invalidate();
 }
 
@@ -422,7 +438,10 @@ auto Widget::get_theme() const -> std::shared_ptr<Theme> {
         }
         p = p->parent;
     }
-    return window->main_widget.theme;
+    if (window) {
+        window->main_widget.theme;
+    }
+    return {};
 }
 
 auto Widget::get_cursor() const -> MouseCursor {
@@ -455,6 +474,17 @@ auto Widget::hide() -> void {
     invalidate();
 }
 
+auto Widget::get_padding() const -> LayoutParams {
+    if (padding.is_valid()) {
+        return padding;
+    }
+    auto t = get_theme();
+    if (t) {
+        return t->get_padding(padding_style);
+    }
+    return {};
+}
+
 PlatformWindow::PlatformWindow() {
     main_widget.layout = std::make_shared<VerticalLayout>();
     main_widget.layout->padding.set_vertical(5);
@@ -477,7 +507,6 @@ auto PlatformWindow::set_cursor(MouseCursor cursor) -> void {
     }
 
     if (platform) {
-        spdlog::info("Setting cursor: {}", (int)cursor);
         platform->set_cursor(*this, cursor);
     } else {
         spdlog::error("Window without platform!");

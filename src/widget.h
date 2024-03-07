@@ -12,14 +12,14 @@
 #include <events.h>
 #include <layout.h>
 #include <mousecursors.h>
+#include <platform.h>
+#include <theme.h>
 
 #include <list>
 #include <memory>
 #include <string>
 
 struct Theme;
-struct Platform;
-struct PlatformWindow;
 struct Widget;
 
 struct WidgetCollection {
@@ -27,6 +27,7 @@ struct WidgetCollection {
     std::shared_ptr<Widget> last_overed_widget;
     std::shared_ptr<Widget> focused_widget;
     int max_focus_index = 1;
+    bool debug = true;
 
     auto add(std::shared_ptr<Widget> widget, PlatformWindow *window) -> std::shared_ptr<Widget>;
 
@@ -47,6 +48,7 @@ struct Widget : std::enable_shared_from_this<Widget>, LayoutItem {
     Frame frame{FrameStyles::NoFrame, FrameSize::SingleFrame};
     std::shared_ptr<LayoutItem> layout;
     MouseCursor mouse_cursor = MouseCursor::Inherit;
+    PaddingStyle padding_style = PaddingStyle::Label;
 
     // TODO this should be a weak pointer
     PlatformWindow *window = nullptr;
@@ -97,6 +99,7 @@ struct Widget : std::enable_shared_from_this<Widget>, LayoutItem {
     auto show() -> void;
     auto hide() -> void;
     auto is_visible() const -> bool { return is_widget_visible; }
+    auto get_padding() const -> LayoutParams;
 
     auto relayout(Position position, const Size size) -> void override {
         this->position = position;

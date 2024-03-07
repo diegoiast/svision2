@@ -126,6 +126,8 @@ auto Bitmap::resize(int width, int height) -> void {
 }
 
 auto Bitmap::fill_rect(int x, int y, int w, int h, uint32_t c) -> void {
+    w = std::min(w, size.width);
+    h = std::min(h, size.height);
     for (int row = 0; row < h; row++) {
         for (int col = 0; col < w; col++) {
             put_pixel(x + col, y + row, c);
@@ -221,6 +223,12 @@ auto Bitmap::line_thikness(int x0, int y0, int x1, int y1, int thickness, uint32
 
 auto Bitmap::draw_rectangle(int x, int y, int width, int height, uint32_t color1, uint32_t color2)
     -> void {
+    if (x + width > size.width) {
+        width = size.width - x;
+    }
+    if (y + height > size.height) {
+        height = size.height - y;
+    }
     line(x + 0, y + 0, x + width - 2, y + 0, color1);
     line(x + 0, y + 0, x + 0, y + height - 2, color1);
     line(x + width - 1, y + 0, x + width - 1, y + height - 1, color2);

@@ -45,7 +45,7 @@ auto Theme::draw_frame(Bitmap &content, Position position, Size size, FrameStyle
         case FrameSize::TrippleFrame:
             // Not really supported
         case FrameSize::DoubleFrame:
-            content.draw_rectangle(1, 1, size.width - 2, size.height - 2,
+            content.draw_rectangle(position.x + 1, position.y + 1, size.width - 2, size.height - 2,
                                    colors.frame_disabled_color3, colors.frame_disabled_color4);
         case FrameSize::SingleFrame:
             content.draw_rectangle(position.x, position.y, size.width, size.height,
@@ -59,8 +59,8 @@ auto Theme::draw_frame(Bitmap &content, Position position, Size size, FrameStyle
         case FrameSize::TrippleFrame:
             // Not really supported
         case FrameSize::DoubleFrame:
-            content.draw_rectangle(1, 1, size.width - 2, size.height - 2, colors.frame_hover_color3,
-                                   colors.frame_hover_color4);
+            content.draw_rectangle(position.x + 1, position.y + 1, size.width - 2, size.height - 2,
+                                   colors.frame_hover_color3, colors.frame_hover_color4);
         case FrameSize::SingleFrame:
             content.draw_rectangle(position.x, position.y, size.width, size.height,
                                    colors.frame_hover_color1, colors.frame_hover_color2);
@@ -72,6 +72,33 @@ auto Theme::draw_frame(Bitmap &content, Position position, Size size, FrameStyle
     case FrameStyles::NoFrame:
         break;
     }
+}
+
+auto Theme::draw_tabs(Bitmap &content, bool has_focus, int selected_index, int hover_index,
+                      const LayoutParams &padding, const std::vector<std::string_view> &names)
+    -> std::vector<TabHeaderOffsets> {
+    auto tab_offset = std::vector<TabHeaderOffsets>();
+
+    auto offset = 0;
+    auto bottom_frame_color1 = colors.frame_normal_color3;
+    auto bottom_frame_color2 = colors.window_background;
+
+    draw_widget_background(content, has_focus);
+    content.fill_rect(0, content.size.height - 2, content.size.width, 2, bottom_frame_color2);
+    content.fill_rect(0, content.size.height - 3, content.size.width, 1, bottom_frame_color1);
+    tab_offset.clear();
+    tab_offset.resize(names.size());
+    auto i = 0;
+    for (auto tab_name : names) {
+        auto is_active_tab = i == selected_index;
+        auto is_hover = i == hover_index;
+        auto size = draw_single_tab(content, offset, is_active_tab, is_hover, padding, tab_name);
+        tab_offset[i] = {offset, size};
+        offset += size;
+        i++;
+    }
+
+    return tab_offset;
 }
 
 auto ThemeRedmond::get_light_colors() -> ColorStyle {
@@ -124,6 +151,12 @@ auto ThemeRedmond::get_light_colors() -> ColorStyle {
 auto ThemeRedmond::get_dark_colors() -> ColorStyle {
     ColorStyle colors;
     return colors;
+}
+
+ThemeRedmond::ThemeRedmond(FontProvider &f) : Theme(f) {
+    colors = get_light_colors();
+    defaultPadding.set_vertical(2);
+    defaultPadding.set_horizontal(5);
 }
 
 auto ThemeRedmond::draw_widget_background(Bitmap &content, bool has_focus) -> void {
@@ -212,8 +245,8 @@ auto ThemeRedmond::draw_button(Bitmap &content, bool has_focus, bool is_default,
 }
 
 auto ThemeRedmond::draw_checkbox(Bitmap &content, bool has_focus, bool is_enabled, bool is_checked,
-                                 ButtonStates state, const std::string &text, CheckboxShape shape)
-    -> void {
+                                 ButtonStates state, const std::string &text, CheckboxShape shape,
+                                 const LayoutParams &padding) -> void {
     auto background_color = colors.input_background_normal;
     auto foreground_color = colors.text_color;
     auto checkbox_size = content.size.height;
@@ -266,11 +299,12 @@ auto ThemeRedmond::draw_checkbox(Bitmap &content, bool has_focus, bool is_enable
         break;
     }
 
-    auto text_padding = 2;
     auto text_size = font.text_size(text);
-    auto content_rect = content.size - (text_padding);
+    auto content_rect = content.size;
     auto centered = content_rect.centeredY(text_size);
-    centered.x += checkbox_size + text_padding;
+    content_rect.width -= padding.get_horizontal();
+    content_rect.height -= padding.get_vertical();
+    centered.x += checkbox_size + padding.start;
     font.write(content, centered, text, is_enabled ? foreground_color : colors.text_color_disabled);
 
     if (is_checked) {
@@ -363,9 +397,8 @@ auto ThemeRedmond::draw_listview_background(Bitmap &content, const bool has_focu
 }
 
 void ThemeRedmond::draw_listview_item(Bitmap &content, const std::string_view text,
-                                      const ItemStatus status, bool is_hover) {
-    auto padding = Position{5, 5};
-
+                                      const ItemStatus status, const bool is_hover) {
+    auto padding = Position{defaultPadding.start, defaultPadding.top};
     auto text_color = status.is_active ? colors.text_selection_color : colors.text_color;
     auto background_color =
         status.is_active ? colors.text_selection_background : colors.input_background_normal;
@@ -375,9 +408,50 @@ void ThemeRedmond::draw_listview_item(Bitmap &content, const std::string_view te
     font.write(content, padding, text, text_color);
 }
 
+auto ThemeRedmond::draw_single_tab(Bitmap &content, const int offset, const bool is_active,
+                                   const bool is_hover, const LayoutParams &padding,
+                                   const std::string_view name) -> int {
+    auto active_bg = (colors.window_background);
+    auto is_tab_hover = is_hover;
+    auto tab_size = font.text_size(name);
+
+    tab_size.width += padding.get_horizontal();
+    tab_size.height += padding.get_vertical();
+
+    if (is_active) {
+        content.fill_rect(offset, 0, tab_size.width, tab_size.height, active_bg);
+        draw_frame(content, {offset, 0}, {tab_size.width, tab_size.height}, FrameStyles::Normal,
+                   FrameSize::SingleFrame);
+        content.fill_rect(offset, tab_size.height - 1, tab_size.width, 2, active_bg);
+
+    } else {
+        if (is_hover) {
+            content.fill_rect(offset, 0, tab_size.width, tab_size.height - 3,
+                              Lighter(active_bg, 0.05));
+        }
+    }
+    if (is_active) {
+        is_tab_hover = false;
+    }
+    font.write(content, {offset + padding.start, padding.top}, name, colors.text_color);
+    return tab_size.width;
+}
+
+LayoutParams ThemeRedmond::get_padding(PaddingStyle t) {
+    switch (t) {
+    case PaddingStyle::Button:
+        return {8, 8, 8, 8};
+    case PaddingStyle::ScrollBar:
+        return {10, 10, 10, 10};
+    case PaddingStyle::TabHeader:
+        return {5, 5, 10, 10};
+    }
+    return defaultPadding;
+}
+
 auto ThemeVision::draw_widget_background(Bitmap &content, bool has_focus) -> void {
     content.fill(colors.window_background);
-};
+}
 
 auto ThemeVision::draw_window_background(Bitmap &content) -> void {
     content.fill(colors.window_background);
@@ -428,8 +502,8 @@ auto ThemeVision::draw_button(Bitmap &content, bool has_focus, bool is_default, 
 }
 
 auto ThemeVision::draw_checkbox(Bitmap &content, bool has_focus, bool is_enabled, bool is_checked,
-                                ButtonStates state, const std::string &text, CheckboxShape shape)
-    -> void {
+                                ButtonStates state, const std::string &text, CheckboxShape shape,
+                                const LayoutParams &padding3) -> void {
     auto background_color = colors.window_background;
     auto checkbox_size = content.size.height;
     auto checkbox_color = colors.frame_hover_color1;
@@ -611,7 +685,7 @@ auto ThemeVision::draw_listview_background(Bitmap &content, const bool has_focus
 }
 
 void ThemeVision::draw_listview_item(Bitmap &content, const std::string_view text,
-                                     const ItemStatus status, bool is_hover) {
+                                     const ItemStatus status, const bool is_hover) {
     auto text_color = status.is_active ? colors.text_selection_color : colors.text_color;
     auto background_color =
         status.is_active ? colors.text_selection_background : colors.input_background_normal;
@@ -624,6 +698,13 @@ void ThemeVision::draw_listview_item(Bitmap &content, const std::string_view tex
     auto text_size = font.text_size(text);
     auto centered = Position{text_padding, text_padding};
     font.write(content, centered, text, text_color);
+}
+
+auto ThemeVision::draw_single_tab(Bitmap &content, const int offset, const bool is_active,
+                                  const bool is_hover, const LayoutParams &padding,
+                                  const std::string_view name) -> int {
+    // TODO
+    return 0;
 }
 
 auto ThemePlasma::draw_widget_background(Bitmap &content, bool has_focus) -> void {
@@ -706,24 +787,20 @@ auto ThemePlasma::draw_button(Bitmap &content, bool has_focus, bool is_default, 
 }
 
 auto ThemePlasma::draw_checkbox(Bitmap &content, bool has_focus, bool is_enabled, bool is_checked,
-                                ButtonStates state, const std::string &text, CheckboxShape shape)
-    -> void {
+                                ButtonStates state, const std::string &text, CheckboxShape shape,
+                                const LayoutParams &padding) -> void {
     auto background_color = colors.window_background;
     auto foreground_color = colors.text_color;
     auto checkbox_size = content.size.height;
-    auto checkbox_color = colors.frame_hover_color1;
     auto checkbox_border = colors.frame_disabled_color1;
 
     switch (state) {
     case ButtonStates::ClickedInside:
-        checkbox_color = colors.frame_disabled_color1;
         checkbox_border = colors.frame_normal_color1;
         is_checked = true;
         break;
     case ButtonStates::ClickedOutside:
         checkbox_border = colors.frame_hover_color1;
-        checkbox_color = has_focus ? colors.frame_hover_color1 : colors.frame_normal_color1;
-
         break;
     case ButtonStates::Hovered:
         if (is_enabled) {
@@ -732,19 +809,14 @@ auto ThemePlasma::draw_checkbox(Bitmap &content, bool has_focus, bool is_enabled
         break;
     case ButtonStates::Normal:
         checkbox_border = has_focus ? colors.frame_hover_color1 : colors.frame_normal_color1;
-        checkbox_color = has_focus ? colors.frame_hover_color1 : colors.frame_normal_color1;
         break;
-    }
-
-    if (!is_enabled) {
-        checkbox_color = colors.text_color_disabled;
     }
 
     content.fill(background_color);
     {
-        auto padding = 3;
-        auto p = Position{padding, padding};
-        auto w = Size{checkbox_size - padding * 2, checkbox_size - padding * 2};
+        auto icon_padding = 3;
+        auto p = Position{icon_padding, icon_padding};
+        auto w = Size{checkbox_size - icon_padding * 2, checkbox_size - icon_padding * 2};
         auto m = checkbox_size / 2;
 
         switch (shape) {
@@ -755,26 +827,26 @@ auto ThemePlasma::draw_checkbox(Bitmap &content, bool has_focus, bool is_enabled
         case CheckboxShape::RadioButton:
             if (is_checked) {
                 if (is_enabled) {
-                    content.fill_circle(m, m, checkbox_size / 2 - padding,
+                    content.fill_circle(m, m, checkbox_size / 2 - icon_padding,
                                         colors.button_selected_background);
-                    content.draw_circle(m, m, checkbox_size / 2 - padding,
+                    content.draw_circle(m, m, checkbox_size / 2 - icon_padding,
                                         colors.frame_hover_color1);
                 } else {
-                    content.fill_circle(m, m, checkbox_size / 2 - padding, checkbox_border);
-                    content.draw_circle(m, m, checkbox_size / 2 - padding,
+                    content.fill_circle(m, m, checkbox_size / 2 - icon_padding, checkbox_border);
+                    content.draw_circle(m, m, checkbox_size / 2 - icon_padding,
                                         colors.text_color_disabled);
                 }
             } else {
-                content.draw_circle(m, m, checkbox_size / 2 - padding, checkbox_border);
+                content.draw_circle(m, m, checkbox_size / 2 - icon_padding, checkbox_border);
             }
             break;
         }
     }
 
     {
-        auto padding = 5;
-        auto p = Position{padding, padding};
-        auto w = Size{checkbox_size - padding * 2, checkbox_size - padding * 2};
+        auto icon_padding = 5;
+        auto p = Position{icon_padding, icon_padding};
+        auto w = Size{checkbox_size - icon_padding * 2, checkbox_size - icon_padding * 2};
         auto m = checkbox_size / 2;
 
         switch (shape) {
@@ -789,8 +861,14 @@ auto ThemePlasma::draw_checkbox(Bitmap &content, bool has_focus, bool is_enabled
         }
     }
 
-    auto centered = Position{checkbox_size + 5, 5};
-    font.write(content, centered, text, is_enabled ? foreground_color : colors.text_color_disabled);
+    {
+        auto text_size = font.text_size(text);
+        auto text_block_size = Size{content.size.width - checkbox_size, checkbox_size};
+        auto centered = text_block_size.centeredY(text_size);
+        centered.x += checkbox_size;
+        font.write(content, centered, text,
+                   is_enabled ? foreground_color : colors.text_color_disabled);
+    }
 }
 
 auto ThemePlasma::draw_input_background(Bitmap &content, const bool has_focus) -> void {
@@ -815,7 +893,7 @@ auto ThemePlasma::draw_listview_background(Bitmap &content, const bool has_focus
 }
 
 void ThemePlasma::draw_listview_item(Bitmap &content, const std::string_view text,
-                                     const ItemStatus status, bool is_hover) {
+                                     const ItemStatus status, const bool is_hover) {
 
     auto text_color = status.is_active ? colors.text_selection_color : colors.text_color;
     auto background_color =
@@ -828,4 +906,53 @@ void ThemePlasma::draw_listview_item(Bitmap &content, const std::string_view tex
     auto text_size = font.text_size(text);
     auto centered = content.size.centeredY(text_size, text_padding);
     font.write(content, centered, text, text_color);
+}
+
+auto ThemePlasma::draw_single_tab(Bitmap &content, const int offset, const bool is_active,
+                                  const bool is_hover, const LayoutParams &padding,
+                                  const std::string_view name) -> int {
+    auto is_tab_hover = is_hover;
+    auto active_bg = colors.window_background;
+    auto tab_size = font.text_size(name);
+    tab_size.width += padding.get_horizontal();
+    tab_size.height += padding.get_vertical();
+
+    if (is_active) {
+        content.fill_rect(offset, 0, tab_size.width, tab_size.height, active_bg);
+        //        draw_frame(content, {offset, 0}, {tab_size.width, tab_size.height},
+        //        FrameStyles::Hover,
+        //                   FrameSize::SingleFrame);
+        content.fill_rect(offset, 0, tab_size.width, 3, colors.frame_hover_color3);
+        content.fill_rect(offset, tab_size.height - 2, tab_size.width, 2, active_bg);
+    } else {
+        content.fill_rect(offset, 0, tab_size.width, tab_size.height, Darker(active_bg));
+        auto bottom_frame_color1 = colors.frame_normal_color3;
+        auto bottom_frame_color2 = colors.window_background;
+
+        content.fill_rect(offset, tab_size.height - 2, tab_size.width, 2, bottom_frame_color2);
+        content.fill_rect(offset, tab_size.height - 3, tab_size.width, 1, bottom_frame_color1);
+    }
+    if (is_active) {
+        is_tab_hover = false;
+    }
+    font.write(content, {offset + padding.start, padding.top}, name,
+               is_tab_hover ? Lighter(colors.button_selected_text, 0.3)
+                            : colors.button_selected_text);
+    return tab_size.width;
+}
+
+LayoutParams ThemePlasma::get_padding(PaddingStyle t) {
+    switch (t) {
+    case PaddingStyle::Button:
+        return {10, 10, 10, 10};
+    case PaddingStyle::Checkbox:
+        return {5, 5, 5, 5};
+    case PaddingStyle::Label:
+        return {5, 5, 5, 5};
+    case PaddingStyle::ScrollBar:
+        return {12, 12, 12, 12};
+    case PaddingStyle::TabHeader:
+        return {10, 10, 10, 10};
+    }
+    return defaultPadding;
 }

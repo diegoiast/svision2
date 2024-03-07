@@ -16,11 +16,12 @@ Checkbox::Checkbox(Position p, int length, std::string text,
     this->on_checkbox_change = on_checkbox_change;
     this->can_focus = true;
     this->content.resize({length, 22});
+    this->padding_style = PaddingStyle::Checkbox;
 }
 
 auto Checkbox::draw() -> void {
-    get_theme()->draw_checkbox(content, has_focus, is_enabled, is_checked, state.state, text,
-                               shape);
+    get_theme()->draw_checkbox(content, has_focus, is_enabled, is_checked, state.state, text, shape,
+                               get_padding());
 }
 
 auto Checkbox::on_hover(const EventMouse &event) -> void {
@@ -83,9 +84,10 @@ auto Checkbox::on_keyboard(const EventKeyboard &event) -> EventPropagation {
 }
 
 auto Checkbox::size_hint() const -> Size {
+    auto p = get_padding();
     auto hint = Size{};
     auto font_height = this->get_theme()->font.text_size("X").height;
-    hint.height = font_height + 5;
+    hint.height = font_height + p.get_vertical();
     return hint;
 }
 

@@ -19,11 +19,9 @@ auto IntegerValidator::is_keyboard_input_valid(KeyCodes keycode, int position) -
     if (literal == '-' or literal == '+') {
         return (position == 0);
     }
-
     if (literal >= '0' and literal <= '9') {
         return true;
     }
-
     return false;
 }
 
@@ -38,17 +36,14 @@ Spinbox::Spinbox(Position position, Size size) : TextField(position, size) {
     auto s = content.size.height / 2;
     auto button_size = Size{s, s};
     auto button_position = Position{content.size.width - s, 0};
-    padding.set_horizontal(5);
-    this->up_button = std::make_shared<Button>(button_position, button_size, "+");
     button_position.y = s;
+    this->up_button = std::make_shared<Button>(button_position, button_size, "+");
+    this->up_button->on_button_click = [this]() { this->increase_value(); };
+    this->up_button->set_auto_repeat(500);
     this->down_button = std::make_shared<Button>(button_position, button_size, "-");
-    up_button->on_button_click = [this]() { this->increase_value(); };
-    up_button->set_auto_repeat(500);
-    down_button->on_button_click = [this]() { this->decrease_value(); };
-    down_button->set_auto_repeat(500);
-
+    this->down_button->on_button_click = [this]() { this->decrease_value(); };
+    this->down_button->set_auto_repeat(500);
     this->validator = std::make_shared<IntegerValidator>();
-
     add(up_button);
     add(down_button);
 }

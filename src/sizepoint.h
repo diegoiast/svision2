@@ -9,6 +9,34 @@
 
 #include <cstdint>
 
+struct LayoutParams {
+    int top = 0;
+    int bottom = 0;
+    int start = 0;
+    int end = 0;
+
+    auto set_horizontal(int value) {
+        start = value;
+        end = value;
+    }
+
+    auto set_vertical(int value) {
+        top = value;
+        bottom = value;
+    }
+
+    auto set(int value) {
+        top = value;
+        bottom = value;
+        start = value;
+        end = value;
+    }
+
+    auto get_horizontal() const -> auto { return start + end; }
+    auto get_vertical() const -> auto { return top + bottom; }
+    auto is_valid() const -> bool { return top != 0 && bottom != 0 && start != 0 && end != 0; }
+};
+
 struct Position {
     int x = 0;
     int y = 0;
@@ -94,5 +122,13 @@ struct Size {
     auto inline centeredY(const Size &other, int padding = 0) const -> Position {
         auto s = *this - other;
         return {padding, s.height / 2};
+    }
+
+    auto inline centeredY(LayoutParams padding = {}) const -> Position {
+        return {padding.start, (height - padding.get_vertical()) / 2};
+    }
+
+    auto inline centeredX(LayoutParams padding = {}) const -> Position {
+        return {(width - padding.get_horizontal()) / 2, padding.top};
     }
 };
