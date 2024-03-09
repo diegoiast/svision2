@@ -105,6 +105,8 @@ set(SVISION_SOURCES
     src/textfield.h
     src/widget.cpp
     src/widget.h
+    src/themes/fluent.cpp
+    src/themes/fluent.h
 )
 
 if (UNIX)

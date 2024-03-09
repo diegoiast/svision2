@@ -24,6 +24,7 @@
 #include <stackwidget.h>
 #include <tabheader.h>
 #include <textfield.h>
+#include <themes/fluent.h>
 
 #include <spdlog/spdlog.h>
 #include <timer.h>
@@ -109,8 +110,8 @@ int main() {
     int timer_count = 0;
     auto platform = ThePlatform();
     platform.init();
+    platform.default_theme = std::make_shared<ThemeFluent>(*platform.default_font);
     //    platform.default_theme = std::make_shared<ThemeVision>(*platform.default_font, 0x00ff00);
-    //    platform.default_theme = std::make_shared<ThemeVision>(*platform.default_font);
     //    platform.default_theme = std::make_shared<ThemeRedmond>(*platform.default_font);
     //    platform.default_theme = std::make_shared<ThemePlasma>(*platform.default_font, 0xff6737);
     //    platform.default_theme = std::make_shared<ThemePlasma>(*platform.default_font);
@@ -120,7 +121,7 @@ int main() {
         //        spdlog::info("timer");
     });
 
-#if 1
+#if 0
     auto w2 = platform.open_window(300, 300, 640, 480, "test 2");
     w2->main_widget.content.background_color = 0x00FF00;
     w2->main_widget.layout->padding.set_vertical(0);
@@ -158,7 +159,7 @@ int main() {
     platform.show_window(w2);
 #endif
 
-#if 0
+#if 1
     auto w1 = platform.open_window(100, 100, 640, 480, "test 1");
     auto l =
         w1->add_new<Label>(Position{10, 10}, Size{300, 20}, "test 1 - Hello world! glqi שלום עולם");
