@@ -16,6 +16,7 @@
 #include "fontproviderfreetype.h"
 #include "platformwin32.h"
 #include "theme.h"
+#include "themes/fluent.h"
 #include "widget.h"
 
 extern "C" int main(int, char **);
@@ -338,7 +339,7 @@ auto PlatformWin32::init() -> void {
     RegisterClassExW(&wc);
 
     this->default_font = std::make_shared<FontProviderFreetype>(default_font_file);
-    default_theme = std::make_shared<ThemeVision>(*this->default_font);
+    default_theme = std::make_shared<ThemeFluent>(*this->default_font);
     spdlog::info("PlatformWin32 initialized");
 }
 

@@ -25,34 +25,37 @@ auto ThemeFluent::draw_button(Bitmap &content, bool has_focus, bool is_default, 
                               ButtonStates state, const std::string &text) -> void {
 
     auto text_padding = 5;
-    auto background = colors.button_background_1;
-    auto color = colors.text_color;
+    auto background = !is_default ? colors.button_background_1 : colors.button_selected_background;
+    auto color = !is_default ? colors.text_color : colors.button_selected_text;
     auto frame = FrameStyles::Normal;
 
     switch (state) {
     case ButtonStates::Normal:
         break;
     case ButtonStates::Hovered:
-        frame = FrameStyles::Hover;
+        background = Lighter(background);
+        if (!is_default) {
+            color = Lighter(colors.text_color);
+        }
         break;
     case ButtonStates::ClickedInside:
-        color = colors.button_selected_text;
-        background = colors.button_selected_background;
+        if (!is_default) {
+            background = colors.window_background;
+            color = Darker(colors.frame_normal_color1, 0.6);
+        } else {
+            background = Lighter(background, 0.20);
+        }
         break;
     case ButtonStates::ClickedOutside:
         break;
     }
 
-    if (has_focus) {
-        color = colors.button_selected_text;
-        background = colors.button_selected_background;
-        draw_frame(content, {0, 0}, content.size, FrameStyles::Hover,
-                   is_default ? FrameSize::DoubleFrame : FrameSize::SingleFrame);
-    } else {
-        draw_frame(content, {0, 0}, content.size, frame,
-                   is_default ? FrameSize::DoubleFrame : FrameSize::SingleFrame);
-    }
+    draw_frame(content, {0, 0}, content.size, frame,
+               is_default ? FrameSize::DoubleFrame : FrameSize::SingleFrame);
     content.fill_rect(1, 1, content.size.width - 2, content.size.height - 2, background);
+
+    content.line(2, content.size.height - 1, content.size.width - 4, content.size.height - 1,
+                 Darker(background, is_default ? 0.1 : 0.5));
 
     auto text_size = font.text_size(text);
     auto centered = content.size.centered(text_size, text_padding);
@@ -142,13 +145,13 @@ auto ThemeFluent::draw_input_background(Bitmap &content, const bool has_focus) -
 
 auto ThemeFluent::get_light_colors(int32_t accent) -> ColorStyle {
     // https://learn.microsoft.com/en-us/windows/apps/design/signature-experiences/color
-    auto background = MakeColor(240, 240, 240);
-    auto disabled = MakeColor(130, 130, 130);
+    auto background = MakeColor(243, 243, 243);
+    auto disabled = MakeColor(191, 191, 191);
 
     auto colors = ColorStyle();
     colors.window_background = background;
 
-    colors.frame_normal_color1 = MakeColor(173, 173, 173);
+    colors.frame_normal_color1 = MakeColor(229, 229, 229);
     colors.frame_normal_color2 = colors.frame_normal_color1;
     colors.frame_normal_color3 = colors.frame_normal_color1;
     colors.frame_normal_color4 = colors.frame_normal_color1;
@@ -169,12 +172,12 @@ auto ThemeFluent::get_light_colors(int32_t accent) -> ColorStyle {
     colors.frame_disabled_color4 = colors.frame_disabled_color1;
 
     colors.input_background_normal = MakeColor(255, 255, 255);
-    colors.input_background_hover = MakeColor(255, 255, 255);
+    colors.input_background_hover = MakeColor(252, 252, 252);
     colors.input_background_disabled = colors.input_background_normal;
     colors.input_background_selected = accent;
 
-    colors.button_background_1 = MakeColor(225, 225, 225);
-    colors.button_background_2 = MakeColor(225, 225, 225);
+    colors.button_background_1 = MakeColor(251, 251, 251);
+    colors.button_background_2 = MakeColor(253, 253, 253);
     colors.button_selected_background = accent;
     colors.button_selected_text = MakeColor(255, 255, 255);
 
@@ -231,7 +234,7 @@ LayoutParams ThemeFluent::get_padding(PaddingStyle t) {
     case PaddingStyle::Button:
         return {10, 10, 10, 10};
     case PaddingStyle::Checkbox:
-        return {5, 5, 5, 5};
+        return {2, 2, 0, 0};
     case PaddingStyle::Label:
         return {5, 5, 5, 5};
     case PaddingStyle::ScrollBar:

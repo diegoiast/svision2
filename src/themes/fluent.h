@@ -11,7 +11,7 @@
 #include <theme.h>
 
 struct ThemeFluent : Theme {
-    static constexpr int32_t DefaultAccentLight = 0xff0078d7;
+    static constexpr int32_t DefaultAccentLight = 0xff1975c5;
     static auto get_light_colors(int32_t accent = DefaultAccentLight) -> ColorStyle;
     static auto get_dark_colors(int32_t accent = DefaultAccentLight) -> ColorStyle;
 
