@@ -7,6 +7,59 @@
 
 #include "themes/fluent.h"
 
+auto ThemeFluent::get_light_colors(int32_t accent) -> ColorStyle {
+    // https://learn.microsoft.com/en-us/windows/apps/design/signature-experiences/color
+    auto background = MakeColor(243, 243, 243);
+    auto normal = MakeColor(229, 229, 229);
+    auto disabled = Darker(normal);
+
+    auto colors = ColorStyle();
+    colors.window_background = background;
+
+    colors.frame_normal_color1 = normal;
+    colors.frame_normal_color2 = colors.frame_normal_color1;
+    colors.frame_normal_color3 = colors.frame_normal_color1;
+    colors.frame_normal_color4 = colors.frame_normal_color1;
+
+    colors.frame_hover_color1 = colors.frame_normal_color1;
+    colors.frame_hover_color2 = colors.frame_hover_color1;
+    colors.frame_hover_color3 = colors.frame_hover_color1;
+    colors.frame_hover_color4 = colors.frame_hover_color1;
+
+    colors.frame_selected_color1 = (accent);
+    colors.frame_selected_color2 = colors.frame_selected_color1;
+    colors.frame_selected_color3 = colors.frame_selected_color1;
+    colors.frame_selected_color4 = colors.frame_selected_color1;
+
+    colors.frame_disabled_color1 = disabled;
+    colors.frame_disabled_color2 = colors.frame_disabled_color1;
+    colors.frame_disabled_color3 = colors.frame_disabled_color1;
+    colors.frame_disabled_color4 = colors.frame_disabled_color1;
+
+    colors.input_background_normal = MakeColor(255, 255, 255);
+    colors.input_background_hover = MakeColor(252, 252, 252);
+    colors.input_background_disabled = colors.input_background_normal;
+    colors.input_background_selected = accent;
+
+    colors.button_background_1 = MakeColor(251, 251, 251);
+    colors.button_background_2 = MakeColor(253, 253, 253);
+    colors.button_selected_background = accent;
+    colors.button_selected_text = MakeColor(255, 255, 255);
+
+    colors.text_color = MakeColor(0, 0, 0);
+    colors.text_color_disabled = disabled;
+
+    colors.text_selection_color = MakeColor(255, 255, 255);
+    colors.text_selection_background = accent;
+    colors.text_selection_background_hover = Lighter(accent);
+    return colors;
+}
+
+auto ThemeFluent::get_dark_colors(int32_t accent) -> ColorStyle {
+    ColorStyle colors;
+    return colors;
+}
+
 auto ThemeFluent::draw_widget_background(Bitmap &content, bool has_focus) -> void {
     content.fill(colors.window_background);
 }
@@ -65,72 +118,125 @@ auto ThemeFluent::draw_button(Bitmap &content, bool has_focus, bool is_default, 
 auto ThemeFluent::draw_checkbox(Bitmap &content, bool has_focus, bool is_enabled, bool is_checked,
                                 ButtonStates state, const std::string &text, CheckboxShape shape,
                                 const LayoutParams &padding3) -> void {
-    auto background_color = colors.window_background;
     auto checkbox_size = content.size.height;
-    auto checkbox_color = colors.frame_hover_color1;
-    auto padding = 2;
+
+    // we have 3 colors
+    auto background_color = colors.window_background;
+    auto checkbox_background = colors.frame_hover_color1;
+    auto checkbox_color = colors.text_color;
 
     switch (state) {
     case ButtonStates::ClickedInside:
-        checkbox_color = colors.frame_hover_color1;
-        is_checked = true;
+        if (is_checked) {
+            checkbox_background = Darker(colors.frame_hover_color1);
+            checkbox_color = colors.text_selection_color;
+        } else {
+            checkbox_background = colors.frame_hover_color1;
+            checkbox_color = colors.text_selection_color;
+        }
         break;
     case ButtonStates::ClickedOutside:
         if (is_checked) {
-            checkbox_color = colors.frame_hover_color1;
+            checkbox_background = Darker(colors.text_selection_background);
+            checkbox_color = colors.text_selection_color;
         } else {
-            checkbox_color = colors.frame_disabled_color1;
+            checkbox_background = colors.frame_normal_color1;
+            checkbox_color = colors.text_selection_color;
         }
         break;
     case ButtonStates::Hovered:
+        if (is_checked) {
+            checkbox_background = colors.text_selection_background;
+            checkbox_color = colors.text_selection_color;
+        } else {
+            checkbox_background = colors.frame_normal_color1;
+            checkbox_color = colors.frame_disabled_color1;
+            if (!is_enabled) {
+                // TODO - disabled color looks wrong
+                // checkbox_background = colors.frame_disabled_color1;
+                checkbox_color = colors.frame_disabled_color1;
+            }
+        }
         break;
     case ButtonStates::Normal:
+        if (is_checked) {
+            checkbox_background = colors.text_selection_background;
+            checkbox_color = colors.text_selection_color;
+        } else {
+            checkbox_background = colors.frame_normal_color1;
+            checkbox_color = colors.frame_normal_color1;
+            if (!is_enabled) {
+                // TODO - disabled color looks wrong
+                // checkbox_background = colors.frame_disabled_color1;
+                checkbox_color = colors.frame_disabled_color1;
+            }
+        }
         break;
     }
 
     content.fill(background_color);
+
+    // this part draws the borders
     {
-        auto p = Position{padding, padding};
-        auto w = Size{checkbox_size - padding * 2, checkbox_size - padding * 2};
-        auto m = checkbox_size / 2;
+        auto margin_top = 2;
+        auto p = Position{0, 0};
+        auto w = Size{checkbox_size, checkbox_size};
+        auto m = (checkbox_size) / 2;
 
         switch (shape) {
         case CheckboxShape::Checkbox:
-            content.draw_rounded_rectangle(p.x, p.y, w.width, w.height, 1,
-                                           colors.frame_hover_color1, colors.frame_hover_color2);
+            if (is_checked)
+                content.fill_rounded_rect(p.x, p.y, w.width, w.height, checkbox_background);
+            else {
+                if (state == ButtonStates::ClickedInside) {
+                    content.fill_rect(p.x, p.y, w.width, w.height, checkbox_background);
+                } else {
+                    content.draw_rounded_rectangle(p.x, p.y, w.width, w.height, 1,
+                                                   checkbox_background, checkbox_background);
+                }
+            }
             break;
         case CheckboxShape::RadioButton:
-            content.draw_circle(m, m, checkbox_size / 2 - padding,
-                                is_enabled ? checkbox_color : colors.text_color_disabled);
+            content.draw_circle(checkbox_size / 2, checkbox_size / 2, m - margin_top,
+                                checkbox_background);
             break;
         }
     }
 
-    switch (shape) {
-    case CheckboxShape::Checkbox:
-        if (is_checked) {
-            auto padding = 1;
-            auto p = Position{padding, padding};
-            auto w = Size{checkbox_size - padding * 2, checkbox_size - padding * 2};
-            content.fill_rect(p.x, p.y, w.width, w.height, checkbox_color);
-            content.line(p.x + 5, p.y + w.height - 10, p.x + 8, p.y + w.height - 5, 0xffffff);
-
-            content.line(p.x + 8, p.y + w.height - 5, p.x + 13, p.y + w.height - 15, 0xffffff);
+    // this part draws the checked center
+    {
+        auto margin_top = 2;
+        switch (shape) {
+        case CheckboxShape::Checkbox: {
+            auto p = Position{margin_top, margin_top};
+            auto w = Size{checkbox_size - margin_top * 2, checkbox_size - margin_top * 2};
+            if (is_checked) {
+                content.line(p.x + 5, p.y + w.height - 10, p.x + 8, p.y + w.height - 5,
+                             checkbox_color);
+                content.line(p.x + 8, p.y + w.height - 5, p.x + 13, p.y + w.height - 15,
+                             checkbox_color);
+            } else {
+            }
+            break;
         }
-        break;
-    case CheckboxShape::RadioButton:
-        if (is_checked) {
-            auto m = checkbox_size / 2;
-            content.fill_circle(m, m, checkbox_size / 2 - padding,
-                                is_enabled ? checkbox_color : colors.text_color_disabled);
+        case CheckboxShape::RadioButton:
+            if (is_checked) {
+                auto m2 = checkbox_size / 2;
+                auto m3 = checkbox_size / 3.1;
+                content.fill_circle(checkbox_size / 2, checkbox_size / 2, m2 - margin_top,
+                                    checkbox_background);
+                content.fill_circle(checkbox_size / 2, checkbox_size / 2, m3 - margin_top,
+                                    checkbox_color);
+            }
+            break;
         }
-        break;
     }
 
+    auto text_margin = 5;
     auto text_size = font.text_size(text);
     auto content_rect = content.size;
     auto centered = content_rect.centeredY(text_size);
-    centered.x += checkbox_size + padding;
+    centered.x += checkbox_size + text_margin;
     font.write(content, centered, text,
                is_enabled ? colors.text_color : colors.text_color_disabled);
 }
@@ -141,58 +247,6 @@ auto ThemeFluent::draw_input_background(Bitmap &content, const bool has_focus) -
     auto background = has_focus ? colors.input_background_hover : colors.input_background_normal;
     content.fill_rect(padding, padding, content.size.width - padding * 2,
                       content.size.height - padding * 2, background);
-}
-
-auto ThemeFluent::get_light_colors(int32_t accent) -> ColorStyle {
-    // https://learn.microsoft.com/en-us/windows/apps/design/signature-experiences/color
-    auto background = MakeColor(243, 243, 243);
-    auto disabled = MakeColor(191, 191, 191);
-
-    auto colors = ColorStyle();
-    colors.window_background = background;
-
-    colors.frame_normal_color1 = MakeColor(229, 229, 229);
-    colors.frame_normal_color2 = colors.frame_normal_color1;
-    colors.frame_normal_color3 = colors.frame_normal_color1;
-    colors.frame_normal_color4 = colors.frame_normal_color1;
-
-    colors.frame_hover_color1 = (accent);
-    colors.frame_hover_color2 = colors.frame_hover_color1;
-    colors.frame_hover_color3 = colors.frame_hover_color1;
-    colors.frame_hover_color4 = colors.frame_hover_color1;
-
-    colors.frame_selected_color1 = (accent);
-    colors.frame_selected_color2 = colors.frame_selected_color1;
-    colors.frame_selected_color3 = colors.frame_selected_color1;
-    colors.frame_selected_color4 = colors.frame_selected_color1;
-
-    colors.frame_disabled_color1 = disabled;
-    colors.frame_disabled_color2 = colors.frame_disabled_color1;
-    colors.frame_disabled_color3 = colors.frame_disabled_color1;
-    colors.frame_disabled_color4 = colors.frame_disabled_color1;
-
-    colors.input_background_normal = MakeColor(255, 255, 255);
-    colors.input_background_hover = MakeColor(252, 252, 252);
-    colors.input_background_disabled = colors.input_background_normal;
-    colors.input_background_selected = accent;
-
-    colors.button_background_1 = MakeColor(251, 251, 251);
-    colors.button_background_2 = MakeColor(253, 253, 253);
-    colors.button_selected_background = accent;
-    colors.button_selected_text = MakeColor(255, 255, 255);
-
-    colors.text_color = MakeColor(0, 0, 0);
-    colors.text_color_disabled = disabled;
-
-    colors.text_selection_color = MakeColor(255, 255, 255);
-    colors.text_selection_background = accent;
-    colors.text_selection_background_hover = Lighter(accent);
-    return colors;
-}
-
-auto ThemeFluent::get_dark_colors(int32_t accent) -> ColorStyle {
-    ColorStyle colors;
-    return colors;
 }
 
 auto ThemeFluent::draw_listview_background(Bitmap &content, const bool has_focus,

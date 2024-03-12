@@ -135,6 +135,11 @@ auto Bitmap::fill_rect(int x, int y, int w, int h, uint32_t c) -> void {
     }
 }
 
+auto Bitmap::fill_rounded_rect(int x, int y, int w, int h, uint32_t color) -> void {
+    // TODO this is a stub, properly implement "soon"
+    fill_rect(x, y, w, h, color);
+}
+
 auto Bitmap::fill_rect_gradient(int x, int y, int w, int h, uint32_t color1, uint32_t color2)
     -> void {
     if (h == 0 || w == 0) {
