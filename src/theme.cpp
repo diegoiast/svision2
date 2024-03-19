@@ -328,11 +328,9 @@ auto ThemeRedmond::draw_checkbox(Bitmap &content, bool has_focus, bool is_enable
 }
 
 auto ThemeRedmond::draw_input_background(Bitmap &content, const bool has_focus) -> void {
-    //    draw_frame(content, {0, 0}, content.size, FrameStyles::Reversed, FrameSize::SingleFrame);
     auto background = has_focus ? colors.input_background_selected : colors.input_background_normal;
-    content.fill_rect(1, 1, content.size.width - 2, content.size.height - 2, background);
+    content.fill(background);
 }
-
 
 auto ThemeRedmond::draw_listview_background(Bitmap &content, const bool has_focus,
                                             bool draw_background) -> void {
@@ -397,7 +395,6 @@ LayoutParams ThemeRedmond::get_padding(PaddingStyle t) {
     }
     return defaultPadding;
 }
-
 
 // static constexpr int32_t DefaultAccentLight = 0x3daee9;
 
@@ -489,7 +486,6 @@ auto ThemePlasma::get_dark_colors(int32_t accent) -> ColorStyle {
     colors.text_selection_background = 0x3daee9;
     return colors;
 }
-
 
 auto ThemePlasma::draw_widget_background(Bitmap &content, bool has_focus) -> void {
     content.fill(colors.window_background);
@@ -656,11 +652,8 @@ auto ThemePlasma::draw_checkbox(Bitmap &content, bool has_focus, bool is_enabled
 }
 
 auto ThemePlasma::draw_input_background(Bitmap &content, const bool has_focus) -> void {
-    // TODO - padding should be the frame size
-    auto padding = 1;
     auto background = has_focus ? colors.input_background_hover : colors.input_background_normal;
-    content.fill_rect(padding, padding, content.size.width - padding * 2,
-                      content.size.height - padding * 2, background);
+    content.fill(background);
 }
 
 auto ThemePlasma::draw_listview_background(Bitmap &content, const bool has_focus,

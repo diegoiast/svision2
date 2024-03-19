@@ -243,10 +243,15 @@ auto ThemeFluent::draw_checkbox(Bitmap &content, bool has_focus, bool is_enabled
 
 auto ThemeFluent::draw_input_background(Bitmap &content, const bool has_focus) -> void {
     // TODO - padding should be the frame size
-    auto padding = 1;
     auto background = has_focus ? colors.input_background_hover : colors.input_background_normal;
-    content.fill_rect(padding, padding, content.size.width - padding * 2,
-                      content.size.height - padding * 2, background);
+
+    auto margin_bottom = 1;
+    content.fill(background);
+    auto frame_size = content.size;
+    frame_size.height -= margin_bottom;
+
+    content.line(0, content.size.height - 2, content.size.width, content.size.height - 2,
+                 has_focus ? colors.text_selection_background : Darker(background, 0.1));
 }
 
 auto ThemeFluent::draw_listview_background(Bitmap &content, const bool has_focus,
