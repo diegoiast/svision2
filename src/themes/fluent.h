@@ -7,6 +7,7 @@
 
 // Theme reference is found here (we try to match as possible look and feel):
 // https://developer.microsoft.com/en-us/fluentui?fabricVer=6#/controls/web/button
+// https://learn.microsoft.com/en-us/windows/apps/design/signature-experiences/color
 
 #include <theme.h>
 

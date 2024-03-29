@@ -8,7 +8,6 @@
 #include "themes/fluent.h"
 
 auto ThemeFluent::get_light_colors(int32_t accent) -> ColorStyle {
-    // https://learn.microsoft.com/en-us/windows/apps/design/signature-experiences/color
     auto background = MakeColor(243, 243, 243);
     auto normal = MakeColor(229, 229, 229);
     auto disabled = Darker(normal);
@@ -17,24 +16,24 @@ auto ThemeFluent::get_light_colors(int32_t accent) -> ColorStyle {
     colors.window_background = background;
 
     colors.frame_normal_color1 = normal;
-    colors.frame_normal_color2 = colors.frame_normal_color1;
-    colors.frame_normal_color3 = colors.frame_normal_color1;
-    colors.frame_normal_color4 = colors.frame_normal_color1;
+    colors.frame_normal_color2 = normal;
+    colors.frame_normal_color3 = normal;
+    colors.frame_normal_color4 = normal;
 
-    colors.frame_hover_color1 = colors.frame_normal_color1;
-    colors.frame_hover_color2 = colors.frame_hover_color1;
-    colors.frame_hover_color3 = colors.frame_hover_color1;
-    colors.frame_hover_color4 = colors.frame_hover_color1;
+    colors.frame_hover_color1 = normal;
+    colors.frame_hover_color2 = normal;
+    colors.frame_hover_color3 = normal;
+    colors.frame_hover_color4 = normal;
 
-    colors.frame_selected_color1 = (accent);
-    colors.frame_selected_color2 = colors.frame_selected_color1;
-    colors.frame_selected_color3 = colors.frame_selected_color1;
-    colors.frame_selected_color4 = colors.frame_selected_color1;
+    colors.frame_selected_color1 = accent;
+    colors.frame_selected_color2 = normal;
+    colors.frame_selected_color3 = normal;
+    colors.frame_selected_color4 = normal;
 
     colors.frame_disabled_color1 = disabled;
-    colors.frame_disabled_color2 = colors.frame_disabled_color1;
-    colors.frame_disabled_color3 = colors.frame_disabled_color1;
-    colors.frame_disabled_color4 = colors.frame_disabled_color1;
+    colors.frame_disabled_color2 = disabled;
+    colors.frame_disabled_color3 = disabled;
+    colors.frame_disabled_color4 = disabled;
 
     colors.input_background_normal = MakeColor(255, 255, 255);
     colors.input_background_hover = MakeColor(252, 252, 252);
@@ -42,7 +41,7 @@ auto ThemeFluent::get_light_colors(int32_t accent) -> ColorStyle {
     colors.input_background_selected = accent;
 
     colors.button_background_1 = MakeColor(251, 251, 251);
-    colors.button_background_2 = MakeColor(253, 253, 253);
+    colors.button_background_2 = colors.button_background_1;
     colors.button_selected_background = accent;
     colors.button_selected_text = MakeColor(255, 255, 255);
 
@@ -242,15 +241,14 @@ auto ThemeFluent::draw_checkbox(Bitmap &content, bool has_focus, bool is_enabled
 }
 
 auto ThemeFluent::draw_input_background(Bitmap &content, const bool has_focus) -> void {
-    // TODO - padding should be the frame size
     auto background = has_focus ? colors.input_background_hover : colors.input_background_normal;
-
     auto margin_bottom = 1;
-    content.fill(background);
     auto frame_size = content.size;
-    frame_size.height -= margin_bottom;
 
-    content.line(0, content.size.height - 2, content.size.width, content.size.height - 2,
+    content.fill(background);
+    frame_size.height -= margin_bottom;
+    content.line(0, content.size.height - margin_bottom * 2, content.size.width,
+                 content.size.height - margin_bottom * 2,
                  has_focus ? colors.text_selection_background : Darker(background, 0.1));
 }
 
@@ -274,10 +272,9 @@ void ThemeFluent::draw_listview_item(Bitmap &content, const std::string_view tex
         background_color = colors.text_selection_background_hover;
     content.fill(background_color);
 
-    // TODO properly center
     auto text_padding = 5;
     auto text_size = font.text_size(text);
-    auto centered = Position{text_padding, text_padding};
+    auto centered = content.size.centeredY(text_size, text_padding);
     font.write(content, centered, text, text_color);
 }
 
