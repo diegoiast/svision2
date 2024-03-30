@@ -113,8 +113,8 @@ struct Widget : std::enable_shared_from_this<Widget>, LayoutItem {
         on_resize();
     }
 
-    friend class PlatformWindow;
-    friend class WidgetCollection;
+    friend struct PlatformWindow;
+    friend struct WidgetCollection;
 
   protected:
     bool needs_redraw = true;

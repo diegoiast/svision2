@@ -77,7 +77,7 @@ struct Gradient {
     }
 
     auto get_color() -> uint32_t {
-        return MakeColor(std::round(r_current), std::round(g_current), std::round(b_current));
+        return MakeColor(std::lround(r_current), std::lround(g_current), std::lround(b_current));
     }
 };
 
@@ -111,7 +111,7 @@ struct Bitmap {
     auto blend_pixel(int x, int y, uint32_t color, uint8_t alpha) -> void;
 
     auto resize(int width, int height) -> void;
-    auto resize(Size size) -> void { resize(size.width, size.height); }
+    auto resize(Size new_size) -> void { resize(new_size.width, new_size.height); }
 
     auto fill(uint32_t color) -> void { std::fill(buffer.begin(), buffer.end(), color); }
     auto fill_rect(int x, int y, int w, int h, uint32_t color) -> void;
