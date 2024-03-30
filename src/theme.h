@@ -137,37 +137,6 @@ struct ThemeRedmond : Theme {
     virtual auto get_padding(PaddingStyle t = PaddingStyle::Label) -> LayoutParams override;
 };
 
-struct ThemeVision : Theme {
-    static constexpr int32_t DefaultAccentLight = 0xff0078d7;
-    static auto get_light_colors(int32_t accent = DefaultAccentLight) -> ColorStyle;
-    static auto get_dark_colors(int32_t accent = DefaultAccentLight) -> ColorStyle;
-
-    explicit ThemeVision(FontProvider &f, int32_t accent = DefaultAccentLight) : Theme(f) {
-        colors = get_light_colors(accent);
-    }
-
-    virtual auto init() -> void override{};
-    virtual auto draw_widget_background(Bitmap &content, bool has_focus) -> void override;
-    virtual auto draw_window_background(Bitmap &content) -> void override;
-    virtual auto draw_scrollbar_background(Bitmap &content) -> void override;
-    virtual auto draw_button(Bitmap &content, bool has_focus, bool is_default, bool is_enabled,
-                             ButtonStates state, const std::string &text) -> void override;
-    virtual auto draw_checkbox(Bitmap &content, bool has_focus, bool is_enabled, bool is_checked,
-                               ButtonStates state, const std::string &text, CheckboxShape shape,
-                               const LayoutParams &padding) -> void override;
-    virtual auto draw_input_background(Bitmap &content, const bool has_focus) -> void override;
-    virtual auto draw_listview_background(Bitmap &content, const bool has_focus,
-                                          bool draw_background) -> void override;
-    virtual auto draw_listview_item(Bitmap &content, const std::string_view text,
-                                    const ItemStatus status, const bool is_hover) -> void override;
-    virtual auto draw_single_tab(Bitmap &content, const int offset, const bool is_active,
-                                 const bool is_hover, const LayoutParams &padding,
-                                 const std::string_view name) -> int override;
-
-    virtual auto needs_frame_for_focus() const -> bool override { return false; };
-    virtual auto scrollbar_size() const -> int override { return 16; };
-};
-
 struct ThemePlasma : Theme {
     static constexpr int32_t DefaultAccentLight = 0x3daee9;
     static auto get_light_colors(int32_t accent = DefaultAccentLight) -> ColorStyle;

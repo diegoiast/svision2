@@ -115,6 +115,7 @@ struct Bitmap {
 
     auto fill(uint32_t color) -> void { std::fill(buffer.begin(), buffer.end(), color); }
     auto fill_rect(int x, int y, int w, int h, uint32_t color) -> void;
+    auto fill_rounded_rect(int x, int y, int w, int h, uint32_t color) -> void;
     auto fill_rect_gradient(int x, int y, int w, int h, uint32_t color1, uint32_t color2) -> void;
     auto fill_circle(int x, int y, int r, uint32_t colo) -> void;
     auto fill_elipse(int x, int y, int width, int height, uint32_t color) -> void;

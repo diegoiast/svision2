@@ -24,6 +24,7 @@
 #include <stackwidget.h>
 #include <tabheader.h>
 #include <textfield.h>
+#include <themes/fluent.h>
 
 #include <spdlog/spdlog.h>
 #include <timer.h>
@@ -109,8 +110,8 @@ int main() {
     int timer_count = 0;
     auto platform = ThePlatform();
     platform.init();
+    //    platform.default_theme = std::make_shared<ThemeFluent>(*platform.default_font);
     //    platform.default_theme = std::make_shared<ThemeVision>(*platform.default_font, 0x00ff00);
-    //    platform.default_theme = std::make_shared<ThemeVision>(*platform.default_font);
     //    platform.default_theme = std::make_shared<ThemeRedmond>(*platform.default_font);
     //    platform.default_theme = std::make_shared<ThemePlasma>(*platform.default_font, 0xff6737);
     //    platform.default_theme = std::make_shared<ThemePlasma>(*platform.default_font);
