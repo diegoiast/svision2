@@ -60,6 +60,7 @@ auto ThemeFluent::get_dark_colors(int32_t accent) -> ColorStyle {
 }
 
 auto ThemeFluent::draw_widget_background(Bitmap &content, bool has_focus) -> void {
+    (void)(has_focus);
     content.fill(colors.window_background);
 }
 
@@ -80,6 +81,7 @@ auto ThemeFluent::draw_button(Bitmap &content, bool has_focus, bool is_default, 
     auto background = !is_default ? colors.button_background_1 : colors.button_selected_background;
     auto color = !is_default ? colors.text_color : colors.button_selected_text;
     auto frame = FrameStyles::Normal;
+    (void)(has_focus);
 
     switch (state) {
     case ButtonStates::Normal:
@@ -116,7 +118,7 @@ auto ThemeFluent::draw_button(Bitmap &content, bool has_focus, bool is_default, 
 
 auto ThemeFluent::draw_checkbox(Bitmap &content, bool has_focus, bool is_enabled, bool is_checked,
                                 ButtonStates state, const std::string &text, CheckboxShape shape,
-                                const LayoutParams &padding3) -> void {
+                                const LayoutParams &padding) -> void {
     auto checkbox_size = content.size.height;
 
     // we have 3 colors
@@ -286,6 +288,7 @@ auto ThemeFluent::draw_single_tab(Bitmap &content, const int offset, const bool 
     auto text_color = colors.text_color;
     auto margin_bottom = 1;
     auto line_height = 5;
+    (void)(is_hover);
 
     tab_width += padding.get_horizontal();
     content.fill_rect(offset, 0, tab_width, content.size.height, colors.window_background);

@@ -26,6 +26,7 @@ auto Checkbox::draw() -> void {
 
 auto Checkbox::on_hover(const EventMouse &event) -> void {
     // default implementation demands redraw, we don't need this by default
+    (void)(event);
 }
 
 auto Checkbox::on_mouse_enter() -> void {
@@ -74,7 +75,10 @@ auto Checkbox::on_mouse_click(const EventMouse &event) -> EventPropagation {
     return result;
 }
 
-auto Checkbox::on_focus_change(bool new_state) -> void { invalidate(); }
+auto Checkbox::on_focus_change(bool new_state) -> void {
+    invalidate();
+    (void)(new_state);
+}
 
 auto Checkbox::on_keyboard(const EventKeyboard &event) -> EventPropagation {
     if (state.on_keyboard(event, [this]() { toggle(); }) == EventPropagation::propagate) {

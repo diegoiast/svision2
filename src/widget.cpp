@@ -410,10 +410,11 @@ auto Widget::on_mouse_leave() -> void {
 }
 
 auto Widget::on_mouse_click(const EventMouse &event) -> EventPropagation {
+    (void)(event);
     return EventPropagation::propagate;
 };
 
-auto Widget::on_focus_change(bool new_state) -> void{};
+auto Widget::on_focus_change(bool new_state) -> void { (void)(new_state); };
 
 auto Widget::on_keyboard(const EventKeyboard &) -> EventPropagation {
     return EventPropagation::propagate;
@@ -439,7 +440,7 @@ auto Widget::get_theme() const -> std::shared_ptr<Theme> {
         p = p->parent;
     }
     if (window) {
-        window->main_widget.theme;
+        return window->main_widget.theme;
     }
     return {};
 }

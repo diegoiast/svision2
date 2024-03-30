@@ -16,12 +16,15 @@ auto Theme::draw_frame(Bitmap &content, Position position, Size size, FrameStyle
         case FrameSize::TrippleFrame:
             content.draw_rectangle(2, 2, size.width - 4, size.height - 4,
                                    colors.frame_normal_color4, colors.frame_normal_color4);
+            [[fallthrough]];
         case FrameSize::DoubleFrame:
             content.draw_rectangle(1, 1, size.width - 2, size.height - 2,
                                    colors.frame_normal_color3, colors.frame_normal_color4);
+            [[fallthrough]];
         case FrameSize::SingleFrame:
             content.draw_rectangle(position.x, position.y, size.width, size.height,
                                    colors.frame_normal_color1, colors.frame_normal_color2);
+            [[fallthrough]];
         case FrameSize::NoFrame:
             break;
         }
@@ -30,12 +33,15 @@ auto Theme::draw_frame(Bitmap &content, Position position, Size size, FrameStyle
         switch (frame_size) {
         case FrameSize::TrippleFrame:
             // Not really supported
+            [[fallthrough]];
         case FrameSize::DoubleFrame:
             content.draw_rectangle(1, 1, size.width - 2, size.height - 2,
                                    colors.frame_normal_color1, colors.frame_normal_color2);
+            [[fallthrough]];
         case FrameSize::SingleFrame:
             content.draw_rectangle(position.x, position.y, size.width, size.height,
                                    colors.frame_normal_color2, colors.frame_normal_color1);
+            [[fallthrough]];
         case FrameSize::NoFrame:
             break;
         }
@@ -44,12 +50,15 @@ auto Theme::draw_frame(Bitmap &content, Position position, Size size, FrameStyle
         switch (frame_size) {
         case FrameSize::TrippleFrame:
             // Not really supported
+            [[fallthrough]];
         case FrameSize::DoubleFrame:
             content.draw_rectangle(position.x + 1, position.y + 1, size.width - 2, size.height - 2,
                                    colors.frame_disabled_color3, colors.frame_disabled_color4);
+            [[fallthrough]];
         case FrameSize::SingleFrame:
             content.draw_rectangle(position.x, position.y, size.width, size.height,
                                    colors.frame_disabled_color1, colors.frame_disabled_color2);
+            [[fallthrough]];
         case FrameSize::NoFrame:
             break;
         }
@@ -58,12 +67,15 @@ auto Theme::draw_frame(Bitmap &content, Position position, Size size, FrameStyle
         switch (frame_size) {
         case FrameSize::TrippleFrame:
             // Not really supported
+            [[fallthrough]];
         case FrameSize::DoubleFrame:
             content.draw_rectangle(position.x + 1, position.y + 1, size.width - 2, size.height - 2,
                                    colors.frame_hover_color3, colors.frame_hover_color4);
+            [[fallthrough]];
         case FrameSize::SingleFrame:
             content.draw_rectangle(position.x, position.y, size.width, size.height,
                                    colors.frame_hover_color1, colors.frame_hover_color2);
+            [[fallthrough]];
         case FrameSize::NoFrame:
             break;
         }
@@ -160,6 +172,7 @@ ThemeRedmond::ThemeRedmond(FontProvider &f) : Theme(f) {
 }
 
 auto ThemeRedmond::draw_widget_background(Bitmap &content, bool has_focus) -> void {
+    (void)(has_focus);
     content.fill(colors.window_background);
 }
 
@@ -183,9 +196,8 @@ auto ThemeRedmond::draw_scrollbar_background(Bitmap &content) -> void {
 
 auto ThemeRedmond::draw_button(Bitmap &content, bool has_focus, bool is_default, bool is_enabled,
                                ButtonStates state, const std::string &text) -> void {
+    (void)(has_focus);
     auto text_padding = 5;
-    //    auto shadow_padding = state == ButtonStates::ClickedInside ? -2 : -1;
-
     auto background_color = 0;
     auto shadow_offset = -1;
     auto topleft = Position{0, 0};
@@ -250,6 +262,7 @@ auto ThemeRedmond::draw_checkbox(Bitmap &content, bool has_focus, bool is_enable
     auto background_color = colors.input_background_normal;
     auto foreground_color = colors.text_color;
     auto checkbox_size = content.size.height;
+    (void)(has_focus);
 
     switch (state) {
     case ButtonStates::ClickedInside:
@@ -359,7 +372,6 @@ auto ThemeRedmond::draw_single_tab(Bitmap &content, const int offset, const bool
                                    const bool is_hover, const LayoutParams &padding,
                                    const std::string_view name) -> int {
     auto active_bg = (colors.window_background);
-    auto is_tab_hover = is_hover;
     auto tab_size = font.text_size(name);
 
     tab_size.width += padding.get_horizontal();
@@ -377,9 +389,6 @@ auto ThemeRedmond::draw_single_tab(Bitmap &content, const int offset, const bool
                               Lighter(active_bg, 0.05));
         }
     }
-    if (is_active) {
-        is_tab_hover = false;
-    }
     font.write(content, {offset + padding.start, padding.top}, name, colors.text_color);
     return tab_size.width;
 }
@@ -392,6 +401,10 @@ LayoutParams ThemeRedmond::get_padding(PaddingStyle t) {
         return {10, 10, 10, 10};
     case PaddingStyle::TabHeader:
         return {5, 5, 10, 10};
+    case PaddingStyle::Checkbox:
+        break;
+    case PaddingStyle::Label:
+        break;
     }
     return defaultPadding;
 }
@@ -488,6 +501,7 @@ auto ThemePlasma::get_dark_colors(int32_t accent) -> ColorStyle {
 }
 
 auto ThemePlasma::draw_widget_background(Bitmap &content, bool has_focus) -> void {
+    (void)(has_focus);
     content.fill(colors.window_background);
 }
 

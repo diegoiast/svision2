@@ -92,7 +92,7 @@ struct Widget : std::enable_shared_from_this<Widget>, LayoutItem {
     // TODO - make sure this T derives from `Widget`
     template <typename T, typename... Args> auto add_new(Args &&...args) -> std::shared_ptr<T> {
         return add(std::make_shared<T>(std::forward<Args>(args)...));
-    };
+    }
 
     auto get_theme() const -> std::shared_ptr<Theme>;
     auto get_cursor() const -> MouseCursor;
@@ -177,12 +177,12 @@ struct PlatformWindow {
         }
         widget->parent = &main_widget;
         return widget;
-    };
+    }
 
     // TODO - make sure this T derives from `Widget`
     template <typename T, typename... Args> auto add_new(Args &&...args) -> std::shared_ptr<T> {
         return add(std::make_shared<T>(std::forward<Args>(args)...));
-    };
+    }
 
     // TODO - make sure this T derives from `Widget`
     template <typename T, typename... Args>
@@ -196,5 +196,5 @@ struct PlatformWindow {
         // TODO - this needs to be a setter - do we can set all children's window as well
         widget->parent = &main_widget;
         return widget;
-    };
+    }
 };

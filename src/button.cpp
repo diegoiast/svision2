@@ -75,7 +75,7 @@ auto Button::draw() -> void {
     get_theme()->draw_button(content, has_focus, is_default, is_enabled, state.state, text);
 }
 
-auto Button::on_hover(const EventMouse &event) -> void {
+auto Button::on_hover(const EventMouse &) -> void {
     // default implementation demands redraw, we don't need this by default
 }
 
@@ -145,7 +145,10 @@ auto Button::on_mouse_click(const EventMouse &event) -> EventPropagation {
     return result;
 }
 
-auto Button::on_focus_change(bool new_state) -> void { invalidate(); }
+auto Button::on_focus_change(bool new_state) -> void {
+    invalidate();
+    (void)(new_state);
+}
 
 auto Button::on_keyboard(const EventKeyboard &event) -> EventPropagation {
     if (state.on_keyboard(event, on_button_click) == EventPropagation::propagate) {

@@ -111,7 +111,7 @@ struct Size {
 
     auto inline centered(const Size &other, int padding = 0) const -> Position {
         auto s = *this - other;
-        return {s.width / 2, s.height / 2};
+        return {(s.width - padding) / 2, (s.height - padding) / 2};
     }
 
     auto inline centeredX(const Size &other, int padding = 0) const -> Position {

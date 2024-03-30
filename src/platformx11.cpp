@@ -63,7 +63,7 @@ const char *x11_event_type_names[]{
     "LASTEvent",        // 36
 };
 
-auto convert_x11_key_event(XEvent &ev, Display *dpy) -> EventKeyboard {
+static auto convert_x11_key_event(XEvent &ev) -> EventKeyboard {
     auto event = EventKeyboard();
     char buf[20];
     KeySym keySym;
@@ -90,7 +90,7 @@ auto convert_x11_key_event(XEvent &ev, Display *dpy) -> EventKeyboard {
     return event;
 }
 
-auto convert_x11_mouse_event(const XEvent &ev, Display *dpy) -> EventMouse {
+static auto convert_x11_mouse_event(const XEvent &ev) -> EventMouse {
     auto event = EventMouse();
     switch (ev.type) {
     case MotionNotify:
@@ -325,14 +325,14 @@ auto PlatformX11::main_loop() -> void {
             // TODO - verify this!
             // mouse events on X11 do not tell you the position of the click, we
             // need to save that data and pass it along
-            auto event = convert_x11_mouse_event(ev, this->dpy);
+            auto event = convert_x11_mouse_event(ev);
             event.x = last_mouse_position.x;
             event.y = last_mouse_position.y;
             target_window->on_mouse(event);
         } break;
 
         case MotionNotify: {
-            auto event = convert_x11_mouse_event(ev, this->dpy);
+            auto event = convert_x11_mouse_event(ev);
             target_window->on_mouse(event);
             last_mouse_position.x = event.x;
             last_mouse_position.y = event.y;
@@ -340,7 +340,7 @@ auto PlatformX11::main_loop() -> void {
 
         case KeyPress:
         case KeyRelease:
-            target_window->on_keyboard(convert_x11_key_event(ev, this->dpy));
+            target_window->on_keyboard(convert_x11_key_event(ev));
             break;
 
         case ConfigureNotify: {

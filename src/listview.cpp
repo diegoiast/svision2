@@ -31,7 +31,7 @@ ListView::ListView(Position position, Size size) : Widget(position, size, 0) {
     position.x = size.width - 24;
     position.y = 0;
     this->scrollbar = add_new<ScrollBar>(position, size.height, false);
-    this->scrollbar->did_change = [this](auto *s, int value) { this->invalidate(); };
+    this->scrollbar->did_change = [this](auto *, int) { this->invalidate(); };
 
     // We will complete redraw the background, the theme should only draw the frame
     // and sub children.
@@ -221,8 +221,6 @@ auto ListView::did_adapter_update() -> void {
     auto widget_count = (this->content.size.height - 2) / item_height + 1;
 
     auto k = adapter->get_count() - widget_count;
-    if (k < 0)
-        k = 0;
     if (adapter->get_count() < widget_count) {
         k = 0;
     }

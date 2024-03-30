@@ -31,8 +31,7 @@ FontProviderFreetype::FontProviderFreetype(const std::string_view default_font) 
 
 // Function to extract one Unicode code point from a UTF-8 string_view
 // Returns the extracted Unicode code point and updates the iterator
-int32_t extractUnicodeCharacter(std::string_view::const_iterator &it,
-                                const std::string_view::const_iterator &end) {
+static int32_t extractUnicodeCharacter(std::string_view::const_iterator &it) {
     int32_t unicodeChar = 0;
     size_t bytesRead = 0;
 
@@ -68,8 +67,8 @@ int32_t extractUnicodeCharacter(std::string_view::const_iterator &it,
 }
 
 static auto draw_glyph(Bitmap &bitmap, int x, int y, uint32_t color, FT_GlyphSlot slot) {
-    for (int dy = 0; dy < slot->bitmap.rows; dy++) {
-        for (auto dx = 0; dx < slot->bitmap.width; dx++) {
+    for (auto dy = 0u; dy < slot->bitmap.rows; dy++) {
+        for (auto dx = 0u; dx < slot->bitmap.width; dx++) {
             auto glyphColor = slot->bitmap.buffer[dy * slot->bitmap.width + dx];
             bitmap.blend_pixel(x + dx, y + dy, color, glyphColor);
         }
@@ -97,7 +96,7 @@ auto FontProviderFreetype::write(Bitmap &bitmap, Position position, const std::s
     const auto end = text.end();
 
     while (it != end) {
-        auto code_point = extractUnicodeCharacter(it, end);
+        auto code_point = extractUnicodeCharacter(it);
         auto error = FT_Load_Char(face, code_point, FT_LOAD_RENDER | FT_LOAD_TARGET_NORMAL);
         if (error) {
             //            spdlog::error("Freetype: Error rendering glyph: {}\n",
@@ -132,7 +131,7 @@ auto FontProviderFreetype::text_size(const std::string_view text) -> Size {
 
     FT_Set_Pixel_Sizes(face, 0, fontSize);
     while (it != end) {
-        auto code_point = extractUnicodeCharacter(it, end);
+        auto code_point = extractUnicodeCharacter(it);
         auto error = FT_Load_Char(face, code_point, FT_LOAD_RENDER | FT_LOAD_TARGET_NORMAL);
         if (error) {
             continue;

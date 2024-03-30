@@ -13,9 +13,9 @@
 
 #include <widget.h>
 
-class Button;
-class ListView;
-class ComboboxList;
+struct Button;
+struct ListView;
+struct ComboboxList;
 
 struct Combobox : Widget {
     std::shared_ptr<ComboboxList> popup_list = {};

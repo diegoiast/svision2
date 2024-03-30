@@ -73,7 +73,7 @@ struct EventMouse : Event {
         y = -1;
     }
 
-    auto is_valid() -> const bool { return x <= 0 || y <= 0; }
+    auto is_valid() const -> bool { return x <= 0 || y <= 0; }
 };
 
 struct EventResize : Event {

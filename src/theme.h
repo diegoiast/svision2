@@ -100,6 +100,7 @@ struct Theme {
     virtual auto modify_frame_on_hover() const -> bool { return true; }
 
     virtual auto get_padding(PaddingStyle t = PaddingStyle::Label) -> LayoutParams {
+        (void)(t);
         return defaultPadding;
     }
 };

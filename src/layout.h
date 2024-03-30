@@ -33,16 +33,16 @@ struct LayoutItem {
             on_item_added(*this, sub_items.size() - 1);
         }
         return layoutItem;
-    };
+    }
 };
 
 struct HorizontalSpacer : LayoutItem {
-    virtual auto relayout(Position position, const Size size) -> void override{};
+    virtual auto relayout(Position, const Size) -> void override {}
     virtual auto size_hint() const -> Size override { return {0, 1}; }
 };
 
 struct VerticalSpacer : LayoutItem {
-    virtual auto relayout(Position position, const Size size) -> void override{};
+    virtual auto relayout(Position, const Size) -> void override {}
     virtual auto size_hint() const -> Size override { return {1, 0}; }
 };
 

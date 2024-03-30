@@ -22,7 +22,7 @@ struct SingleWidgetVisible : LayoutItem {
             return;
         }
 
-        auto i = 0;
+        auto i = size_t(0);
         for (auto &item : sub_items) {
             auto w = std::dynamic_pointer_cast<Widget>(item);
             if (w == nullptr) {

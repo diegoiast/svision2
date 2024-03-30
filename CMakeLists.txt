@@ -132,6 +132,11 @@ target_link_libraries(svision2 PUBLIC
     ${SVISION_PLATFORM_LIBS})
 target_include_directories(svision2 PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src")
 target_compile_features(svision2 PUBLIC cxx_std_17)
+if(MSVC)
+  target_compile_options(svision2 PRIVATE /W4 /WX)
+else()
+  target_compile_options(svision2 PRIVATE -Wall -Wextra)
+endif()
 
 # Development demo
 add_executable (demo src/main.cxx )
