@@ -281,8 +281,24 @@ void ThemeFluent::draw_listview_item(Bitmap &content, const std::string_view tex
 auto ThemeFluent::draw_single_tab(Bitmap &content, const int offset, const bool is_active,
                                   const bool is_hover, const LayoutParams &padding,
                                   const std::string_view name) -> int {
-    // TODO
-    return 0;
+    // https://learn.microsoft.com/en-us/microsoftteams/platform/tabs/design/tabs
+    auto tab_width = font.text_size(name).width;
+    auto text_color = colors.text_color;
+    auto margin_bottom = 1;
+    auto line_height = 5;
+
+    tab_width += padding.get_horizontal();
+    content.fill_rect(offset, 0, tab_width, content.size.height, colors.window_background);
+    if (is_active) {
+        content.fill_rect(offset, content.size.height - (margin_bottom + line_height), tab_width,
+                          line_height, colors.text_selection_background);
+    } else {
+        auto bottom_frame_color1 = colors.frame_normal_color3;
+        content.fill_rect(offset, content.size.height - 3, content.size.width, 1,
+                          bottom_frame_color1);
+    }
+    font.write(content, {offset + padding.start, padding.top}, name, text_color);
+    return tab_width;
 }
 
 LayoutParams ThemeFluent::get_padding(PaddingStyle t) {
@@ -296,7 +312,7 @@ LayoutParams ThemeFluent::get_padding(PaddingStyle t) {
     case PaddingStyle::ScrollBar:
         return {12, 12, 12, 12};
     case PaddingStyle::TabHeader:
-        return {10, 10, 10, 10};
+        return {15, 15, 10, 10};
     }
     return defaultPadding;
 }
