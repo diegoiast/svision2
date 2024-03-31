@@ -28,11 +28,17 @@ auto constexpr inline MakeColor(uint8_t r, uint8_t g, uint8_t b) -> uint32_t {
     return r << 16 | g << 8 | b;
 }
 
-auto constexpr inline GetRed(uint32_t color) -> uint8_t { return color >> 16; }
+auto constexpr inline GetRed(uint32_t color) -> uint8_t {
+    return static_cast<uint8_t>(color >> 16);
+}
 
-auto constexpr inline GetGreen(uint32_t color) -> uint8_t { return (color >> 8) & 0x00ff; }
+auto constexpr inline GetGreen(uint32_t color) -> uint8_t {
+    return static_cast<uint8_t>((color >> 8) & 0x00ff);
+}
 
-auto constexpr inline GetBlue(uint32_t color) -> uint8_t { return color & 0x00ff; }
+auto constexpr inline GetBlue(uint32_t color) -> uint8_t {
+    return static_cast<uint8_t>(color & 0x00ff);
+}
 
 auto constexpr inline get_bit(unsigned char number, char n) -> bool { return (number >> n) & 1; }
 
@@ -77,7 +83,9 @@ struct Gradient {
     }
 
     auto get_color() -> uint32_t {
-        return MakeColor(std::lround(r_current), std::lround(g_current), std::lround(b_current));
+        return MakeColor(static_cast<uint8_t>(std::lround(r_current)),
+                         static_cast<uint8_t>(std::lround(g_current)),
+                         static_cast<uint8_t>(std::lround(b_current)));
     }
 };
 

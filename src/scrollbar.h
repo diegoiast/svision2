@@ -9,7 +9,7 @@
 #include <functional>
 #include <widget.h>
 
-class Button;
+struct Button;
 
 struct ScrollBar : Widget {
     std::function<void(ScrollBar *, int value)> did_change = {};

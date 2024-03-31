@@ -22,6 +22,11 @@
 extern "C" int main(int, char **);
 
 int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
+    (void)(hInstance);
+    (void)(hPrevInstance);
+    (void)(lpCmdLine);
+    (void)(nCmdShow);
+
     int argc = __argc;
     char **argv = __argv;
     int result = main(argc, argv);
@@ -376,7 +381,6 @@ auto PlatformWin32::show_window(std::shared_ptr<PlatformWindow> w) -> void {
 }
 
 auto PlatformWin32::set_cursor(PlatformWindow &window, MouseCursor cursor) -> void {
-    auto x11_window = static_cast<PlatformWindowWin32 *>(&window);
     HCURSOR win32_cursor;
 
     if (cursor_cache.find(cursor) == cursor_cache.end()) {

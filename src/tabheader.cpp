@@ -38,10 +38,10 @@ auto TabHeader::get_tab_string(int index) const -> std::string_view {
 }
 
 auto TabHeader::draw() -> void {
-    auto theme = get_theme();
+    auto my_theme = get_theme();
     auto hover_tab_index = mouse_over ? hover_tab : -1;
     tab_offset =
-        theme->draw_tabs(content, has_focus, active_tab, hover_tab_index, get_padding(), names);
+        my_theme->draw_tabs(content, has_focus, active_tab, hover_tab_index, get_padding(), names);
 }
 
 auto TabHeader::on_mouse_click(const EventMouse &event) -> EventPropagation {
@@ -63,19 +63,19 @@ auto TabHeader::on_mouse_click(const EventMouse &event) -> EventPropagation {
 }
 
 auto TabHeader::on_hover(const EventMouse &event) -> void {
-    auto hover_tab = -1;
+    auto my_hover_tab = -1;
     auto index = 0;
     for (const auto &offset : tab_offset) {
         if (event.x > offset.offset && event.x < offset.offset + offset.width) {
             //            this->needs_redraw = true;
-            hover_tab = index;
+            my_hover_tab = index;
         }
         index++;
     }
 
-    if (hover_tab >= 0 and hover_tab != this->hover_tab) {
-        this->hover_tab = hover_tab;
-        auto t = get_tab_string(hover_tab);
+    if (my_hover_tab >= 0 and my_hover_tab != this->hover_tab) {
+        this->hover_tab = my_hover_tab;
+        auto t = get_tab_string(my_hover_tab);
         spdlog::info("Mouse under {}", t);
         invalidate();
     }

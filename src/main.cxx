@@ -159,7 +159,7 @@ int main() {
     platform.show_window(w2);
 #endif
 
-#if 0
+#if 1
     auto w1 = platform.open_window(100, 100, 640, 480, "test 1");
     auto l =
         w1->add_new<Label>(Position{10, 10}, Size{300, 20}, "test 1 - Hello world! glqi שלום עולם");

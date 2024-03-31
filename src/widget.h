@@ -101,13 +101,13 @@ struct Widget : std::enable_shared_from_this<Widget>, LayoutItem {
     auto is_visible() const -> bool { return is_widget_visible; }
     auto get_padding() const -> LayoutParams;
 
-    auto relayout(Position position, const Size size) -> void override {
-        this->position = position;
+    auto relayout(Position new_position, const Size size) -> void override {
+        this->position = new_position;
         content.resize(size);
         needs_redraw = true;
 
         if (layout) {
-            layout->relayout(position, size);
+            layout->relayout(new_position, size);
         }
 
         on_resize();

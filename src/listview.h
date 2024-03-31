@@ -14,7 +14,7 @@
 #include <checkboxshape.h>
 #include <widget.h>
 
-class ScrollBar;
+struct ScrollBar;
 
 struct ItemAdapter {
     // ALA TurboVision

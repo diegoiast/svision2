@@ -116,6 +116,7 @@ auto Win32Timer::stop() -> void {
 }
 
 auto Win32Timer::TimerProc(HWND hwnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime) -> void {
+    (void)(dwTime);
     auto instance = Win32Timer::available_timers[idEvent];
     instance->callback();
     if (!instance->repeating) {

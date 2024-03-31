@@ -133,7 +133,9 @@ target_link_libraries(svision2 PUBLIC
 target_include_directories(svision2 PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src")
 target_compile_features(svision2 PUBLIC cxx_std_17)
 if(MSVC)
-  target_compile_options(svision2 PRIVATE /W4 /WX)
+  target_compile_options(svision2 PRIVATE /W4)
+  # this shuts up stl4043
+  target_compile_definitions(svision2 PRIVATE _SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING)
 else()
   target_compile_options(svision2 PRIVATE -Wall -Wextra)
 endif()

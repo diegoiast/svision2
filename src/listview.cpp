@@ -54,7 +54,7 @@ auto ListView::draw() -> void {
     auto offset = -(scrollbar->value % item_height);
 
     for (auto i = 0; i < widget_count; i++) {
-        auto position = Position{0, offset};
+        auto p = Position{0, offset};
         auto size = Size{this->content.size.width - this->scrollbar->content.size.width,
                          first_widget->content.size.height};
         auto status = ItemStatus{false, false};
@@ -68,7 +68,7 @@ auto ListView::draw() -> void {
             continue;
         }
         status.is_active = this->current_item == first_item;
-        w->position = position;
+        w->position = p;
         if (size.height < 0)
             size.height = 0;
         if (size.width < 0)
@@ -202,13 +202,13 @@ auto ListView::on_keyboard(const EventKeyboard &event) -> EventPropagation {
 
 auto ListView::on_resize() -> void {
     auto default_buttons_size = this->scrollbar->get_padding().get_horizontal();
-    auto position = Position{content.size.width - default_buttons_size, 0};
+    auto p = Position{content.size.width - default_buttons_size, 0};
 
     for (auto &w : reserved_widgets) {
         w->hide();
     }
     this->reserved_widgets.clear();
-    this->scrollbar->position = position;
+    this->scrollbar->position = p;
     this->scrollbar->content.resize(default_buttons_size, content.size.height);
     this->scrollbar->on_resize();
 }
@@ -225,7 +225,7 @@ auto ListView::did_adapter_update() -> void {
         k = 0;
     }
 
-    // the speed is just to make weird funkey updates
+    // the speed is just to make weird funky updates
     this->scrollbar->set_values(0, k * item_height, 0, (item_height * 3) / 11);
 
     widget_count++;
@@ -244,6 +244,6 @@ auto ListView::did_adapter_update() -> void {
 }
 
 auto ListItemWidget::draw() -> void {
-    auto theme = get_theme();
-    theme->draw_listview_item(content, text, status, mouse_over);
+    auto my_theme = get_theme();
+    my_theme->draw_listview_item(content, text, status, mouse_over);
 }

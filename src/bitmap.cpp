@@ -76,7 +76,8 @@ auto hslToRGB(const HSL &hsl) -> int32_t {
         b = x;
     }
 
-    return MakeColor((r + m) * 255.0, (g + m) * 255.0, (b + m) * 255.0);
+    return MakeColor(static_cast<uint8_t>((r + m) * 255), static_cast<uint8_t>((g + m) * 255),
+                     static_cast<uint8_t>((b + m) * 255));
 }
 
 auto Darker(uint32_t color, double percentage) -> uint32_t {

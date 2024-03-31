@@ -18,7 +18,7 @@ auto HorizontalLayout::relayout(Position position, const Size size) -> void {
     // from the list
     auto widget_count = 0;
     auto width = size.width - margin.get_horizontal();
-    for (auto item : sub_items) {
+    for (auto &item : sub_items) {
         if (item->ignore_layout()) {
             continue;
         }
@@ -59,7 +59,7 @@ auto HorizontalLayout::relayout(Position position, const Size size) -> void {
         }
         auto hint = item->size_hint();
         if (hint.width <= 0) {
-            recommended_size.width = (width * item->weight) / total_weight;
+            recommended_size.width = std::lround((width * item->weight) / total_weight);
 
         } else {
             recommended_size.width = hint.width;
@@ -86,7 +86,7 @@ auto HorizontalLayout::size_hint() const -> Size {
     auto has_auto_width = false;
     auto has_auto_height = false;
 
-    for (auto item : sub_items) {
+    for (auto &item : sub_items) {
         if (item->ignore_layout()) {
             continue;
         }
@@ -132,7 +132,7 @@ auto VerticalLayout::relayout(Position position, const Size size) -> void {
     // from the list
     auto widget_count = 0;
     auto height = size.height - margin.get_vertical();
-    for (auto item : sub_items) {
+    for (auto &item : sub_items) {
         if (item->ignore_layout()) {
             continue;
         }
@@ -167,14 +167,14 @@ auto VerticalLayout::relayout(Position position, const Size size) -> void {
 
     // Second pass - resize items. Height is computed, unless the
     // widget has a size hint. In such case - we enforce it.
-    for (auto item : sub_items) {
+    for (auto &item : sub_items) {
         if (item->ignore_layout()) {
             continue;
         }
         auto hint = item->size_hint();
         if (hint.height <= 0) {
             recommended_size.height = height / widget_count;
-            recommended_size.height = (height * item->weight) / total_weight;
+            recommended_size.height = std::lround((height * item->weight) / total_weight);
         } else {
             recommended_size.height = hint.height;
         }
@@ -199,7 +199,7 @@ auto VerticalLayout::size_hint() const -> Size {
     auto has_auto_width = false;
     auto has_auto_height = false;
 
-    for (auto item : sub_items) {
+    for (auto &item : sub_items) {
         if (item->ignore_layout()) {
             continue;
         }

@@ -81,27 +81,27 @@ ScrollBar::ScrollBar(Position position, int length, bool horizontal, int maximum
 }
 
 auto ScrollBar::draw() -> void {
-    auto theme = get_theme();
+    auto my_theme = get_theme();
     content.fill(0xffff00);
-    theme->draw_scrollbar_background(content);
+    my_theme->draw_scrollbar_background(content);
     Widget::draw();
 
     // TODO - move this code to the theme
     if (is_horizontal) {
         auto offset = down_button->content.size.width + thumb_position;
         content.fill_rect(offset, 0, thumb_size, content.size.height,
-                          theme->colors.button_background_1);
+                          my_theme->colors.button_background_1);
         content.draw_rectangle(offset, 0, thumb_size, content.size.height,
-                               theme->colors.frame_normal_color1,
-                               theme->colors.frame_normal_color2);
+                               my_theme->colors.frame_normal_color1,
+                               my_theme->colors.frame_normal_color2);
 
     } else {
         auto offset = down_button->content.size.height + thumb_position;
         content.fill_rect(0, offset, content.size.width, thumb_size,
-                          theme->colors.button_background_1);
+                          my_theme->colors.button_background_1);
         content.draw_rectangle(0, offset, content.size.width, thumb_size,
-                               theme->colors.frame_normal_color1,
-                               theme->colors.frame_normal_color2);
+                               my_theme->colors.frame_normal_color1,
+                               my_theme->colors.frame_normal_color2);
     }
 }
 
@@ -116,42 +116,42 @@ auto ScrollBar::size_hint() const -> Size {
         return {get_padding().get_horizontal(), 0};
 }
 
-auto ScrollBar::set_value(int value) -> void {
-    if (value == this->value) {
+auto ScrollBar::set_value(int new_value) -> void {
+    if (new_value == this->value) {
         return;
     }
 
-    if (value < minimum) {
-        value = minimum;
+    if (new_value < minimum) {
+        new_value = minimum;
     }
-    if (value >= maximum) {
-        value = maximum;
+    if (new_value >= maximum) {
+        new_value = maximum;
     }
-    this->value = value;
+    this->value = new_value;
     update_thumb_size();
     up_button->invalidate();
     down_button->invalidate();
     invalidate();
 
     if (did_change) {
-        this->did_change(this, value);
+        this->did_change(this, new_value);
     }
 }
 
-auto ScrollBar::set_values(int minimum, int maximum, int value, int step) -> void {
-    if (value < minimum) {
-        value = minimum;
+auto ScrollBar::set_values(int min, int max, int new_value, int new_step) -> void {
+    if (new_value < min) {
+        new_value = min;
     }
-    if (value >= maximum) {
-        value = maximum;
+    if (new_value >= max) {
+        new_value = max;
     }
-    if (step == 0) {
-        step = (maximum - minimum) / 10;
+    if (new_step == 0) {
+        new_step = (max - min) / 10;
     }
-    this->minimum = minimum;
-    this->maximum = maximum;
-    this->step = step;
-    this->value = value;
+    this->minimum = min;
+    this->maximum = max;
+    this->step = new_step;
+    this->value = new_value;
     update_thumb_size();
     up_button->invalidate();
     down_button->invalidate();
@@ -192,9 +192,9 @@ auto ScrollBar::step_down() -> void {
 }
 
 auto ScrollBar::update_thumb_size() -> void {
-    auto padding = is_horizontal
-                       ? up_button->content.size.width + down_button->content.size.width
-                       : up_button->content.size.height + down_button->content.size.height;
+    auto thumb_padding = is_horizontal
+                             ? up_button->content.size.width + down_button->content.size.width
+                             : up_button->content.size.height + down_button->content.size.height;
     auto length = is_horizontal ? content.size.width : content.size.height;
     auto range = maximum - minimum;
 
@@ -203,9 +203,9 @@ auto ScrollBar::update_thumb_size() -> void {
 
     if (draw_area >= range) {
         // If we have enough space thumb size, is relative to widget/value
-        thumb_size = length - padding - range;
-        if (thumb_size < padding) {
-            thumb_size = padding;
+        thumb_size = length - thumb_padding - range;
+        if (thumb_size < thumb_padding) {
+            thumb_size = thumb_padding;
         }
         thumb_position = value - minimum;
     } else {

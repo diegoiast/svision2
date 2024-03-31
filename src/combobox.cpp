@@ -37,12 +37,12 @@ auto Combobox::draw() -> void {
     Widget::draw();
 
     auto text = get_value();
-    auto theme = get_theme();
+    auto my_theme = get_theme();
     auto text_padding = get_padding().get_horizontal();
-    auto color = has_focus ? theme->colors.text_selection_color : theme->colors.text_color;
-    auto text_size = theme->font.text_size(text);
+    auto color = has_focus ? my_theme->colors.text_selection_color : my_theme->colors.text_color;
+    auto text_size = my_theme->font.text_size(text);
     auto centered = content.size.centeredY(text_size, text_padding);
-    theme->font.write(content, centered, text, color);
+    my_theme->font.write(content, centered, text, color);
 }
 
 auto Combobox::on_mouse(const EventMouse &event) -> EventPropagation {
@@ -144,10 +144,10 @@ auto Combobox::on_resize() -> void {
 }
 
 auto Combobox::show_popup() -> void {
-    auto position = Position{this->position.x, this->position.y + this->content.size.height};
+    auto new_position = Position{this->position.x, this->position.y + this->content.size.height};
     if (!popup_list) {
         auto size = Size{this->content.size.width, 100};
-        popup_list = window->add_new<ComboboxList>(position, size);
+        popup_list = window->add_new<ComboboxList>(new_position, size);
         popup_list->adapter = std::make_shared<ListItemAdapter>(strings);
         popup_list->on_item_selected = [this](auto &, auto index, auto reason) {
             this->selected_item = index;
@@ -173,7 +173,7 @@ auto Combobox::show_popup() -> void {
         popup_list->hide();
         window->focus_widget(shared_from_this());
     } else {
-        popup_list->position = position;
+        popup_list->position = new_position;
         popup_list->show();
         window->focus_widget(popup_list);
     }

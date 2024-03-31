@@ -16,8 +16,8 @@ struct PlatformTimer {
     bool is_running = false;
     std::function<void()> callback;
 
-    PlatformTimer(int64_t millies, bool repeating, std::function<void()> callback) {
-        this->millies = millies;
+    PlatformTimer(int64_t milli_seconds, bool repeating, std::function<void()> callback) {
+        this->millies = milli_seconds;
         this->repeating = repeating;
         this->callback = callback;
     }
