@@ -130,7 +130,7 @@ int main() {
         "Tab 1",
         "Tab with very long name",
         "Tab 3",
-        "‎Tab‎ 4",
+        "Tab 4",
     };
 
     auto list = w2->add_new<Combobox>(Position{0, 0}, 0, list_names);
