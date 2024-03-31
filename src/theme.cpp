@@ -101,7 +101,7 @@ auto Theme::draw_tabs(Bitmap &content, bool has_focus, int selected_index, int h
     tab_offset.clear();
     tab_offset.resize(names.size());
     auto i = 0;
-    for (auto tab_name : names) {
+    for (auto &tab_name : names) {
         auto is_active_tab = i == selected_index;
         auto is_hover = i == hover_index;
         auto size = draw_single_tab(content, offset, is_active_tab, is_hover, padding, tab_name);

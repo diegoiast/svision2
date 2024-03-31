@@ -200,7 +200,7 @@ auto PlatformX11::init() -> void {
 }
 
 auto PlatformX11::done() -> void {
-    for (auto w : windows) {
+    for (auto &w : windows) {
         XDestroyWindow(dpy, w.second->x11_window);
         XFreeGC(dpy, w.second->gc);
     }

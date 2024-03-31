@@ -203,7 +203,7 @@ auto WidgetCollection::focus_next_widget() -> void {
 
     std::shared_ptr<Widget> best_focus_widget;
     std::shared_ptr<Widget> least_focus_widget;
-    for (auto w : this->widgets) {
+    for (auto &w : this->widgets) {
         if (!w->can_focus || !w->is_visible()) {
             continue;
         }
@@ -249,7 +249,7 @@ auto WidgetCollection::focus_previous_widget() -> void {
 
     std::shared_ptr<Widget> best_focus_widget;
     std::shared_ptr<Widget> least_focus_widget;
-    for (auto w : this->widgets) {
+    for (auto &w : this->widgets) {
         if (!w->can_focus || !w->is_visible()) {
             continue;
         }
@@ -352,7 +352,7 @@ auto Widget::draw() -> void {
             get_theme()->draw_widget_background(content, has_focus);
         }
     }
-    for (auto w : widgets.widgets) {
+    for (auto &w : widgets.widgets) {
         if (!w->is_visible()) {
             continue;
         }
@@ -388,13 +388,13 @@ auto Widget::on_mouse(const EventMouse &event) -> EventPropagation {
 }
 
 auto Widget::on_hover(const EventMouse &event) -> void {
-    for (auto w : widgets.widgets) {
+    for (auto &w : widgets.widgets) {
         w->on_hover(event);
     }
 };
 
 auto Widget::on_mouse_enter() -> void {
-    for (auto w : widgets.widgets) {
+    for (auto &w : widgets.widgets) {
         w->on_mouse_enter();
     }
     // TODO - this is not needed strictly, we can remove when we fix listview
@@ -402,7 +402,7 @@ auto Widget::on_mouse_enter() -> void {
 }
 
 auto Widget::on_mouse_leave() -> void {
-    for (auto w : widgets.widgets) {
+    for (auto &w : widgets.widgets) {
         w->on_mouse_leave();
     }
     // TODO - this is not needed strictly, we can remove when we fix listview
@@ -525,22 +525,21 @@ auto PlatformWindow::set_override_cursor(MouseCursor cursor) -> void {
 }
 
 auto PlatformWindow::draw() -> void {
-    if (main_widget.content.background_color != 0)
+    if (main_widget.content.background_color != 0) {
         main_widget.content.fill(main_widget.content.background_color);
-    else
+    } else {
         main_widget.theme->draw_window_background(main_widget.content);
+    }
 
-    for (auto w : main_widget.widgets.widgets) {
+    for (auto &w : main_widget.widgets.widgets) {
         if (!w->is_visible()) {
             continue;
         }
-
         if (w->needs_redraw) {
             w->draw();
             w->needs_redraw = false;
         }
         main_widget.content.draw(w->position, w->content);
-
         if (w->has_focus) {
             if (main_widget.theme->needs_frame_for_focus()) {
                 auto offset = 3;
@@ -596,7 +595,7 @@ auto PlatformWindow::invalidate() -> void {
 };
 
 auto PlatformWindow::on_close() -> void {
-    for (auto w : main_widget.widgets.widgets) {
+    for (auto &w : main_widget.widgets.widgets) {
         if (w) {
             w->on_remove();
         }
