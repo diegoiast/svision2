@@ -5,6 +5,7 @@
  * SPDX-License-Identifier: MIT
  */
 
+#include <cmath>
 #include <layout.h>
 
 auto HorizontalLayout::relayout(Position position, const Size size) -> void {
@@ -59,7 +60,7 @@ auto HorizontalLayout::relayout(Position position, const Size size) -> void {
         }
         auto hint = item->size_hint();
         if (hint.width <= 0) {
-            recommended_size.width = std::lround((width * item->weight) / total_weight);
+            recommended_size.width = std::roundl((width * item->weight) / total_weight);
 
         } else {
             recommended_size.width = hint.width;
