@@ -66,6 +66,7 @@ struct Theme {
     LayoutParams defaultPadding = {10, 10, 10, 10};
 
     explicit Theme(FontProvider &f) : font(f) {}
+    virtual ~Theme() = default;
 
     auto draw_frame(Bitmap &content, Position position, Size size, FrameStyles style,
                     FrameSize frame_size) -> void;

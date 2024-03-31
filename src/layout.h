@@ -34,6 +34,8 @@ struct LayoutItem {
         }
         return layoutItem;
     }
+
+    virtual ~LayoutItem() = default;
 };
 
 struct HorizontalSpacer : LayoutItem {

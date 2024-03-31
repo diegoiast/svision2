@@ -11,6 +11,7 @@
 #include <string>
 
 struct FontProvider {
+    virtual ~FontProvider() = default;
     auto virtual write(Bitmap &, Position, const std::string_view, const uint32_t color)
         -> void = 0;
     auto virtual text_size(const std::string_view str) -> Size = 0;

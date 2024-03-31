@@ -12,6 +12,7 @@
 #include <widget.h>
 
 struct IntegerValidator : public TextField::input_validator {
+    virtual ~IntegerValidator() = default;
     virtual auto is_keyboard_input_valid(KeyCodes keycode, int position) -> bool override;
     virtual auto is_string_valid(std::string_view str) -> bool override;
 };

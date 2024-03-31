@@ -19,6 +19,7 @@ struct ScrollBar;
 struct ItemAdapter {
     // ALA TurboVision
     using PWidget = std::shared_ptr<Widget>;
+    virtual ~ItemAdapter() = default;
 
     virtual auto get_count() const -> size_t = 0;
     virtual auto get_widget(size_t position, std::shared_ptr<Theme> theme) -> PWidget = 0;
