@@ -23,6 +23,7 @@
 #include <spinbox.h>
 #include <stackwidget.h>
 #include <tabheader.h>
+#include <tabview.h>
 #include <textfield.h>
 #include <themes/fluent.h>
 
@@ -111,7 +112,6 @@ int main() {
     auto platform = ThePlatform();
     platform.init();
     //    platform.default_theme = std::make_shared<ThemeFluent>(*platform.default_font);
-    //    platform.default_theme = std::make_shared<ThemeVision>(*platform.default_font, 0x00ff00);
     //    platform.default_theme = std::make_shared<ThemeRedmond>(*platform.default_font);
     //    platform.default_theme = std::make_shared<ThemePlasma>(*platform.default_font, 0xff6737);
     //    platform.default_theme = std::make_shared<ThemePlasma>(*platform.default_font);
@@ -123,43 +123,32 @@ int main() {
 
 #if 1
     auto w2 = platform.open_window(300, 300, 640, 480, "test 2");
-    w2->main_widget.content.background_color = 0x00FF00;
-    w2->main_widget.layout->padding.set_vertical(0);
+    w2->main_widget.layout->padding.set_vertical(2);
 
-    auto list_names = std::vector<std::string_view>{
-        "Tab 1",
-        "Tab with very long name",
-        "Tab 3",
-        "Tab 4",
-    };
-
-    auto list = w2->add_new<Combobox>(Position{0, 0}, 0, list_names);
-    auto tab_header = w2->add_new<TabHeader>();
-    tab_header->names = list_names;
-
-    auto stack = w2->add_new<Stackwidget>();
-    stack->add_new<Label>(Position{}, Size{}, "Widget 1");
-    stack->add_new<Label>(Position{}, Size{}, "Widget 2")->content.background_color =
-        MakeColor(0xaa, 0x22, 0x22);
-    stack->add_new<Label>(Position{}, Size{}, "Widget 3")->content.background_color =
+    auto list = w2->add_new<Combobox>(Position{0, 0}, 0, std::vector<std::string_view>());
+    auto tabs = w2->add_new<TabView>();
+    tabs->add_new_tab<Label>("Tab 1", "This is the first widget");
+    tabs->add_new_tab<Label>("Tab with long name", "This is the second widget")
+        ->content.background_color = MakeColor(0xaa, 0x22, 0x22);
+    tabs->add_new_tab<Label>("Tab 3", "This is the third widget")->content.background_color =
         MakeColor(0x33, 0xaa, 0x22);
-    stack->add_new<Label>(Position{}, Size{}, "Widget 4")->content.background_color =
+    tabs->add_new_tab<Label>("Tab 4", "This is the forth widget")->content.background_color =
         MakeColor(0x33, 0x22, 0xaa);
 
-    list->on_item_selected = [&stack, &tab_header, &list](auto &c, auto index /*, auto reason*/) {
-        stack->set_current_page(index);
-        tab_header->set_active_tab(index);
+    list->set_items(tabs->page_names());
+    list->on_item_selected = [&tabs](auto &, auto index) {
+        // propagate event to the tabs
+        tabs->set_active_page(index);
     };
-    tab_header->on_item_selected = [&stack, &tab_header, &list](auto &t,
-                                                                auto index /*, auto reason*/) {
-        stack->set_current_page(index);
+    tabs->on_page_selected = [&list](auto &, auto index) {
+        // propagate event to the combo box
         list->set_active_index(index);
     };
 
     platform.show_window(w2);
 #endif
 
-#if 1
+#if 0
     auto w1 = platform.open_window(100, 100, 640, 480, "test 1");
     auto l =
         w1->add_new<Label>(Position{10, 10}, Size{300, 20}, "test 1 - Hello world! glqi שלום עולם");

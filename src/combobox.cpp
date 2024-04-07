@@ -186,3 +186,11 @@ auto Combobox::set_active_index(int index) -> void {
     this->selected_item = index;
     this->invalidate();
 }
+
+auto Combobox::set_items(const std::vector<std::string_view> &new_strings) -> void {
+    this->strings = new_strings;
+    if (this->selected_item >= this->strings.size()) {
+        this->selected_item = this->strings.size();
+    }
+    invalidate();
+}

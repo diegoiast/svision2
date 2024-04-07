@@ -37,6 +37,7 @@ struct Combobox : Widget {
     auto show_popup() -> void;
     auto set_active_index(int index) -> void;
     auto get_active_index() const -> int { return selected_item; }
+    auto set_items(const std::vector<std::string_view> &new_strings) -> void;
 
   private:
     std::shared_ptr<Button> popup_button = nullptr;

@@ -103,6 +103,8 @@ set(SVISION_SOURCES
     src/timer.h
     src/textfield.cpp
     src/textfield.h
+    src/tabview.cpp
+    src/tabview.h
     src/widget.cpp
     src/widget.h
     src/themes/fluent.cpp
@@ -132,6 +134,7 @@ target_link_libraries(svision2 PUBLIC
     ${SVISION_PLATFORM_LIBS})
 target_include_directories(svision2 PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src")
 target_compile_features(svision2 PUBLIC cxx_std_17)
+
 if(MSVC)
   target_compile_options(svision2 PRIVATE /W4)
   # this shuts up stl4043

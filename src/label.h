@@ -14,6 +14,11 @@
 struct Label : public Widget {
     std::string_view text;
 
+    Label(std::string_view text) : Widget({}, {}, 0) {
+        this->text = text;
+        this->content.resize(1, 1);
+    }
+
     Label(Position pp, Size size, std::string_view text) : Widget(pp, size, 0) {
         this->text = text;
     }

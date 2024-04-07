@@ -35,6 +35,11 @@ struct LayoutItem {
         return layoutItem;
     }
 
+    // TODO - make sure this T derives from `Widget`
+    template <typename T, typename... Args> auto add_new(Args &&...args) -> std::shared_ptr<T> {
+        return add(std::make_shared<T>(std::forward<Args>(args)...));
+    }
+
     virtual ~LayoutItem() = default;
 };
 
