@@ -94,6 +94,20 @@ struct Widget : std::enable_shared_from_this<Widget>, LayoutItem {
         return add(std::make_shared<T>(std::forward<Args>(args)...));
     }
 
+    // TODO - make sure this T derives from `Widget`
+    template <typename T, typename... Args>
+    auto add_new_to_layout(std::shared_ptr<LayoutItem> layout, Args &&...args)
+        -> std::shared_ptr<T> {
+        auto widget = std::make_shared<T>(std::forward<Args>(args)...);
+        widgets.add(widget, window);
+        if (layout) {
+            layout->add(widget);
+        }
+        // TODO - this needs to be a setter - do we can set all children's window as well
+        widget->parent = this;
+        return widget;
+    }
+
     auto get_theme() const -> std::shared_ptr<Theme>;
     auto get_cursor() const -> MouseCursor;
     auto show() -> void;
