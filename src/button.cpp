@@ -75,7 +75,8 @@ Button::Button(Position pp, Size size, std::string text, bool is_default,
 }
 
 auto Button::draw() -> void {
-    get_theme()->draw_button(content, has_focus, is_default, is_enabled, state.state, text);
+    get_theme()->draw_button(content, has_focus, is_default, is_enabled, has_frame, state.state,
+                             text);
 }
 
 auto Button::on_hover(const EventMouse &) -> void {

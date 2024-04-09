@@ -195,58 +195,60 @@ auto ThemeRedmond::draw_scrollbar_background(Bitmap &content) -> void {
 }
 
 auto ThemeRedmond::draw_button(Bitmap &content, bool has_focus, bool is_default, bool is_enabled,
-                               ButtonStates state, const std::string &text) -> void {
+                               bool has_frame, ButtonStates state, const std::string &text)
+    -> void {
     (void)(has_focus);
     auto text_padding = 5;
     auto background_color = 0;
     auto shadow_offset = -1;
     auto topleft = Position{0, 0};
     auto frame_size = is_default ? FrameSize::TrippleFrame : FrameSize::DoubleFrame;
+    auto frame_style = FrameStyles::NoFrame;
 
     switch (state) {
     case ButtonStates::Normal:
         if (is_enabled) {
-            draw_frame(content, topleft, content.size, FrameStyles::Normal, frame_size);
+            frame_style = FrameStyles::Normal;
         } else {
-            draw_frame(content, topleft, content.size, FrameStyles::Disabled, frame_size);
+            frame_style = FrameStyles::Disabled;
+        }
+
+        if (!has_frame) {
+            frame_style = FrameStyles::NoFrame;
         }
         background_color = colors.window_background;
         break;
     case ButtonStates::Hovered:
         if (is_enabled) {
-            draw_frame(content, topleft, content.size, FrameStyles::Hover, frame_size);
+            frame_style = FrameStyles::Hover;
         } else {
-            draw_frame(content, topleft, content.size, FrameStyles::Disabled, frame_size);
+            frame_style = FrameStyles::Disabled;
         }
         // TODO - are we missing a color in the theme?
         background_color = colors.button_selected_background;
         break;
     case ButtonStates::ClickedInside:
         if (is_enabled) {
-            draw_frame(content, topleft, content.size, FrameStyles::Reversed, frame_size);
+            frame_style = FrameStyles::Reversed;
         } else {
-            draw_frame(content, topleft, content.size, FrameStyles::Disabled, frame_size);
+            frame_style = FrameStyles::Disabled;
         }
         background_color = colors.button_background_1;
         shadow_offset = is_default ? -3 : -2;
         break;
     case ButtonStates::ClickedOutside:
         background_color = colors.window_background;
-        if (is_enabled) {
-            draw_frame(content, topleft, content.size, FrameStyles::Normal, frame_size);
-        } else {
-            draw_frame(content, topleft, content.size, FrameStyles::Disabled, frame_size);
-        }
         break;
     default:
         break;
     }
 
     if (!is_default) {
-        content.fill_rect(2, 2, content.size.width - 4, content.size.height - 4, background_color);
+        content.fill(background_color);
     } else {
-        content.fill_rect(3, 3, content.size.width - 6, content.size.height - 6, background_color);
+        content.fill(background_color);
     }
+    draw_frame(content, topleft, content.size, frame_style, frame_size);
 
     auto text_size = font.text_size(text);
     auto content_rect = content.size - (text_padding);
@@ -513,7 +515,7 @@ auto ThemePlasma::draw_window_background(Bitmap &content) -> void {
 auto ThemePlasma::draw_scrollbar_background(Bitmap &content) -> void {}
 
 auto ThemePlasma::draw_button(Bitmap &content, bool has_focus, bool is_default, bool is_enabled,
-                              ButtonStates state, const std::string &text) -> void {
+                              bool has_frame, ButtonStates state, const std::string &text) -> void {
     auto background1 = colors.button_background_1;
     auto background2 = colors.button_background_2;
     auto border = colors.frame_normal_color1;
@@ -553,23 +555,25 @@ auto ThemePlasma::draw_button(Bitmap &content, bool has_focus, bool is_default, 
             border = colors.frame_hover_color1;
     }
 
-    content.draw_rounded_rectangle(0, 0, content.size.width, content.size.height - 1, 5, border,
-                                   border);
+    if (background1 == background2) {
+        content.fill(background1);
+    } else {
+        content.fill_rect_gradient(0, 0, content.size.width, content.size.height, background1,
+                                   background2);
+    }
 
-    content.line(2, content.size.height - 1, content.size.width - 2, content.size.height - 1,
-                 colors.frame_disabled_color1);
+    if (has_frame || state != ButtonStates::Normal) {
+        content.draw_rounded_rectangle(0, 0, content.size.width, content.size.height - 1, 5, border,
+                                       border);
+        content.line(2, content.size.height - 1, content.size.width - 2, content.size.height - 1,
+                     colors.frame_disabled_color1);
+    }
 
     // TODO - widget should be filled with real content from parent
     content.put_pixel(0, content.size.height - 1, colors.window_background);
     content.put_pixel(1, content.size.height - 1, colors.window_background);
     content.put_pixel(content.size.width - 1, content.size.height - 1, colors.window_background);
 
-    if (background1 == background2) {
-        content.fill_rect(1, 1, content.size.width - 2, content.size.height - 3, background1);
-    } else {
-        content.fill_rect_gradient(1, 1, content.size.width - 2, content.size.height - 3,
-                                   background1, background2);
-    }
 
     if (is_enabled) {
         // TODO properly center

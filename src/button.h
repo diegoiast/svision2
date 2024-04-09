@@ -20,6 +20,8 @@ struct Button : Widget {
     bool is_default = false;
     bool is_enabled = true;
     bool auto_shrink = false;
+    bool has_frame = true;
+
     std::string text;
     std::function<void()> on_button_click;
     AbstractButtonState state;
@@ -49,4 +51,28 @@ struct Button : Widget {
 
     auto set_auto_repeat(int64_t repeat_millies, int64_t repeat_start = 500) -> void;
     auto disable_auto_repeat() -> void;
+
+    auto set_is_default(bool new_state) -> Button & {
+        this->is_default = new_state;
+        this->needs_redraw = true;
+        return *this;
+    }
+
+    auto set_is_enabled(bool new_state) -> Button & {
+        this->is_enabled = new_state;
+        this->needs_redraw = true;
+        return *this;
+    }
+
+    auto set_auto_shrink(bool new_state) -> Button & {
+        this->auto_shrink = new_state;
+        this->needs_redraw = true;
+        return *this;
+    }
+
+    auto set_has_frame(bool new_state) -> Button & {
+        this->has_frame = new_state;
+        this->needs_redraw = true;
+        return *this;
+    }
 };

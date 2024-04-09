@@ -75,7 +75,7 @@ auto ThemeFluent::draw_scrollbar_background(Bitmap &content) -> void {
 }
 
 auto ThemeFluent::draw_button(Bitmap &content, bool has_focus, bool is_default, bool is_enabled,
-                              ButtonStates state, const std::string &text) -> void {
+                              bool has_frame, ButtonStates state, const std::string &text) -> void {
 
     auto text_padding = 5;
     auto background = !is_default ? colors.button_background_1 : colors.button_selected_background;
@@ -104,13 +104,14 @@ auto ThemeFluent::draw_button(Bitmap &content, bool has_focus, bool is_default, 
         break;
     }
 
-    draw_frame(content, {0, 0}, content.size, frame,
-               is_default ? FrameSize::DoubleFrame : FrameSize::SingleFrame);
-    content.fill_rect(1, 1, content.size.width - 2, content.size.height - 2, background);
+    content.fill(background);
+    if (has_frame || state != ButtonStates::Normal) {
+        draw_frame(content, {0, 0}, content.size, frame,
+                   is_default ? FrameSize::DoubleFrame : FrameSize::SingleFrame);
 
-    content.line(2, content.size.height - 1, content.size.width - 4, content.size.height - 1,
-                 Darker(background, is_default ? 0.1 : 0.5));
-
+        content.line(2, content.size.height - 1, content.size.width - 4, content.size.height - 1,
+                     Darker(background, is_default ? 0.1 : 0.5));
+    }
     auto text_size = font.text_size(text);
     auto centered = content.size.centered(text_size, text_padding);
     font.write(content, centered, text, color);
