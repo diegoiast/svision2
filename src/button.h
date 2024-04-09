@@ -19,6 +19,7 @@ enum class RepeatState { Normal, WaitForFirstRepeat, Repeating };
 struct Button : Widget {
     bool is_default = false;
     bool is_enabled = true;
+    bool auto_shrink = false;
     std::string text;
     std::function<void()> on_button_click;
     AbstractButtonState state;
@@ -34,6 +35,8 @@ struct Button : Widget {
 
     Button(Position pp, Size size, std::string text, bool is_default = false,
            std::function<void()> on_button_click = {});
+
+    Button(std::string text, std::function<void()> on_button_click = {});
 
     virtual auto draw() -> void override;
     virtual auto on_hover(const EventMouse &event) -> void override;

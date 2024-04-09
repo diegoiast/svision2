@@ -61,6 +61,9 @@ auto start_repeate_timer(Button *button) -> void {
     }
 }
 
+Button::Button(std::string text, std::function<void()> on_button_click)
+    : Button(Position{}, Size{}, text, false, on_button_click) {}
+
 Button::Button(Position pp, Size size, std::string text, bool is_default,
                std::function<void()> on_button_click)
     : Widget(pp, size, 0) {
@@ -161,8 +164,10 @@ Size Button::size_hint() const {
     // TODO: Size of text is not correct. We also need to calculate the yMin and yMax for example
     auto s = get_theme()->font.text_size(text);
     auto p = get_padding();
-    auto padding_y = p.get_vertical();
-    return {0, s.height * 1 + padding_y};
+    if (auto_shrink) {
+        return {s.width + p.get_horizontal(), s.height + p.get_vertical()};
+    }
+    return {0, s.height + p.get_vertical()};
 }
 
 auto Button::set_auto_repeat(int64_t repeat_millies, int64_t repeat_start) -> void {
