@@ -27,6 +27,8 @@ struct LayoutItem {
     virtual auto size_hint() const -> Size = 0;
     virtual auto ignore_layout() const -> bool { return false; }
 
+    auto remove_all() -> void;
+
     template <typename T> auto add(T layoutItem) -> T {
         sub_items.push_back(layoutItem);
         if (on_item_added) {
