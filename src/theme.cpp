@@ -574,7 +574,6 @@ auto ThemePlasma::draw_button(Bitmap &content, bool has_focus, bool is_default, 
     content.put_pixel(1, content.size.height - 1, colors.window_background);
     content.put_pixel(content.size.width - 1, content.size.height - 1, colors.window_background);
 
-
     if (is_enabled) {
         // TODO properly center
         auto text_padding = 5;
