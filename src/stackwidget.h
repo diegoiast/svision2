@@ -15,6 +15,7 @@ struct Stackwidget : Widget {
 
     auto get_current_page() const -> int;
     auto set_current_page(int i) -> void;
+    auto get_page(size_t i) -> std::shared_ptr<Widget>;
     auto remove_page(int i) -> void;
     auto get_page_count() const -> size_t;
 };

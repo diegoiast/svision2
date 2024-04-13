@@ -36,6 +36,8 @@ struct TabView : Widget {
         return widgets->add_new<T>();
     }
 
+    auto get_active_tab() const -> size_t { return headers->get_active_tab(); }
+
     auto page_names() const -> std::vector<std::string_view> { return headers->names; }
 
   private:

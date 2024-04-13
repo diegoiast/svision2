@@ -79,8 +79,12 @@ auto Stackwidget::set_current_page(int i) -> void {
     w->set_current(i);
 }
 
+auto Stackwidget::get_page(size_t i) -> std::shared_ptr<Widget> {
+    return this->widgets.widgets.at(i);
+}
+
 auto Stackwidget::remove_page(int i) -> void {
-    // TODO
+    this->widgets.widgets.erase(this->widgets.widgets.begin() + i);
 }
 
 auto Stackwidget::get_page_count() const -> size_t {

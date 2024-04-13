@@ -29,6 +29,11 @@ auto TabView::set_active_page(size_t new_index) -> void {
     this->widgets->set_current_page(new_index);
 }
 
+auto TabView::remove_page(size_t position) -> void {
+    this->headers->remove_tab(position);
+    this->widgets->remove_page(position);
+}
+
 auto TabView::set_buttons(std::shared_ptr<Button> start, std::shared_ptr<Button> end) -> void {
     top_layout->remove_all();
 
