@@ -23,13 +23,14 @@ struct Theme;
 struct Widget;
 
 struct WidgetCollection {
-    std::list<std::shared_ptr<Widget>> widgets;
+    std::vector<std::shared_ptr<Widget>> widgets;
     std::shared_ptr<Widget> last_overed_widget;
     std::shared_ptr<Widget> focused_widget;
     int max_focus_index = 1;
     bool debug = true;
 
     auto add(std::shared_ptr<Widget> widget, PlatformWindow *window) -> std::shared_ptr<Widget>;
+    auto remove(std::shared_ptr<Widget> widget) -> void;
 
     auto on_mouse(const EventMouse &event, Widget &myself) -> EventPropagation;
     auto on_mouse_release(const EventMouse &event, std::shared_ptr<Widget> w) -> EventPropagation;
@@ -184,31 +185,17 @@ struct PlatformWindow {
     virtual auto on_close() -> void;
 
     // TODO - make sure this T derives from `Widget`
-    template <typename T> auto add(T widget) -> T {
-        main_widget.widgets.add(widget, this);
-        if (main_widget.layout) {
-            main_widget.layout->add(widget);
-        }
-        widget->parent = &main_widget;
-        return widget;
-    }
+    template <typename T> auto add(T widget) -> T { return main_widget.add(widget, this); }
 
     // TODO - make sure this T derives from `Widget`
     template <typename T, typename... Args> auto add_new(Args &&...args) -> std::shared_ptr<T> {
-        return add(std::make_shared<T>(std::forward<Args>(args)...));
+        return main_widget.add(std::make_shared<T>(std::forward<Args>(args)...));
     }
 
     // TODO - make sure this T derives from `Widget`
     template <typename T, typename... Args>
     auto add_new_to_layout(std::shared_ptr<LayoutItem> layout, Args &&...args)
         -> std::shared_ptr<T> {
-        auto widget = std::make_shared<T>(std::forward<Args>(args)...);
-        main_widget.widgets.add(widget, this);
-        if (layout) {
-            layout->add(widget);
-        }
-        // TODO - this needs to be a setter - do we can set all children's window as well
-        widget->parent = &main_widget;
-        return widget;
+        return main_widget.add_new_to_layout(layout, std::forward<Args>(args)...);
     }
 };
