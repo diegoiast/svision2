@@ -125,9 +125,6 @@ int main() {
     auto w2 = platform.open_window(300, 300, 640, 480, "test 2");
     w2->main_widget.layout->padding.set_vertical(2);
 
-    auto b1 = std::make_shared<Button>("+");
-    auto b2 = std::make_shared<Button>("x");
-
     auto list = w2->add_new<Combobox>(Position{0, 0}, 0, std::vector<std::string_view>());
     auto tabs = w2->add_new<TabView>();
     tabs->add_new_tab<Label>("Tab 1", "This is the first widget");
@@ -147,16 +144,22 @@ int main() {
         // propagate event to the combo box
         list->set_active_index(index);
     };
-    tabs->set_buttons(b1, b2);
-    b1->set_has_frame(false).set_auto_shrink(true).on_button_click = [&tabs]() {
+
+    auto b1 = std::make_shared<Button>("+")
+                  ->set_has_frame(false)
+                  ->set_auto_shrink(true)
+                  ->on_button_click = [&tabs]() {
         tabs->add_new_tab<Label>("Tab", "This is a dynamic tab");
         MakeColor(0x33, 0xaa, 0x22);
     };
-
-    b2->set_has_frame(false).set_auto_shrink(true).on_button_click = [&tabs]() {
+    auto b2 = std::make_shared<Button>("x")
+                  ->set_has_frame(false)
+                  ->set_auto_shrink(true)
+                  ->on_button_click = [&tabs]() {
         auto active_tab = tabs->get_active_tab();
         tabs->remove_page(active_tab);
     };
+    tabs->set_buttons(b1, b2);
 
     platform.show_window(w2);
 #endif

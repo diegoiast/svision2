@@ -16,7 +16,7 @@
 
 enum class RepeatState { Normal, WaitForFirstRepeat, Repeating };
 
-struct Button : Widget {
+struct Button : Widget, std::enable_shared_from_this<Button> {
     bool is_default = false;
     bool is_enabled = true;
     bool auto_shrink = false;
@@ -52,27 +52,27 @@ struct Button : Widget {
     auto set_auto_repeat(int64_t repeat_millies, int64_t repeat_start = 500) -> void;
     auto disable_auto_repeat() -> void;
 
-    auto set_is_default(bool new_state) -> Button & {
+    auto set_is_default(bool new_state) -> std::shared_ptr<Button> {
         this->is_default = new_state;
         this->needs_redraw = true;
-        return *this;
+        return this->std::enable_shared_from_this<Button>::shared_from_this();
     }
 
-    auto set_is_enabled(bool new_state) -> Button & {
+    auto set_is_enabled(bool new_state) -> std::shared_ptr<Button> {
         this->is_enabled = new_state;
         this->needs_redraw = true;
-        return *this;
+        return this->std::enable_shared_from_this<Button>::shared_from_this();
     }
 
-    auto set_auto_shrink(bool new_state) -> Button & {
+    auto set_auto_shrink(bool new_state) -> std::shared_ptr<Button> {
         this->auto_shrink = new_state;
         this->needs_redraw = true;
-        return *this;
+        return this->std::enable_shared_from_this<Button>::shared_from_this();
     }
 
-    auto set_has_frame(bool new_state) -> Button & {
+    auto set_has_frame(bool new_state) -> std::shared_ptr<Button> {
         this->has_frame = new_state;
         this->needs_redraw = true;
-        return *this;
+        return this->std::enable_shared_from_this<Button>::shared_from_this();
     }
 };
