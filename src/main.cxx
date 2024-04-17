@@ -156,7 +156,6 @@ int main() {
     b2->set_has_frame(false).set_auto_shrink(true).on_button_click = [&tabs]() {
         auto active_tab = tabs->get_active_tab();
         tabs->remove_page(active_tab);
-        tabs->invalidate();
     };
 
     platform.show_window(w2);

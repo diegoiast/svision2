@@ -26,6 +26,7 @@ struct TabView : Widget {
 
     template <typename T, typename... Args>
     auto add_new_tab(std::string_view name, Args &&...args) -> std::shared_ptr<T> {
+        this->needs_redraw = true;
         headers->add_tab(name);
         return widgets->add_new<T>(std::forward<Args>(args)...);
     }

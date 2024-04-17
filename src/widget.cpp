@@ -591,6 +591,7 @@ auto PlatformWindow::on_resize(const EventResize &event) -> void {
 
 auto PlatformWindow::invalidate() -> void {
     assert(platform);
+    this->needs_redraw = true;
     platform->invalidate(*this);
 };
 
