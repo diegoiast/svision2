@@ -81,7 +81,8 @@ auto Checkbox::on_focus_change(bool new_state) -> void {
 }
 
 auto Checkbox::on_keyboard(const EventKeyboard &event) -> EventPropagation {
-    if (state.on_keyboard(event, [this]() { toggle(); }) == EventPropagation::propagate) {
+    if (state.on_keyboard(event) == EventPropagation::handled) {
+        toggle();
         return EventPropagation::handled;
     }
     return Widget::on_keyboard(event);

@@ -22,7 +22,7 @@ auto start_repeate_timer(Button *button) -> void {
             if (button->state.state == ButtonStates::ClickedInside) {
                 button->repeat_state = RepeatState::Repeating;
                 if (button->on_button_click)
-                    button->on_button_click();
+                    button->on_button_click(*button);
                 button->click_timer->stop();
 
                 // We need a new timer, with different timeout.
@@ -37,7 +37,7 @@ auto start_repeate_timer(Button *button) -> void {
         break;
     case RepeatState::WaitForFirstRepeat:
         if (button->on_button_click)
-            button->on_button_click();
+            button->on_button_click(*button);
 
         button->click_timer->stop();
         button->click_timer.reset();
@@ -51,7 +51,7 @@ auto start_repeate_timer(Button *button) -> void {
             if (button->state.state != ButtonStates::ClickedInside) {
                 button->repeat_state = RepeatState::Repeating;
                 if (button->on_button_click)
-                    button->on_button_click();
+                    button->on_button_click(*button);
             }
         });
         button->click_timer->start();
@@ -61,11 +61,11 @@ auto start_repeate_timer(Button *button) -> void {
     }
 }
 
-Button::Button(std::string text, std::function<void()> on_button_click)
+Button::Button(std::string text, std::function<void(Button &)> on_button_click)
     : Button(Position{}, Size{}, text, false, on_button_click) {}
 
 Button::Button(Position pp, Size size, std::string text, bool is_default,
-               std::function<void()> on_button_click)
+               std::function<void(Button &)> on_button_click)
     : Widget(pp, size, 0) {
     this->text = text;
     this->is_default = is_default;
@@ -128,7 +128,7 @@ auto Button::on_mouse_click(const EventMouse &event) -> EventPropagation {
             switch (event.button) {
             case 1:
                 if (repeat_state != RepeatState::Repeating && on_button_click) {
-                    on_button_click();
+                    on_button_click(*this);
                 }
                 break;
             default:
@@ -155,7 +155,9 @@ auto Button::on_focus_change(bool new_state) -> void {
 }
 
 auto Button::on_keyboard(const EventKeyboard &event) -> EventPropagation {
-    if (state.on_keyboard(event, on_button_click) == EventPropagation::propagate) {
+
+    if (state.on_keyboard(event) == EventPropagation::handled) {
+        on_button_click(*this);
         return EventPropagation::handled;
     }
     return Widget::on_keyboard(event);

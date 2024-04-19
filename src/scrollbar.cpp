@@ -67,9 +67,9 @@ ScrollBar::ScrollBar(Position position, int length, bool horizontal, int maximum
 
     make_buttons(*this, length, horizontal);
 
-    this->up_button->on_button_click = [this]() { step_up(); };
+    this->up_button->on_button_click = [this](auto &button) { step_up(); };
     this->down_button->set_auto_repeat(500);
-    this->down_button->on_button_click = [this]() { step_down(); };
+    this->down_button->on_button_click = [this](auto &button) { step_down(); };
     this->up_button->set_auto_repeat(500);
 
     this->draw_background = true;
