@@ -15,10 +15,10 @@
 
 struct Button;
 
-struct TabView : Widget {
-    std::function<void(TabView &, int)> on_page_selected = {};
+struct TabWidget : Widget {
+    std::function<void(TabWidget &, int)> on_page_selected = {};
 
-    TabView();
+    TabWidget();
 
     auto set_active_page(size_t new_index) -> void;
     auto remove_page(size_t position) -> void;

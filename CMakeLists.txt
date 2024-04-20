@@ -103,8 +103,8 @@ set(SVISION_SOURCES
     src/timer.h
     src/textfield.cpp
     src/textfield.h
-    src/tabview.cpp
-    src/tabview.h
+    src/tabwidget.cpp
+    src/tabwidget.h
     src/widget.cpp
     src/widget.h
     src/themes/fluent.cpp

@@ -23,7 +23,7 @@
 #include <spinbox.h>
 #include <stackwidget.h>
 #include <tabheader.h>
-#include <tabview.h>
+#include <tabwidget.h>
 #include <textfield.h>
 #include <themes/fluent.h>
 
@@ -126,7 +126,7 @@ int main() {
     w2->main_widget.layout->padding.set_vertical(2);
 
     auto list = w2->add_new<Combobox>(Position{0, 0}, 0, std::vector<std::string_view>());
-    auto tabs = w2->add_new<TabView>();
+    auto tabs = w2->add_new<TabWidget>();
     tabs->add_new_tab<Label>("Tab 1", "This is the first widget");
     tabs->add_new_tab<Label>("Tab with long name", "This is the second widget")
         ->content.background_color = MakeColor(0xaa, 0x22, 0x22);
