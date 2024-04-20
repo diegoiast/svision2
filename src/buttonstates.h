@@ -7,7 +7,6 @@
 
 #pragma once
 
-
 #include <events.h>
 
 enum class ButtonStates {
