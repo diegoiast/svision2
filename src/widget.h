@@ -196,6 +196,6 @@ struct PlatformWindow {
     template <typename T, typename... Args>
     auto add_new_to_layout(std::shared_ptr<LayoutItem> layout, Args &&...args)
         -> std::shared_ptr<T> {
-        return main_widget.add_new_to_layout(layout, std::forward<Args>(args)...);
+        return main_widget.add_new_to_layout<T>(layout, std::forward<Args>(args)...);
     }
 };
