@@ -20,7 +20,7 @@ Combobox::Combobox(Position position, int width, const std::vector<std::string_v
     this->content.resize({width, 22});
     auto s = Size{22, 22};
     auto p = Position{width - s.width, 0};
-    this->popup_button = add_new<Button>(p, s, "*", false, [this](auto &button) { show_popup(); });
+    this->popup_button = add_new<Button>(p, s, "*", false, [this](auto &) { show_popup(); });
 }
 
 auto Combobox::get_value() const -> std::string_view {

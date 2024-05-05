@@ -5,7 +5,6 @@
  * SPDX-License-Identifier: MIT
  */
 
-#include <iostream>
 
 #include <X11/XKBlib.h>
 #include <X11/Xlib.h>
@@ -72,7 +71,7 @@ static auto convert_x11_key_event(XEvent &ev) -> EventKeyboard {
     // TODO binary search could be nice.
     for (auto i = 0; X11_KEYCODES[i] != 0; i += 2) {
         /* Map XKB KeySym to our custom key code value */
-        if (X11_KEYCODES[i] == keySym) {
+        if ((KeySym)X11_KEYCODES[i] == keySym) {
             event.key = (KeyCodes)X11_KEYCODES[i + 1];
             break;
         }
@@ -283,6 +282,10 @@ auto PlatformX11::main_loop() -> void {
 
     while ((pending = XPending(dpy) || !this->exit_loop)) {
         auto k = XNextEvent(dpy, &ev);
+        if (k) {
+            spdlog::error("Reading from X failed with error %d", k);
+            break;
+        }
         std::shared_ptr<PlatformWindowX11> target_window;
 
         if (windows.find(ev.xany.window) == windows.end()) {
@@ -307,7 +310,7 @@ auto PlatformX11::main_loop() -> void {
 
         case ClientMessage:
             spdlog::debug("Atom {}", ev.xclient.data.l[0]);
-            if (ev.xclient.data.l[0] == wmDeleteMessage) {
+            if (ev.xclient.data.l[0] == static_cast<long long>(wmDeleteMessage)) {
                 if (target_window->can_close()) {
                     XDestroyWindow(dpy, target_window->x11_window);
                 }
