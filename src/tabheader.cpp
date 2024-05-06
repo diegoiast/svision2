@@ -13,11 +13,15 @@
 TabHeader::TabHeader() : Widget() { this->padding_style = PaddingStyle::TabHeader; }
 
 auto TabHeader::add_tab(const std::string_view name) -> int {
+    this->needs_redraw = true;
     this->names.push_back(name);
     return this->names.size() - 1;
 }
 
-auto TabHeader::remove_tab(int index) -> void { this->names.erase(this->names.begin() + index); }
+auto TabHeader::remove_tab(int index) -> void {
+    this->names.erase(this->names.begin() + index);
+    this->needs_redraw = true;
+}
 
 auto TabHeader::set_active_tab(int index) -> void {
     if (this->active_tab == index) {

@@ -15,10 +15,10 @@
 
 struct Button;
 
-struct TabView : Widget {
-    std::function<void(TabView &, int)> on_page_selected = {};
+struct TabWidget : Widget {
+    std::function<void(TabWidget &, int)> on_page_selected = {};
 
-    TabView();
+    TabWidget();
 
     auto set_active_page(size_t new_index) -> void;
     auto remove_page(size_t position) -> void;
@@ -26,6 +26,7 @@ struct TabView : Widget {
 
     template <typename T, typename... Args>
     auto add_new_tab(std::string_view name, Args &&...args) -> std::shared_ptr<T> {
+        this->needs_redraw = true;
         headers->add_tab(name);
         return widgets->add_new<T>(std::forward<Args>(args)...);
     }
@@ -35,6 +36,8 @@ struct TabView : Widget {
         headers->add_tab(name);
         return widgets->add_new<T>();
     }
+
+    auto get_active_tab() const -> size_t { return headers->get_active_tab(); }
 
     auto page_names() const -> std::vector<std::string_view> { return headers->names; }
 

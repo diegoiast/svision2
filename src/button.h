@@ -23,7 +23,7 @@ struct Button : Widget {
     bool has_frame = true;
 
     std::string text;
-    std::function<void()> on_button_click;
+    std::function<void(Button &)> on_button_click;
     AbstractButtonState state;
 
     // TODO this part can be extracted into another helper class to be re-used.
@@ -36,9 +36,9 @@ struct Button : Widget {
     // TODO add support for buttons with images
 
     Button(Position pp, Size size, std::string text, bool is_default = false,
-           std::function<void()> on_button_click = {});
+           std::function<void(Button &)> on_button_click = {});
 
-    Button(std::string text, std::function<void()> on_button_click = {});
+    Button(std::string text, std::function<void(Button &)> on_button_click = {});
 
     virtual auto draw() -> void override;
     virtual auto on_hover(const EventMouse &event) -> void override;
@@ -52,27 +52,32 @@ struct Button : Widget {
     auto set_auto_repeat(int64_t repeat_millies, int64_t repeat_start = 500) -> void;
     auto disable_auto_repeat() -> void;
 
-    auto set_is_default(bool new_state) -> Button & {
+    auto set_is_default(bool new_state) -> std::shared_ptr<Button> {
         this->is_default = new_state;
         this->needs_redraw = true;
-        return *this;
+        return std::dynamic_pointer_cast<Button>(this->shared_from_this());
     }
 
-    auto set_is_enabled(bool new_state) -> Button & {
+    auto set_is_enabled(bool new_state) -> std::shared_ptr<Button> {
         this->is_enabled = new_state;
         this->needs_redraw = true;
-        return *this;
+        return std::dynamic_pointer_cast<Button>(this->shared_from_this());
     }
 
-    auto set_auto_shrink(bool new_state) -> Button & {
+    auto set_auto_shrink(bool new_state) -> std::shared_ptr<Button> {
         this->auto_shrink = new_state;
         this->needs_redraw = true;
-        return *this;
+        return std::dynamic_pointer_cast<Button>(this->shared_from_this());
     }
 
-    auto set_has_frame(bool new_state) -> Button & {
+    auto set_has_frame(bool new_state) -> std::shared_ptr<Button> {
         this->has_frame = new_state;
         this->needs_redraw = true;
-        return *this;
+        return std::dynamic_pointer_cast<Button>(this->shared_from_this());
+    }
+
+    auto set_on_click(std::function<void(Button &)> handler) {
+        this->on_button_click = handler;
+        return std::dynamic_pointer_cast<Button>(this->shared_from_this());
     }
 };

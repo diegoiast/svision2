@@ -23,7 +23,7 @@
 #include <spinbox.h>
 #include <stackwidget.h>
 #include <tabheader.h>
-#include <tabview.h>
+#include <tabwidget.h>
 #include <textfield.h>
 #include <themes/fluent.h>
 
@@ -126,7 +126,7 @@ int main() {
     w2->main_widget.layout->padding.set_vertical(2);
 
     auto list = w2->add_new<Combobox>(Position{0, 0}, 0, std::vector<std::string_view>());
-    auto tabs = w2->add_new<TabView>();
+    auto tabs = w2->add_new<TabWidget>();
     tabs->add_new_tab<Label>("Tab 1", "This is the first widget");
     tabs->add_new_tab<Label>("Tab with long name", "This is the second widget")
         ->content.background_color = MakeColor(0xaa, 0x22, 0x22);
@@ -144,6 +144,22 @@ int main() {
         // propagate event to the combo box
         list->set_active_index(index);
     };
+
+    auto b1 = std::make_shared<Button>("+")
+                  ->set_on_click([&tabs](auto &button) {
+                      tabs->add_new_tab<Label>("Tab", "This is a dynamic tab");
+                      MakeColor(0x33, 0xaa, 0x22);
+                  })
+                  ->set_auto_shrink(true)
+                  ->set_has_frame(false);
+    auto b2 = std::make_shared<Button>("x")
+                  ->set_on_click([&tabs](auto &button) {
+                      auto active_tab = tabs->get_active_tab();
+                      tabs->remove_page(active_tab);
+                  })
+                  ->set_auto_shrink(true)
+                  ->set_has_frame(false);
+    tabs->set_buttons(b1, b2);
 
     platform.show_window(w2);
 #endif
@@ -231,19 +247,21 @@ int main() {
     buttons_layout->add(std::make_shared<HorizontalSpacer>())->weight = 2;
 
     w1->add_new_to_layout<Button>(buttons_layout, Position{10, 420}, Size{200, 40}, "OK", true,
-                                  [&platform]() {
+                                  [&platform](auto &button) {
                                       spdlog::info("OK clicked!");
                                       platform.exit_loop = true;
                                   });
 
-    std::shared_ptr<Button> cancel_button = w1->add_new_to_layout<Button>(
-        buttons_layout, Position{220, 420}, Size{200, 40}, "Cancel", false, [&cancel_button]() {
-            static auto clicked_count = 0;
-            clicked_count++;
-            spdlog::info("Cancel Clicked! count = {}", clicked_count);
-            cancel_button->text = fmt::format("Cancel ({})", clicked_count);
-            cancel_button->invalidate();
-        });
+    std::shared_ptr<Button> cancel_button =
+        w1->add_new_to_layout<Button>(buttons_layout, Position{220, 420}, Size{200, 40}, "Cancel",
+                                      false, [&cancel_button](auto &button) {
+                                          static auto clicked_count = 0;
+                                          clicked_count++;
+                                          spdlog::info("Cancel Clicked! count = {}", clicked_count);
+                                          cancel_button->text =
+                                              fmt::format("Cancel ({})", clicked_count);
+                                          cancel_button->invalidate();
+                                      });
     cancel_button->set_auto_repeat(300, 700);
     platform.show_window(w1);
 #endif

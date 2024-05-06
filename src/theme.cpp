@@ -574,7 +574,6 @@ auto ThemePlasma::draw_button(Bitmap &content, bool has_focus, bool is_default, 
     content.put_pixel(1, content.size.height - 1, colors.window_background);
     content.put_pixel(content.size.width - 1, content.size.height - 1, colors.window_background);
 
-
     if (is_enabled) {
         // TODO properly center
         auto text_padding = 5;
@@ -719,6 +718,12 @@ auto ThemePlasma::draw_single_tab(Bitmap &content, const int offset, const bool 
         //                   FrameSize::SingleFrame);
         content.fill_rect(offset, 0, tab_size.width, 3, colors.frame_hover_color3);
         content.fill_rect(offset, tab_size.height - 2, tab_size.width, 2, active_bg);
+
+        content.line(offset, 0, offset, tab_size.height - 3, colors.frame_normal_color3);
+        content.line(offset + tab_size.width - 1, 0, offset + tab_size.width - 1,
+                     tab_size.height - 3, colors.frame_normal_color3);
+
+        content.line(0, 0, 0, tab_size.height, colors.frame_normal_color3);
     } else {
         content.fill_rect(offset, 0, tab_size.width, tab_size.height, Darker(active_bg));
         auto bottom_frame_color1 = colors.frame_normal_color3;

@@ -235,3 +235,5 @@ auto VerticalLayout::size_hint() const -> Size {
     }
     return hint;
 }
+
+auto LayoutItem::remove_all() -> void { this->sub_items.clear(); }

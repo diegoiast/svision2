@@ -38,10 +38,10 @@ Spinbox::Spinbox(Position position, Size size) : TextField(position, size) {
     auto button_position = Position{content.size.width - s, 0};
     button_position.y = s;
     this->up_button = std::make_shared<Button>(button_position, button_size, "+");
-    this->up_button->on_button_click = [this]() { this->increase_value(); };
+    this->up_button->on_button_click = [this](auto &) { this->increase_value(); };
     this->up_button->set_auto_repeat(500);
     this->down_button = std::make_shared<Button>(button_position, button_size, "-");
-    this->down_button->on_button_click = [this]() { this->decrease_value(); };
+    this->down_button->on_button_click = [this](auto &) { this->decrease_value(); };
     this->down_button->set_auto_repeat(500);
     this->validator = std::make_shared<IntegerValidator>();
     add(up_button);
