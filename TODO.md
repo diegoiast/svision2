@@ -6,7 +6,12 @@ Random list of things to be implemented on this library
     1. ~~List view~~
     2. ~~Combo box~~
     3. ~~StackWidget~~
-    4. TabView/TabWidget
+    4. ~~TabView/TabWidget~~
+        1. ~~North~~
+        2. West
+        3. East
+        4. South
+        5. Small triangles (only south?)
     5. Toolbar
         1. Actions
         2. Clickacble actions
@@ -47,6 +52,10 @@ Random list of things to be implemented on this library
     12. Buttons
         1. Bitmap on buttons
         1. Open menu on click
+    13. Color picker
+    14. Font picker
+    15. Directory chooser
+    16. File choosed
 
 2. Infrastructure
     1. Mouse drag
@@ -115,3 +124,8 @@ Random list of things to be implemented on this library
     1. Freetype rendering demo
     2. CopyPasta - clipboard manager, ala CopyQ
     3. SVComm - Nortoma/Midnight/Total Commander clone - dual panel file manager
+5. Bugs
+    1. Mouse hover with subwidgets is borked.
+    2. TabWidget changing tab flickers
+    3. Changing theme on the fly does not work
+    4. TabWidget/TabHeader on Redmond theme - height is wrong.
