@@ -25,6 +25,9 @@ auto on_radio_button_selected(RadioButtonGroup &group, Checkbox &checkbox) -> vo
     }
 }
 
+RadioButtonGroup::RadioButtonGroup(const std::vector<std::string> &items)
+    : RadioButtonGroup({}, {}, items) {}
+
 RadioButtonGroup::RadioButtonGroup(Position position, int width,
                                    const std::vector<std::string> &items)
     : Widget(position, {}, 0) {

@@ -38,7 +38,8 @@ struct Button : Widget {
     Button(Position pp, Size size, std::string text, bool is_default = false,
            std::function<void(Button &)> on_button_click = {});
 
-    Button(std::string text, std::function<void(Button &)> on_button_click = {});
+    Button(std::string text, bool is_default = false,
+           std::function<void(Button &)> on_button_click = {});
 
     virtual auto draw() -> void override;
     virtual auto on_hover(const EventMouse &event) -> void override;

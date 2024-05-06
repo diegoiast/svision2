@@ -21,6 +21,7 @@ struct TextField : Widget {
         virtual auto is_string_valid(std::string_view str) -> bool = 0;
     };
 
+    TextField();
     TextField(Position position, Size size);
     virtual ~TextField() override;
     virtual auto draw() -> void override;

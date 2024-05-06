@@ -59,6 +59,7 @@ struct ListView : public Widget {
     std::function<void(ListView &, int, SelectionReason)> on_item_selected;
     int current_item = 0;
 
+    ListView();
     ListView(Position position, Size size);
     virtual auto draw() -> void override;
     virtual auto on_mouse_click(const EventMouse &event) -> EventPropagation override;

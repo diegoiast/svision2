@@ -24,7 +24,7 @@ static auto point_in_rect(Position p, Size s, int x, int y) -> bool {
     return true;
 }
 
-auto dump_widget(const std::shared_ptr<Widget> w) -> void {
+static auto dump_widget(const std::shared_ptr<Widget> w) -> void {
     auto hint = w->size_hint();
     auto padding = w->get_padding();
     spdlog::info("-------- widget = class = {}, index {}", typeid(*w).name(), w->focus_index);
@@ -318,9 +318,11 @@ auto WidgetCollection::focus_widget(std::shared_ptr<Widget> widget) -> void {
     this->focused_widget = widget;
 }
 
-Widget::Widget() {
+Widget::Widget() : Widget(0) {}
+
+Widget::Widget(uint32_t color) {
     this->position = {};
-    this->content.background_color = 0;
+    this->content.background_color = color;
 }
 
 Widget::Widget(Position position, Size size, uint32_t color) {

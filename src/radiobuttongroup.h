@@ -14,6 +14,7 @@ struct Checkbox;
 
 struct RadioButtonGroup : Widget {
   public:
+    RadioButtonGroup(const std::vector<std::string> &items);
     RadioButtonGroup(Position pos, int width, const std::vector<std::string> &items);
 
     std::function<void(int index, Checkbox &button)> on_selected = {};

@@ -14,6 +14,7 @@ struct Button;
 struct ScrollBar : Widget {
     std::function<void(ScrollBar *, int value)> did_change = {};
 
+    ScrollBar(bool horizontal, int max = 100);
     ScrollBar(Position position, int length, bool horizontal, int max = 100);
 
     bool is_horizontal = false;

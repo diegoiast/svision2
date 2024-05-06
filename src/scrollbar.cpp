@@ -62,6 +62,8 @@ auto make_buttons(ScrollBar &sb, int length, bool horizontal) {
     sb.down_button->invalidate();
 }
 
+ScrollBar::ScrollBar(bool horizontal, int maximum) : ScrollBar({}, 0, horizontal, maximum) {}
+
 ScrollBar::ScrollBar(Position position, int length, bool horizontal, int maximum)
     : Widget(position, {}, 0) {
 

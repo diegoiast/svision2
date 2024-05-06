@@ -10,6 +10,8 @@
 #include "listview.h"
 #include "theme.h"
 
+Combobox::Combobox(const std::vector<std::string_view> &strings) : Combobox({}, 0, strings) {}
+
 Combobox::Combobox(Position position, int width, const std::vector<std::string_view> &strings)
     : Widget(position, {0, 0}, 0) {
     this->strings = strings;

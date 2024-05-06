@@ -11,6 +11,8 @@
 
 #include <spdlog/spdlog.h>
 
+TextField::TextField() : TextField({}, {}) {}
+
 TextField::TextField(Position position, Size size) : Widget(position, size, 0) {
     timer.millies = 750;
     timer.repeating = true;

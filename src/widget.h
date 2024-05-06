@@ -63,6 +63,7 @@ struct Widget : std::enable_shared_from_this<Widget>, LayoutItem {
     int focus_index = -1;
 
     Widget();
+    Widget(uint32_t color);
     Widget(Position pp, Size size, uint32_t color);
     virtual ~Widget();
 

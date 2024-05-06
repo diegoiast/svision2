@@ -26,6 +26,7 @@ struct Spinbox : public TextField {
     bool fractional = false;
     double value = 0;
 
+    Spinbox();
     Spinbox(Position position, Size size);
     virtual auto on_resize() -> void override;
 

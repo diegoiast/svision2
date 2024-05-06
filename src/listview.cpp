@@ -27,6 +27,8 @@ auto ListItemAdapter::set_content(PWidget widget, size_t position, ItemStatus st
     item->status = status;
 }
 
+ListView::ListView() : ListView({}, {}) {}
+
 ListView::ListView(Position position, Size size) : Widget(position, size, 0) {
     position.x = size.width - 24;
     position.y = 0;

@@ -32,6 +32,8 @@ auto IntegerValidator::is_string_valid(std::string_view str) -> bool {
     return !iss.fail() && iss.eof();
 }
 
+Spinbox::Spinbox() : Spinbox({}, {}) {}
+
 Spinbox::Spinbox(Position position, Size size) : TextField(position, size) {
     auto s = content.size.height / 2;
     auto button_size = Size{s, s};

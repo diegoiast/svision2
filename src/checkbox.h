@@ -24,6 +24,7 @@ struct Checkbox : Widget {
     AbstractButtonState state{};
     CheckboxShape shape = CheckboxShape::Checkbox;
 
+    Checkbox(std::string text, std::function<void(Checkbox &)> on_checkbox_change = {});
     Checkbox(Position pp, int length, std::string text,
              std::function<void(Checkbox &)> on_checkbox_change = {});
 

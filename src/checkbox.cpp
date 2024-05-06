@@ -9,6 +9,9 @@
 #include <spdlog/spdlog.h>
 #include <theme.h>
 
+Checkbox::Checkbox(std::string text, std::function<void(Checkbox &)> on_checkbox_change)
+    : Checkbox({}, 0, text, on_checkbox_change) {}
+
 Checkbox::Checkbox(Position p, int length, std::string text,
                    std::function<void(Checkbox &)> on_checkbox_change)
     : Widget(p, {}, 0) {

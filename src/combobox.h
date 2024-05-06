@@ -25,6 +25,7 @@ struct Combobox : Widget {
     int selected_item = 0;
 
     Combobox(Position position, int width, const std::vector<std::string_view> &strings);
+    Combobox(const std::vector<std::string_view> &strings);
     auto get_value() const -> std::string_view;
     auto get_item() const -> int { return selected_item; }
     virtual auto draw() -> void override;
