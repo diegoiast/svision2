@@ -6,7 +6,6 @@
  */
 
 #include "stackwidget.h"
-#include "layout.h"
 
 struct SingleWidgetVisible : LayoutItem {
     virtual auto relayout(Position position, const Size size) -> void {

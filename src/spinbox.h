@@ -7,9 +7,10 @@
 
 #pragma once
 
-#include <button.h>
 #include <textfield.h>
 #include <widget.h>
+
+class Button;
 
 struct IntegerValidator : public TextField::input_validator {
     virtual ~IntegerValidator() = default;

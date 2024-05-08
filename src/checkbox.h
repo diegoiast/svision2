@@ -11,8 +11,6 @@
 
 #include <buttonstates.h>
 #include <checkboxshape.h>
-#include <memory>
-#include <timer.h>
 #include <widget.h>
 
 struct Checkbox : Widget {

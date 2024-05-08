@@ -9,11 +9,11 @@
 
 #include <stackwidget.h>
 #include <tabheader.h>
-#include <theme.h>
 #include <vector>
-#include <widget.h>
 
 struct Button;
+struct Stackwidget;
+struct HorizontalLayout;
 
 struct TabWidget : Widget {
     std::function<void(TabWidget &, int)> on_page_selected = {};

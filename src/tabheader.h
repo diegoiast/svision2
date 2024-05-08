@@ -7,8 +7,6 @@
 
 #pragma once
 
-#include <theme.h>
-#include <vector>
 #include <widget.h>
 
 struct TabHeader : Widget {

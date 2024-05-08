@@ -5,7 +5,6 @@
  * SPDX-License-Identifier: MIT
  */
 
-
 #include <X11/XKBlib.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -206,7 +205,7 @@ auto PlatformX11::done() -> void {
     XCloseDisplay(dpy);
 }
 
-auto PlatformX11::open_window(int x, int y, int width, int height, const std::string &title)
+auto PlatformX11::open_window(int x, int y, int width, int height, const std::string_view title)
     -> std::shared_ptr<PlatformWindow> {
     auto window = std::make_shared<PlatformWindowX11>();
     window->title = title;
@@ -216,7 +215,7 @@ auto PlatformX11::open_window(int x, int y, int width, int height, const std::st
     XSelectInput(dpy, window->x11_window,
                  ExposureMask | StructureNotifyMask | KeyPressMask | KeyReleaseMask |
                      ButtonPressMask | ButtonReleaseMask | PointerMotionMask);
-    XStoreName(dpy, window->x11_window, title.c_str());
+    XStoreName(dpy, window->x11_window, title.data());
     XSetWindowBackgroundPixmap(dpy, window->x11_window, None);
     wmDeleteMessage = XInternAtom(dpy, "WM_DELETE_WINDOW", False);
     XSetWMProtocols(dpy, window->x11_window, &wmDeleteMessage, 1);

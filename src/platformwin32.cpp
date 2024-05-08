@@ -350,7 +350,7 @@ auto PlatformWin32::init() -> void {
 
 auto PlatformWin32::done() -> void {}
 
-auto PlatformWin32::open_window(int x, int y, int width, int height, const std::string &title)
+auto PlatformWin32::open_window(int x, int y, int width, int height, const std::string_view title)
     -> std::shared_ptr<PlatformWindow> {
     auto hInstance = GetModuleHandle(nullptr);
     auto window_rect = RECT{0, 0, width, height};

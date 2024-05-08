@@ -15,7 +15,6 @@
 #include <platform.h>
 #include <theme.h>
 
-#include <list>
 #include <memory>
 #include <string>
 
