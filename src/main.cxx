@@ -247,9 +247,12 @@ int main() {
     std::shared_ptr<Button> cancel_button = w1->add_new_to_layout<Button>(
         buttons_layout, "Cancel", false, [&cancel_button](auto &button) {
             static auto clicked_count = 0;
+            static auto text = std::string();
+
             clicked_count++;
+            text = fmt::format("Cancel ({})", clicked_count);
             spdlog::info("Cancel Clicked! count = {}", clicked_count);
-            cancel_button->text = fmt::format("Cancel ({})", clicked_count);
+            cancel_button->text = text;
             cancel_button->invalidate();
         });
     cancel_button->set_auto_repeat(300, 700);

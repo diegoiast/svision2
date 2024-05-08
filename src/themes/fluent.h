@@ -25,10 +25,10 @@ struct ThemeFluent : Theme {
     virtual auto draw_window_background(Bitmap &content) -> void override;
     virtual auto draw_scrollbar_background(Bitmap &content) -> void override;
     virtual auto draw_button(Bitmap &content, bool has_focus, bool is_default, bool is_enabled,
-                             bool has_frame, ButtonStates state, const std::string &text)
+                             bool has_frame, ButtonStates state, const std::string_view text)
         -> void override;
     virtual auto draw_checkbox(Bitmap &content, bool has_focus, bool is_enabled, bool is_checked,
-                               ButtonStates state, const std::string &text, CheckboxShape shape,
+                               ButtonStates state, const std::string_view text, CheckboxShape shape,
                                const LayoutParams &padding) -> void override;
     virtual auto draw_input_background(Bitmap &content, const bool has_focus) -> void override;
     virtual auto draw_listview_background(Bitmap &content, const bool has_focus,

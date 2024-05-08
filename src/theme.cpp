@@ -195,7 +195,7 @@ auto ThemeRedmond::draw_scrollbar_background(Bitmap &content) -> void {
 }
 
 auto ThemeRedmond::draw_button(Bitmap &content, bool has_focus, bool is_default, bool is_enabled,
-                               bool has_frame, ButtonStates state, const std::string &text)
+                               bool has_frame, ButtonStates state, const std::string_view text)
     -> void {
     (void)(has_focus);
     auto text_padding = 5;
@@ -259,8 +259,8 @@ auto ThemeRedmond::draw_button(Bitmap &content, bool has_focus, bool is_default,
 }
 
 auto ThemeRedmond::draw_checkbox(Bitmap &content, bool has_focus, bool is_enabled, bool is_checked,
-                                 ButtonStates state, const std::string &text, CheckboxShape shape,
-                                 const LayoutParams &padding) -> void {
+                                 ButtonStates state, const std::string_view text,
+                                 CheckboxShape shape, const LayoutParams &padding) -> void {
     auto background_color = colors.input_background_normal;
     auto foreground_color = colors.text_color;
     auto checkbox_size = content.size.height;
@@ -515,7 +515,8 @@ auto ThemePlasma::draw_window_background(Bitmap &content) -> void {
 auto ThemePlasma::draw_scrollbar_background(Bitmap &content) -> void {}
 
 auto ThemePlasma::draw_button(Bitmap &content, bool has_focus, bool is_default, bool is_enabled,
-                              bool has_frame, ButtonStates state, const std::string &text) -> void {
+                              bool has_frame, ButtonStates state, const std::string_view text)
+    -> void {
     auto background1 = colors.button_background_1;
     auto background2 = colors.button_background_2;
     auto border = colors.frame_normal_color1;
@@ -584,8 +585,8 @@ auto ThemePlasma::draw_button(Bitmap &content, bool has_focus, bool is_default, 
 }
 
 auto ThemePlasma::draw_checkbox(Bitmap &content, bool has_focus, bool is_enabled, bool is_checked,
-                                ButtonStates state, const std::string &text, CheckboxShape shape,
-                                const LayoutParams &padding) -> void {
+                                ButtonStates state, const std::string_view text,
+                                CheckboxShape shape, const LayoutParams &padding) -> void {
     auto background_color = colors.window_background;
     auto foreground_color = colors.text_color;
     auto checkbox_size = content.size.height;

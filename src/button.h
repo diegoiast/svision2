@@ -22,7 +22,7 @@ struct Button : Widget {
     bool auto_shrink = false;
     bool has_frame = true;
 
-    std::string text;
+    std::string_view text;
     std::function<void(Button &)> on_button_click;
     AbstractButtonState state;
 
@@ -35,10 +35,10 @@ struct Button : Widget {
 
     // TODO add support for buttons with images
 
-    Button(Position pp, Size size, std::string text, bool is_default = false,
+    Button(Position pp, Size size, std::string_view text, bool is_default = false,
            std::function<void(Button &)> on_button_click = {});
 
-    Button(std::string text, bool is_default = false,
+    Button(std::string_view text, bool is_default = false,
            std::function<void(Button &)> on_button_click = {});
 
     virtual auto draw() -> void override;
@@ -77,7 +77,7 @@ struct Button : Widget {
         return std::dynamic_pointer_cast<Button>(this->shared_from_this());
     }
 
-    auto set_on_click(std::function<void(Button &)> handler) {
+    auto set_on_click(std::function<void(Button &)> handler) -> std::shared_ptr<Button> {
         this->on_button_click = handler;
         return std::dynamic_pointer_cast<Button>(this->shared_from_this());
     }

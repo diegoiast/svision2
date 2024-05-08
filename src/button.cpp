@@ -61,13 +61,14 @@ auto start_repeate_timer(Button *button) -> void {
     }
 }
 
-Button::Button(std::string text, bool is_default, std::function<void(Button &)> on_button_click)
+Button::Button(std::string_view text, bool is_default,
+               std::function<void(Button &)> on_button_click)
     : Button(Position{}, Size{}, text, false, on_button_click) {
     this->padding_style = PaddingStyle::Button;
     this->is_default = is_default;
 }
 
-Button::Button(Position pp, Size size, std::string text, bool is_default,
+Button::Button(Position pp, Size size, std::string_view text, bool is_default,
                std::function<void(Button &)> on_button_click)
     : Widget(pp, size, 0) {
     this->text = text;

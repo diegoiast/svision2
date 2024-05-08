@@ -75,7 +75,8 @@ auto ThemeFluent::draw_scrollbar_background(Bitmap &content) -> void {
 }
 
 auto ThemeFluent::draw_button(Bitmap &content, bool has_focus, bool is_default, bool is_enabled,
-                              bool has_frame, ButtonStates state, const std::string &text) -> void {
+                              bool has_frame, ButtonStates state, const std::string_view text)
+    -> void {
 
     auto text_padding = 5;
     auto background = !is_default ? colors.button_background_1 : colors.button_selected_background;
@@ -118,8 +119,8 @@ auto ThemeFluent::draw_button(Bitmap &content, bool has_focus, bool is_default, 
 }
 
 auto ThemeFluent::draw_checkbox(Bitmap &content, bool has_focus, bool is_enabled, bool is_checked,
-                                ButtonStates state, const std::string &text, CheckboxShape shape,
-                                const LayoutParams &padding) -> void {
+                                ButtonStates state, const std::string_view text,
+                                CheckboxShape shape, const LayoutParams &padding) -> void {
     auto checkbox_size = content.size.height;
 
     // we have 3 colors
