@@ -109,6 +109,8 @@ set(SVISION_SOURCES
     src/textfield.h
     src/tabwidget.cpp
     src/tabwidget.h
+    src/toolbar.cxx
+    src/toolbar.hpp
     src/widget.cpp
     src/widget.h
     src/image/loaders.cxx

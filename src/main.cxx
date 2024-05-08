@@ -7,6 +7,7 @@
 
 // https://zserge.com/posts/fenster/
 
+#include "toolbar.hpp"
 #if defined(__linux__)
 #include "platformx11.h"
 #elif defined(_win32) || defined(WIN32)
@@ -125,6 +126,22 @@ int main() {
         timer_count++;
         //        spdlog::info("timer");
     });
+    auto callback = [&timer_count, &platform](Shortcut &, int id) {
+        switch (id) {
+        case 100:
+            spdlog::info("Should create an open dialog");
+            break;
+        case 101:
+            timer_count++;
+            spdlog::info("Should create a save dialog");
+            break;
+        case 102:
+            platform.exit_loop = true;
+            break;
+        default:
+            break;
+        }
+    };
 
 #if 1
     auto w2 = platform.open_window(300, 300, 640, 480, "test 2");
@@ -181,6 +198,10 @@ int main() {
 
 #if 1
     auto w1 = platform.open_window(100, 100, 640, 480, "test 1");
+    w1->add_new<Toolbar>()
+        ->add_shortcut(std::make_shared<Shortcut>(100, "Open", callback))
+        ->add_shortcut(std::make_shared<Shortcut>(101, "Save", callback))
+        ->add_shortcut(std::make_shared<Shortcut>(102, "Quit", callback));
     auto l = w1->add_new<Label>("test 1 - Hello world! glqi שלום עולם");
     l->frame = {FrameStyles::Normal, FrameSize::SingleFrame};
     l->weight = 0.3;

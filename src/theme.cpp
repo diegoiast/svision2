@@ -527,7 +527,10 @@ auto ThemePlasma::draw_button(Bitmap &content, bool has_focus, bool is_default, 
 
     switch (state) {
     case ButtonStates::Normal:
-        background1 = has_frame ? colors.button_background_1 : colors.window_background;
+        if (!has_focus && !has_frame) {
+            background1 = colors.window_background;
+            background2 = colors.window_background;
+        }
         break;
     case ButtonStates::Hovered:
         if (is_enabled) {
