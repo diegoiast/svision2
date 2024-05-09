@@ -2,6 +2,9 @@ cmake_minimum_required (VERSION 3.22.0)
 
 project (svision2)
 
+option(SVISION_USE_STB "Use STB library" TRUE)
+option(SVISION_USE_FREETYPE "Use FreeType library" FALSE)
+
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
 list(APPEND CMAKE_PREFIX_PATH ${CMAKE_BINARY_DIR})
 
@@ -58,8 +61,9 @@ find_package(spdlog CONFIG REQUIRED)
 find_package(freetype CONFIG REQUIRED)
 find_package(Catch2 3 REQUIRED)
 
-create_resources("src/*.bin"  "fontdos.h")
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
+create_resources("src/*.bin"  "generated_headers/fontdos.h")
+include_directories(${CMAKE_CURRENT_BINARY_DIR}/generated_headers)
+
 
 # Main library
 set(SVISION_SOURCES
@@ -76,8 +80,6 @@ set(SVISION_SOURCES
     src/checkboxshape.h
     src/fontprovider.cpp
     src/fontprovider.h
-    src/fontproviderfreetype.cpp
-    src/fontproviderfreetype.h
     src/label.cpp
     src/label.h
     src/layout.cpp
@@ -111,6 +113,20 @@ set(SVISION_SOURCES
     src/themes/fluent.h
 )
 
+if (SVISION_USE_FREETYPE)
+    list(APPEND SVISION_SOURCES
+        src/fontproviderfreetype.cpp
+        src/fontproviderfreetype.h
+    )
+endif()
+
+if(SVISION_USE_STB)
+    list(APPEND SVISION_SOURCES
+        src/fontproviders/fontproviderstb.cxx
+        src/fontproviders/fontproviderstb.hpp
+    )
+endif()
+
 if (UNIX)
     list(APPEND SVISION_SOURCES
         src/platformx11.cpp
@@ -127,6 +143,15 @@ else()
 	message(FATAL_ERROR "unsupported platform" )
 endif()
 add_library(svision2 ${SVISION_SOURCES})
+
+if (SVISION_USE_FREETYPE)
+    add_compile_definitions(svision2 -DSVISION_USE_FREETYPE)
+endif()
+
+if(SVISION_USE_STB)
+   add_compile_definitions(svision2 -DSVISION_USE_STB)
+endif()
+
 
 target_link_libraries(svision2 PUBLIC 
     spdlog::spdlog $<$<BOOL:${MINGW}>:ws2_32>

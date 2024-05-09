@@ -25,6 +25,8 @@
 #include <tabheader.h>
 #include <tabwidget.h>
 #include <textfield.h>
+
+#include <fontproviders/fontproviderstb.hpp>
 #include <themes/fluent.h>
 
 #include <spdlog/spdlog.h>
@@ -108,11 +110,12 @@ struct DebugWidget : public Widget {
 int main() {
     int timer_count = 0;
     auto platform = ThePlatform();
-    platform.init();
+    //    platform.default_font = std::make_shared<FontProviderSTB>(platform.default_font_file);
     //    platform.default_theme = std::make_shared<ThemeFluent>(*platform.default_font);
     //    platform.default_theme = std::make_shared<ThemeRedmond>(*platform.default_font);
     //    platform.default_theme = std::make_shared<ThemePlasma>(*platform.default_font, 0xff6737);
     //    platform.default_theme = std::make_shared<ThemePlasma>(*platform.default_font);
+    platform.init();
 
     Timer t1(500, true, [&timer_count]() {
         timer_count++;

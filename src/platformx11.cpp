@@ -13,8 +13,13 @@
 
 #include <spdlog/spdlog.h>
 
-#include "events.h"
+#if defined(SVISION_USE_FREETYPE)
 #include "fontproviderfreetype.h"
+#elif defined(SVISION_USE_STB)
+#include "fontproviders/fontproviderstb.hpp"
+#endif
+
+#include "events.h"
 #include "platformx11.h"
 #include "theme.h"
 #include "widget.h"
@@ -190,10 +195,14 @@ auto PlatformX11::init() -> void {
         return;
     }
 
-    // TODO - detect GTK and use a GTK theme
     if (!this->default_font) {
+#if defined(SVISION_USE_FREETYPE)
         this->default_font = std::make_shared<FontProviderFreetype>(default_font_file);
+#elif defined(SVISION_USE_STB)
+        this->default_font = std::make_shared<FontProviderSTB>(default_font_file);
+#endif
     }
+    // TODO - detect GTK and use a GTK theme
     if (!this->default_theme) {
         default_theme = std::make_shared<ThemePlasma>(*this->default_font);
     }
