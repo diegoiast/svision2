@@ -19,8 +19,8 @@ struct FontProvider;
 struct Platform {
     bool exit_loop = false;
     bool close_on_last_window = true;
-    std::shared_ptr<Theme> default_theme;
-    std::shared_ptr<FontProvider> default_font;
+    std::shared_ptr<Theme> default_theme = nullptr;
+    std::shared_ptr<FontProvider> default_font = nullptr;
 
     virtual auto init() -> void = 0;
     virtual auto done() -> void = 0;

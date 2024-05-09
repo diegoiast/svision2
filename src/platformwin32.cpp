@@ -343,8 +343,12 @@ auto PlatformWin32::init() -> void {
     wc.lpszClassName = WINDOW_CLASS_NAME;
     RegisterClassExW(&wc);
 
-    this->default_font = std::make_shared<FontProviderFreetype>(default_font_file);
-    default_theme = std::make_shared<ThemeFluent>(*this->default_font);
+    if (!this->default_font) {
+        this->default_font = std::make_shared<FontProviderFreetype>(default_font_file);
+    }
+    if (!this->default_theme) {
+        this->default_theme = std::make_shared<ThemeFluent>(*this->default_font);
+    }
     spdlog::info("PlatformWin32 initialized");
 }
 
