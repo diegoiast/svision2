@@ -7,9 +7,7 @@
 
 #pragma once
 
-#include <cassert>
 #include <cmath>
-#include <string>
 #include <vector>
 
 #include <sizepoint.h>
