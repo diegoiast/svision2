@@ -7,10 +7,7 @@
 
 #include "fontproviderfreetype.h"
 #include "spdlog/spdlog.h"
-#include <algorithm>
 #include <string_view>
-
-// #include <ft2build.h>
 
 FontProviderFreetype::FontProviderFreetype(const std::string_view default_font) {
     if (FT_Init_FreeType(&library)) {
