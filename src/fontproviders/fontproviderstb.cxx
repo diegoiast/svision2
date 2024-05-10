@@ -2,6 +2,7 @@
 #include <iostream>
 #include <iterator>
 #include <string_view>
+#include <vector>
 
 #include <spdlog/spdlog.h>
 
