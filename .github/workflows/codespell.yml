@@ -16,6 +16,6 @@ jobs:
       with:
         check_filenames: true
         path: ./src/
-        skip: "*.lua,*.ui"
+        skip: "*.lua,*.ui,./src/stb/stb_*.h"
         ignore_words_list: "doubleclick,msdos"
       
