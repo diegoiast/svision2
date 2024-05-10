@@ -1,6 +1,6 @@
-#include <bits/stream_iterator.h>
 #include <fstream>
 #include <iostream>
+#include <iterator>
 #include <string_view>
 
 #include <spdlog/spdlog.h>
