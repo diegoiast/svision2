@@ -2,8 +2,8 @@ cmake_minimum_required (VERSION 3.22.0)
 
 project (svision2)
 
-option(SVISION_USE_STB "Use STB library" TRUE)
-option(SVISION_USE_FREETYPE "Use FreeType library" FALSE)
+option(SVISION_USE_STB "Use STB library" ON)
+option(SVISION_USE_FREETYPE "Use FreeType library" OFF)
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
 list(APPEND CMAKE_PREFIX_PATH ${CMAKE_BINARY_DIR})
@@ -120,7 +120,7 @@ if (SVISION_USE_FREETYPE)
     )
 endif()
 
-if(SVISION_USE_STB)
+if (SVISION_USE_STB)
     list(APPEND SVISION_SOURCES
         src/fontproviders/fontproviderstb.cxx
         src/fontproviders/fontproviderstb.hpp

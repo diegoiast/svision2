@@ -13,11 +13,16 @@
 #include "spdlog/spdlog.h"
 
 #include "events.h"
-#include "fontproviderfreetype.h"
 #include "platformwin32.h"
 #include "theme.h"
 #include "themes/fluent.h"
 #include "widget.h"
+
+#if defined(SVISION_USE_FREETYPE)
+#include "fontproviderfreetype.h"
+#elif defined(SVISION_USE_STB)
+#include "fontproviders/fontproviderstb.hpp"
+#endif
 
 extern "C" int main(int, char **);
 
@@ -344,7 +349,11 @@ auto PlatformWin32::init() -> void {
     RegisterClassExW(&wc);
 
     if (!this->default_font) {
+#if defined(SVISION_USE_FREETYPE)
         this->default_font = std::make_shared<FontProviderFreetype>(default_font_file);
+#elif defined(SVISION_USE_STB)
+        this->default_font = std::make_shared<FontProviderSTB>(default_font_file);
+#endif
     }
     if (!this->default_theme) {
         this->default_theme = std::make_shared<ThemeFluent>(*this->default_font);
