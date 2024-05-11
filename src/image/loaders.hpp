@@ -11,7 +11,7 @@
 #include <string>
 
 struct ImageDecoder {
-    virtual auto decode(const std::string &filename, Bitmap &bitmap)-> bool = 0;
+    virtual auto decode(const std::string &filename, Bitmap &bitmap) -> bool = 0;
     virtual ~ImageDecoder() = default;
 };
 

@@ -17,8 +17,7 @@
 #include "fontproviders/fontproviderstb.hpp"
 #endif
 
-void Platform::init()
-{
+void Platform::init() {
     platform_init();
 
     if (!this->default_font) {
@@ -34,7 +33,7 @@ void Platform::init()
         default_theme = std::make_shared<ThemePlasma>(*this->default_font);
     }
 
-    if (!this->image_loader){
+    if (!this->image_loader) {
         image_loader = std::make_shared<ImageLoader>();
     }
 }
