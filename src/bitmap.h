@@ -92,7 +92,6 @@ auto Darker(uint32_t color, double percentage = 0.1) -> uint32_t;
 
 struct Bitmap {
     uint32_t background_color = 0;
-    //    uint32_t *buf = 0;
     std::vector<uint32_t> buffer;
     Size size = {0, 0};
 
