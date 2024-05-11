@@ -348,16 +348,8 @@ auto PlatformWin32::init() -> void {
     wc.lpszClassName = WINDOW_CLASS_NAME;
     RegisterClassExW(&wc);
 
-    if (!this->default_font) {
-#if defined(SVISION_USE_FREETYPE)
-        this->default_font = std::make_shared<FontProviderFreetype>(default_font_file);
-#elif defined(SVISION_USE_STB)
-        this->default_font = std::make_shared<FontProviderSTB>(default_font_file);
-#endif
-    }
-    if (!this->default_theme) {
-        this->default_theme = std::make_shared<ThemeFluent>(*this->default_font);
-    }
+    default_font_file = "c:\\Windows\\Fonts\\arial.ttf";
+
     spdlog::info("PlatformWin32 initialized");
 }
 

@@ -15,14 +15,19 @@
 struct Theme;
 struct PlatformWindow;
 struct FontProvider;
+struct FileLoader;
+struct ImageLoader;
 
 struct Platform {
     bool exit_loop = false;
     bool close_on_last_window = true;
+    std::string_view default_font_file = "";
     std::shared_ptr<Theme> default_theme = nullptr;
     std::shared_ptr<FontProvider> default_font = nullptr;
+    std::shared_ptr<ImageLoader> image_loader = nullptr;
 
-    virtual auto init() -> void = 0;
+    auto init() -> void;
+    virtual auto platform_init() -> void = 0;
     virtual auto done() -> void = 0;
     virtual auto open_window(int x, int y, int width, int height, const std::string_view title)
         -> std::shared_ptr<PlatformWindow> = 0;

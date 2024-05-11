@@ -109,6 +109,8 @@ set(SVISION_SOURCES
     src/tabwidget.h
     src/widget.cpp
     src/widget.h
+    src/image/loaders.cxx
+    src/image/loaders.hpp
     src/themes/fluent.cpp
     src/themes/fluent.h
 )

@@ -13,15 +13,8 @@
 
 #include <spdlog/spdlog.h>
 
-#if defined(SVISION_USE_FREETYPE)
-#include "fontproviderfreetype.h"
-#elif defined(SVISION_USE_STB)
-#include "fontproviders/fontproviderstb.hpp"
-#endif
-
 #include "events.h"
 #include "platformx11.h"
-#include "theme.h"
 #include "widget.h"
 
 #include "platformx11-keycodes.h"
@@ -184,7 +177,7 @@ struct PlatformWindowX11 : public PlatformWindow {
     }
 };
 
-auto PlatformX11::init() -> void {
+auto PlatformX11::platform_init() -> void {
     spdlog::set_level(spdlog::level::info);
     dpy = XOpenDisplay(NULL);
     screen = DefaultScreen(dpy);
@@ -195,17 +188,7 @@ auto PlatformX11::init() -> void {
         return;
     }
 
-    if (!this->default_font) {
-#if defined(SVISION_USE_FREETYPE)
-        this->default_font = std::make_shared<FontProviderFreetype>(default_font_file);
-#elif defined(SVISION_USE_STB)
-        this->default_font = std::make_shared<FontProviderSTB>(default_font_file);
-#endif
-    }
-    // TODO - detect GTK and use a GTK theme
-    if (!this->default_theme) {
-        default_theme = std::make_shared<ThemePlasma>(*this->default_font);
-    }
+    default_font_file = SVISION_X11_TTF_PATH SVISION_X11_TTF_FILENAME;
     spdlog::info("PlatformX11 initialized");
 }
 
