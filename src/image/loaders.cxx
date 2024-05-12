@@ -16,7 +16,16 @@ struct ImageDecoderSTB : public ImageDecoder {
         if (data) {
             spdlog::info("Decoding {} using STB decoder...", filename);
             bitmap.size = {width, height};
-            bitmap.buffer.assign(data, data + width * height);
+            size_t numPixels = width * height;
+            for (size_t i = 0; i < numPixels; ++i) {
+                uint32_t pixel = 0;
+                for (int c = 0; c < 3; ++c) {
+                    pixel |= static_cast<uint32_t>(data[i * 4 + c]) << (c * 8);
+                }
+                pixel |= static_cast<uint32_t>(data[i * 4 + 3]) << 24;
+                bitmap.buffer.push_back(pixel);
+            }
+
             stbi_image_free(data);
             return true;
         } else {

@@ -94,6 +94,12 @@ auto Lighter(uint32_t color, double percentage) -> uint32_t {
     return hslToRGB(hsl);
 }
 
+auto Bitmap::copy_from(const Bitmap &other) -> void
+{
+    this->buffer = other.buffer;
+    this->size = other.size;
+}
+
 auto Bitmap::blend_pixel(int x, int y, uint32_t color, uint8_t alpha) -> void {
     if (x < 0)
         return;

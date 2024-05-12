@@ -16,6 +16,8 @@
 #include <button.h>
 #include <checkbox.h>
 #include <combobox.h>
+#include <image/loaders.hpp>
+#include <imageview.hpp>
 #include <label.h>
 #include <listview.h>
 #include <radiobuttongroup.h>
@@ -128,7 +130,12 @@ int main() {
 
     auto list = w2->add_new<Combobox>(std::vector<std::string_view>());
     auto tabs = w2->add_new<TabWidget>();
-    tabs->add_new_tab<Label>("Tab 1", "This is the first widget");
+    auto bitmap = Bitmap();
+
+    platform.image_loader->loadFile("vampire-riding-a-dinozaur.png", bitmap);
+    //    platform.image_loader->loadFile("watering-can-garden-nature-5346272.jpg", bitmap);
+
+    tabs->add_new_tab<ImageView>("Tab 1", bitmap);
     tabs->add_new_tab<Label>("Tab with long name", "This is the second widget")
         ->content.background_color = MakeColor(0xaa, 0x22, 0x22);
     tabs->add_new_tab<Label>("Tab 3", "This is the third widget")->content.background_color =

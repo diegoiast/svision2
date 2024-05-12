@@ -80,6 +80,8 @@ set(SVISION_SOURCES
     src/checkboxshape.h
     src/fontprovider.cpp
     src/fontprovider.h
+    src/imageview.cxx
+    src/imageview.hpp
     src/label.cpp
     src/label.h
     src/layout.cpp
