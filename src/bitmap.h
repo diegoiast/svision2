@@ -119,6 +119,12 @@ struct Bitmap {
 
     auto resize(int width, int height) -> void;
     auto resize(Size new_size) -> void { resize(new_size.width, new_size.height); }
+    auto rescale(int width, int height) -> void;
+    auto rescale(Size new_size) -> void { rescale(new_size.width, new_size.height); }
+    auto rescale_from(const Bitmap &other, int width, int height) -> void;
+    auto rescale_from(const Bitmap &other, Size new_size) -> void {
+        rescale_from(other, new_size.width, new_size.height);
+    }
 
     auto fill(uint32_t color) -> void { std::fill(buffer.begin(), buffer.end(), color); }
     auto fill_rect(int x, int y, int w, int h, uint32_t color) -> void;

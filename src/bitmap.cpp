@@ -94,9 +94,8 @@ auto Lighter(uint32_t color, double percentage) -> uint32_t {
     return hslToRGB(hsl);
 }
 
-auto Bitmap::copy_from(const Bitmap &other) -> void
-{
-    this->buffer = other.buffer;
+auto Bitmap::copy_from(const Bitmap &other) -> void {
+    this->buffer = std::move(other.buffer);
     this->size = other.size;
 }
 
@@ -130,6 +129,44 @@ auto Bitmap::resize(int width, int height) -> void {
     }
     size.width = width;
     size.height = height;
+}
+
+auto Bitmap::rescale(int width, int height) -> void {
+    std::vector<uint32_t> new_buffer(width * height);
+    auto scale_x = 1000 * this->size.width / width;
+    auto scale_y = 1000 * this->size.height / height;
+    auto offset = 0;
+
+    for (auto y = 0; y < height; y++) {
+        for (auto x = 0; x < width; x++) {
+            auto yy = y * scale_y / 1000;
+            auto xx = x * scale_x / 1000;
+            auto c = get_pixel(xx, yy);
+            new_buffer[offset] = c;
+            offset++;
+        }
+    }
+
+    buffer = std::move(new_buffer);
+    size.width = width;
+    size.height = height;
+}
+
+auto Bitmap::rescale_from(const Bitmap &other, int width, int height) -> void {
+    auto scale_x = 1000 * other.size.width / width;
+    auto scale_y = 1000 * other.size.height / height;
+    auto offset = 0;
+    this->resize(width, height);
+
+    for (auto y = 0; y < height; y++) {
+        for (auto x = 0; x < width; x++) {
+            auto yy = y * scale_y / 1000;
+            auto xx = x * scale_x / 1000;
+            auto c = other.get_pixel(xx, yy);
+            this->buffer[offset] = c;
+            offset++;
+        }
+    }
 }
 
 auto Bitmap::fill_rect(int x, int y, int w, int h, uint32_t c) -> void {
