@@ -336,7 +336,7 @@ static constexpr auto WINDOW_CLASS_NAME = L"svision2";
 
 PlatformWin32::PlatformWin32() {}
 
-auto PlatformWin32::init() -> void {
+auto PlatformWin32::platform_init() -> void {
     spdlog::set_level(spdlog::level::info);
 
     HINSTANCE hInstance = GetModuleHandle(NULL);
