@@ -117,15 +117,21 @@ struct Widget : std::enable_shared_from_this<Widget>, LayoutItem {
     auto get_padding() const -> LayoutParams;
 
     auto relayout(Position new_position, const Size size) -> void override {
+        auto has_new_size = (content.size != size);
         this->position = new_position;
-        content.resize(size);
+
+        if (has_new_size) {
+            content.resize(size);
+        }
         needs_redraw = true;
 
         if (layout) {
             layout->relayout(new_position, size);
         }
 
-        on_resize();
+        if (has_new_size) {
+            on_resize();
+        }
     }
 
     friend struct PlatformWindow;
