@@ -38,8 +38,7 @@
 // auto handle_event(std::shared_ptr<PlatformWindow> w, const Event &ev);
 // auto handle_event(int window_id, int widget_id, const Event &ev);
 
-struct DebugWidget : public Widget 
-{
+struct DebugWidget : public Widget {
     bool state_pressed = false;
     Position pos = {0, 0};
     bool unclick_inside = false;
