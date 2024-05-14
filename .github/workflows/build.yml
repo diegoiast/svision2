@@ -62,9 +62,6 @@ jobs:
         run: pip3 install conan==1.61.0
       - name: Install cmake-format
         run: pip3 install cmake-format
-      - name: Install clang-tidy
-        if: matrix.config.os == 'ubuntu-22.04'
-        run : sudo apt install clang-tidy
       - name: Setup MSVC (optional)
         if: ${{ matrix.config.cxx == 'cl' }}
         uses: ilammy/msvc-dev-cmd@v1
@@ -76,27 +73,5 @@ jobs:
         id: runcmakebuild
         run: |
           cmake --build ${{ runner.workspace }}/build/${{ runner.config.build_dir }} --parallel --verbose
-      - name: Run static analysis
-        # if: matrix.config.os == 'ubuntu-22.04'
-        if: false
-        uses: JacobDomagala/StaticAnalysis@master
-        with:
-          language: c++
-          
-          # don't fail build, just warn
-          # continue-on-error: true  # Continue on error or failure
-
-          # Exclude any issues found in ${Project_root_dir}/lib
-          exclude_dir: lib
-
-          use_cmake: true
-          cmake_args: -S ${{ github.workspace }} -B "${{ runner.workspace }}/build/${{ runner.config.build_dir }}" -G "${{ matrix.config.generators }}" -DCMAKE_BUILD_TYPE="${{ matrix.config.build_type }}" -DCMAKE_C_COMPILER=${{ matrix.config.cc }} -DCMAKE_CXX_COMPILER=${{ matrix.config.cxx }}
-
-          # (Optional) clang-tidy args
-          clang_tidy_args: -checks='*,fuchsia-*,google-*,zircon-*,abseil-*,modernize-use-trailing-return-type'
-
-          # (Optional) cppcheck args
-          # cppcheck_args: --enable=all --suppress=missingInclude --suppress=missingIncludeSystem
-          cppcheck_args: --enable=all --disable=unusedFunction,missingInclude  --suppress=missingIncludeSystem --std=c++17 --language=c++
       - name: Run tests
         run : '${{ runner.workspace }}/build/${{ runner.config.build_dir }}/bin/test-buttons'
