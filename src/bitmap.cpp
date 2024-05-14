@@ -94,6 +94,11 @@ auto Lighter(uint32_t color, double percentage) -> uint32_t {
     return hslToRGB(hsl);
 }
 
+auto Bitmap::copy_from(const Bitmap &other) -> void {
+    this->buffer = std::move(other.buffer);
+    this->size = other.size;
+}
+
 auto Bitmap::blend_pixel(int x, int y, uint32_t color, uint8_t alpha) -> void {
     if (x < 0)
         return;
@@ -124,6 +129,96 @@ auto Bitmap::resize(int width, int height) -> void {
     }
     size.width = width;
     size.height = height;
+}
+
+auto Bitmap::rescale(int width, int height) -> void {
+    std::vector<uint32_t> new_buffer(width * height);
+    auto scale_x = 1000 * this->size.width / width;
+    auto scale_y = 1000 * this->size.height / height;
+    auto offset = 0;
+
+    for (auto y = 0; y < height; y++) {
+        for (auto x = 0; x < width; x++) {
+            auto yy = y * scale_y / 1000;
+            auto xx = x * scale_x / 1000;
+            auto c = get_pixel(xx, yy);
+            new_buffer[offset] = c;
+            offset++;
+        }
+    }
+
+    buffer = std::move(new_buffer);
+    size.width = width;
+    size.height = height;
+}
+
+// #define USE_STB_FOR_RESIZE
+
+#ifdef USE_STB_FOR_RESIZE
+#define STB_IMAGE_RESIZE_IMPLEMENTATION
+#include "stb/stb_image_resize2.h"
+#endif
+
+auto Bitmap::rescale_from(const Bitmap &other, int width, int height) -> void {
+    this->resize(width, height);
+
+#if defined(USE_STB_FOR_RESIZE)
+    /*
+    NOTE:
+    I was expecting STB to outperform my code, as it uses SIMD, and this is a very naeive
+    implementation but numbers show that my code outperforms it. No idea why - but, I am going with
+    it.
+
+    stb
+    [2024-05-13 09:46:03.309] [info] Resizing to 640x422 to 67618usec
+    [2024-05-13 09:46:03.370] [info] Resizing to 640x422 to 58417usec
+    [2024-05-13 09:46:03.425] [info] Resizing to 640x422 to 54775usec
+    [2024-05-13 09:46:03.479] [info] Resizing to 640x422 to 54340usec
+    [2024-05-13 09:45:38.593] [info] Resizing to 1920x950 to 124564usec
+    [2024-05-13 09:46:28.710] [info] Resizing to 1920x950 to 142235usec
+    [2024-05-13 09:46:28.849] [info] Resizing to 1920x950 to 127730usec
+    [2024-05-13 09:46:28.977] [info] Resizing to 1920x950 to 127447usec
+    [2024-05-13 09:46:29.106] [info] Resizing to 1920x950 to 129449usec
+    [2024-05-13 09:46:53.667] [info] Resizing to 640x422 to 95904usec
+    [2024-05-13 09:46:53.724] [info] Resizing to 640x422 to 57475usec
+    [2024-05-13 09:46:53.780] [info] Resizing to 640x422 to 55731usec
+    [2024-05-13 09:46:53.835] [info] Resizing to 640x422 to 55075usec
+
+
+    my code
+    [2024-05-13 09:47:20.610] [info] Resizing to 640x422 to 4781usec
+    [2024-05-13 09:47:20.618] [info] Resizing to 640x422 to 4940usec
+    [2024-05-13 09:47:20.621] [info] Resizing to 640x422 to 3867usec
+    [2024-05-13 09:47:20.625] [info] Resizing to 640x422 to 3246usec
+    [2024-05-13 09:47:42.709] [info] Resizing to 1920x950 to 22587usec
+    [2024-05-13 09:47:42.744] [info] Resizing to 1920x950 to 21598usec
+    [2024-05-13 09:47:42.765] [info] Resizing to 1920x950 to 21268usec
+    [2024-05-13 09:47:42.787] [info] Resizing to 1920x950 to 21587usec
+    [2024-05-13 09:47:57.491] [info] Resizing to 640x422 to 8139usec
+    [2024-05-13 09:47:57.497] [info] Resizing to 640x422 to 5785usec
+    [2024-05-13 09:47:57.503] [info] Resizing to 640x422 to 5787usec
+    [2024-05-13 09:47:57.508] [info] Resizing to 640x422 to 4538usec
+     */
+
+    auto other_buffer = reinterpret_cast<const unsigned char *>(other.buffer.data());
+    auto my_buffer = (unsigned char *)(this->buffer.data());
+    stbir_resize_uint8_linear(other_buffer, other.size.width, other.size.height, 0, my_buffer,
+                              width, height, 0, STBIR_RGBA);
+#else
+    auto scale_x = 1000 * other.size.width / width;
+    auto scale_y = 1000 * other.size.height / height;
+    auto offset = 0;
+
+    for (auto y = 0; y < height; y++) {
+        for (auto x = 0; x < width; x++) {
+            auto yy = y * scale_y / 1000;
+            auto xx = x * scale_x / 1000;
+            auto c = other.get_pixel(xx, yy);
+            this->buffer[offset] = c;
+            offset++;
+        }
+    }
+#endif
 }
 
 auto Bitmap::fill_rect(int x, int y, int w, int h, uint32_t c) -> void {

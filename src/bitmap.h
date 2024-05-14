@@ -7,9 +7,7 @@
 
 #pragma once
 
-#include <cassert>
 #include <cmath>
-#include <string>
 #include <vector>
 
 #include <sizepoint.h>
@@ -94,7 +92,6 @@ auto Darker(uint32_t color, double percentage = 0.1) -> uint32_t;
 
 struct Bitmap {
     uint32_t background_color = 0;
-    //    uint32_t *buf = 0;
     std::vector<uint32_t> buffer;
     Size size = {0, 0};
 
@@ -116,10 +113,18 @@ struct Bitmap {
         return buffer[(y * size.width) + x];
     }
 
+    auto copy_from(const Bitmap &other) -> void;
+
     auto blend_pixel(int x, int y, uint32_t color, uint8_t alpha) -> void;
 
     auto resize(int width, int height) -> void;
     auto resize(Size new_size) -> void { resize(new_size.width, new_size.height); }
+    auto rescale(int width, int height) -> void;
+    auto rescale(Size new_size) -> void { rescale(new_size.width, new_size.height); }
+    auto rescale_from(const Bitmap &other, int width, int height) -> void;
+    auto rescale_from(const Bitmap &other, Size new_size) -> void {
+        rescale_from(other, new_size.width, new_size.height);
+    }
 
     auto fill(uint32_t color) -> void { std::fill(buffer.begin(), buffer.end(), color); }
     auto fill_rect(int x, int y, int w, int h, uint32_t color) -> void;

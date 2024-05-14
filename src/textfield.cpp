@@ -207,7 +207,8 @@ auto TextField::on_remove() -> void { timer.stop(); }
 
 auto TextField::size_hint() const -> Size {
     // TODO: Size of text is not correct. We also need to calculate the yMin and yMax for example
-    auto s = get_theme()->font.text_size(get_text());
+    auto t = get_text().size() != 0 ? get_text() : "X";
+    auto s = get_theme()->font.text_size(t);
     return {0, s.height + this->get_padding().get_vertical()};
 }
 

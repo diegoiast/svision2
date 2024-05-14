@@ -13,11 +13,16 @@
 #include "spdlog/spdlog.h"
 
 #include "events.h"
-#include "fontproviderfreetype.h"
 #include "platformwin32.h"
 #include "theme.h"
 #include "themes/fluent.h"
 #include "widget.h"
+
+#if defined(SVISION_USE_FREETYPE)
+#include "fontproviderfreetype.h"
+#elif defined(SVISION_USE_STB)
+#include "fontproviders/fontproviderstb.hpp"
+#endif
 
 extern "C" int main(int, char **);
 
@@ -331,7 +336,7 @@ static constexpr auto WINDOW_CLASS_NAME = L"svision2";
 
 PlatformWin32::PlatformWin32() {}
 
-auto PlatformWin32::init() -> void {
+auto PlatformWin32::platform_init() -> void {
     spdlog::set_level(spdlog::level::info);
 
     HINSTANCE hInstance = GetModuleHandle(NULL);
@@ -343,8 +348,8 @@ auto PlatformWin32::init() -> void {
     wc.lpszClassName = WINDOW_CLASS_NAME;
     RegisterClassExW(&wc);
 
-    this->default_font = std::make_shared<FontProviderFreetype>(default_font_file);
-    default_theme = std::make_shared<ThemeFluent>(*this->default_font);
+    default_font_file = "c:\\Windows\\Fonts\\arial.ttf";
+
     spdlog::info("PlatformWin32 initialized");
 }
 

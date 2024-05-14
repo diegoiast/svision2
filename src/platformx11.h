@@ -22,8 +22,6 @@ struct PlatformWindowX11;
 // #define SVISION_X11_TTF_FILENAME "dejavu/DejaVuSans.ttf"
 
 struct PlatformX11 : Platform {
-    const char *default_font_file = SVISION_X11_TTF_PATH SVISION_X11_TTF_FILENAME;
-
     std::map<Window, std::shared_ptr<PlatformWindowX11>> windows;
     std::map<MouseCursor, Cursor> cursor_cache;
 
@@ -31,7 +29,7 @@ struct PlatformX11 : Platform {
     int screen = -1;
     Atom wmDeleteMessage = None;
 
-    virtual auto init() -> void override;
+    virtual auto platform_init() -> void override;
     virtual auto done() -> void override;
     virtual auto open_window(int x, int y, int width, int height, const std::string_view title)
         -> std::shared_ptr<PlatformWindow> override;

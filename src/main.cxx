@@ -16,6 +16,8 @@
 #include <button.h>
 #include <checkbox.h>
 #include <combobox.h>
+#include <image/loaders.hpp>
+#include <imageview.hpp>
 #include <label.h>
 #include <listview.h>
 #include <radiobuttongroup.h>
@@ -25,6 +27,8 @@
 #include <tabheader.h>
 #include <tabwidget.h>
 #include <textfield.h>
+
+#include <fontproviders/fontproviderstb.hpp>
 #include <themes/fluent.h>
 
 #include <spdlog/spdlog.h>
@@ -108,11 +112,12 @@ struct DebugWidget : public Widget {
 int main() {
     int timer_count = 0;
     auto platform = ThePlatform();
-    platform.init();
+    //    platform.default_font = std::make_shared<FontProviderSTB>(platform.default_font_file);
     //    platform.default_theme = std::make_shared<ThemeFluent>(*platform.default_font);
     //    platform.default_theme = std::make_shared<ThemeRedmond>(*platform.default_font);
     //    platform.default_theme = std::make_shared<ThemePlasma>(*platform.default_font, 0xff6737);
     //    platform.default_theme = std::make_shared<ThemePlasma>(*platform.default_font);
+    platform.init();
 
     Timer t1(500, true, [&timer_count]() {
         timer_count++;
@@ -125,7 +130,12 @@ int main() {
 
     auto list = w2->add_new<Combobox>(std::vector<std::string_view>());
     auto tabs = w2->add_new<TabWidget>();
-    tabs->add_new_tab<Label>("Tab 1", "This is the first widget");
+    auto bitmap = Bitmap();
+
+    platform.image_loader->loadFile("../vampire-riding-a-dinozaur.png", bitmap);
+    //    platform.image_loader->loadFile("watering-can-garden-nature-5346272.jpg", bitmap);
+
+    tabs->add_new_tab<ImageView>("Tab 1", bitmap);
     tabs->add_new_tab<Label>("Tab with long name", "This is the second widget")
         ->content.background_color = MakeColor(0xaa, 0x22, 0x22);
     tabs->add_new_tab<Label>("Tab 3", "This is the third widget")->content.background_color =

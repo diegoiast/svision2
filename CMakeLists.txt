@@ -2,6 +2,9 @@ cmake_minimum_required (VERSION 3.22.0)
 
 project (svision2)
 
+option(SVISION_USE_STB "Use STB library" ON)
+option(SVISION_USE_FREETYPE "Use FreeType library" OFF)
+
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
 list(APPEND CMAKE_PREFIX_PATH ${CMAKE_BINARY_DIR})
 
@@ -58,8 +61,9 @@ find_package(spdlog CONFIG REQUIRED)
 find_package(freetype CONFIG REQUIRED)
 find_package(Catch2 3 REQUIRED)
 
-create_resources("src/*.bin"  "fontdos.h")
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
+create_resources("src/*.bin"  "generated_headers/fontdos.h")
+include_directories(${CMAKE_CURRENT_BINARY_DIR}/generated_headers)
+
 
 # Main library
 set(SVISION_SOURCES
@@ -76,8 +80,8 @@ set(SVISION_SOURCES
     src/checkboxshape.h
     src/fontprovider.cpp
     src/fontprovider.h
-    src/fontproviderfreetype.cpp
-    src/fontproviderfreetype.h
+    src/imageview.cxx
+    src/imageview.hpp
     src/label.cpp
     src/label.h
     src/layout.cpp
@@ -107,9 +111,25 @@ set(SVISION_SOURCES
     src/tabwidget.h
     src/widget.cpp
     src/widget.h
+    src/image/loaders.cxx
+    src/image/loaders.hpp
     src/themes/fluent.cpp
     src/themes/fluent.h
 )
+
+if (SVISION_USE_FREETYPE)
+    list(APPEND SVISION_SOURCES
+        src/fontproviderfreetype.cpp
+        src/fontproviderfreetype.h
+    )
+endif()
+
+if (SVISION_USE_STB)
+    list(APPEND SVISION_SOURCES
+        src/fontproviders/fontproviderstb.cxx
+        src/fontproviders/fontproviderstb.hpp
+    )
+endif()
 
 if (UNIX)
     list(APPEND SVISION_SOURCES
@@ -127,6 +147,15 @@ else()
 	message(FATAL_ERROR "unsupported platform" )
 endif()
 add_library(svision2 ${SVISION_SOURCES})
+
+if (SVISION_USE_FREETYPE)
+    add_compile_definitions(svision2 -DSVISION_USE_FREETYPE)
+endif()
+
+if(SVISION_USE_STB)
+   add_compile_definitions(svision2 -DSVISION_USE_STB)
+endif()
+
 
 target_link_libraries(svision2 PUBLIC 
     spdlog::spdlog $<$<BOOL:${MINGW}>:ws2_32>
@@ -146,6 +175,13 @@ endif()
 # Development demo
 add_executable (demo src/main.cxx )
 target_link_libraries(demo svision2)
+add_custom_command(TARGET demo PRE_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy
+    "${CMAKE_CURRENT_SOURCE_DIR}/vampire-riding-a-dinozaur.png"
+    "${CMAKE_BINARY_DIR}/vampire-riding-a-dinozaur.png"
+    DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/vampire-riding-a-dinozaur.png"
+    COMMENT "Link image to build dir"
+)
 
 # Create a GUI application (no console)
 set_target_properties(demo PROPERTIES WIN32_EXECUTABLE TRUE)

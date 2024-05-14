@@ -14,9 +14,7 @@
 #include <spdlog/spdlog.h>
 
 #include "events.h"
-#include "fontproviderfreetype.h"
 #include "platformx11.h"
-#include "theme.h"
 #include "widget.h"
 
 #include "platformx11-keycodes.h"
@@ -179,7 +177,7 @@ struct PlatformWindowX11 : public PlatformWindow {
     }
 };
 
-auto PlatformX11::init() -> void {
+auto PlatformX11::platform_init() -> void {
     spdlog::set_level(spdlog::level::info);
     dpy = XOpenDisplay(NULL);
     screen = DefaultScreen(dpy);
@@ -190,10 +188,7 @@ auto PlatformX11::init() -> void {
         return;
     }
 
-    // TODO - detect GTK and use a GTK theme
-    this->default_font = std::make_shared<FontProviderFreetype>(default_font_file);
-    default_theme = std::make_shared<ThemePlasma>(*this->default_font);
-    //    spdlog::set_level(spdlog::level::debug);
+    default_font_file = SVISION_X11_TTF_PATH SVISION_X11_TTF_FILENAME;
     spdlog::info("PlatformX11 initialized");
 }
 
