@@ -100,14 +100,18 @@ auto Bitmap::copy_from(const Bitmap &other) -> void {
 }
 
 auto Bitmap::blend_pixel(int x, int y, uint32_t color, uint8_t alpha) -> void {
-    if (x < 0)
+    if (x < 0) {
         return;
-    if (y < 0)
+    }
+    if (y < 0) {
         return;
-    if (x >= size.width)
+    }
+    if (x >= size.width) {
         return;
-    if (y >= size.height)
+    }
+    if (y >= size.height) {
         return;
+    }
 
     auto color2 = get_pixel(x, y);
     auto red = ((255 - alpha) * GetRed(color2) + alpha * GetRed(color)) / 255;
@@ -253,8 +257,9 @@ auto Bitmap::fill_rect_gradient(int x, int y, int w, int h, uint32_t color1, uin
 auto Bitmap::fill_circle(int x, int y, int r, uint32_t c) -> void {
     for (int dy = -r; dy < r; dy++) {
         for (int dx = -r; dx < r; dx++) {
-            if (dx * dx + dy * dy <= r * r)
+            if (dx * dx + dy * dy <= r * r) {
                 put_pixel(x + dx, y + dy, c);
+            }
         }
     }
 }
@@ -263,8 +268,9 @@ auto Bitmap::fill_elipse(int x, int y, int width, int height, uint32_t color) ->
     for (int yy = -height; yy <= height; yy++) {
         for (int xx = -width; xx <= width; xx++) {
             if (xx * xx * height * height + yy * yy * width * width <=
-                height * height * width * width)
+                height * height * width * width) {
                 put_pixel(xx + x, yy + y, color);
+            }
         }
     }
 }
@@ -280,8 +286,9 @@ auto Bitmap::line(int x0, int y0, int x1, int y1, uint32_t color) -> void {
         int e2; /* error value e_xy */
 
         put_pixel(x0, y0, color);
-        if (x0 == x1 && y0 == y1)
+        if (x0 == x1 && y0 == y1) {
             break;
+        }
         e2 = 2 * err;
 
         /* e_xy+e_x > 0 */
@@ -353,10 +360,12 @@ auto Bitmap::draw_circle(int x, int y, int r, uint32_t color) -> void {
         put_pixel(x + xx, y - yy, color); /* III. Quadrant */
         put_pixel(x + yy, y + xx, color); /*  IV. Quadrant */
         r = err;
-        if (r <= yy)
+        if (r <= yy) {
             err += ++yy * 2 + 1; /* e_xy+e_y < 0 */
-        if (r > xx || err > yy)
+        }
+        if (r > xx || err > yy) {
             err += ++xx * 2 + 1; /* e_xy+e_x > 0 or no 2nd y-step */
+        }
     } while (xx < 0);
 }
 
@@ -371,8 +380,9 @@ auto Bitmap::draw_elipse(int x0, int y0, int x1, int y1, uint32_t color) -> void
         x1 += a;
     }
     /* .. exchange them */
-    if (y0 > y1)
+    if (y0 > y1) {
         y0 = y1;
+    }
     y0 += (b + 1) / 2;
     /* starting pixel */
     y1 = y0 - b1;
@@ -457,8 +467,9 @@ auto Bitmap::draw_bezier(int x0, int y0, int x1, int y1, int x2, int y2, uint32_
         do {
             put_pixel(x0, y0, color);
             /* last pixel -> curve finished */
-            if (x0 == x2 && y0 == y2)
+            if (x0 == x2 && y0 == y2) {
                 return;
+            }
             /* save value for test of y step */
             y1 = 2 * err < dx;
             /* x step */

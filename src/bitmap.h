@@ -98,18 +98,22 @@ struct Bitmap {
     virtual ~Bitmap() {}
 
     auto inline put_pixel(int x, int y, uint32_t color) -> void {
-        if (x < 0 || x >= size.width)
+        if (x < 0 || x >= size.width) {
             return;
-        if (y < 0 || y >= size.height)
+        }
+        if (y < 0 || y >= size.height) {
             return;
+        }
         buffer[(y * size.width) + x] = color;
     }
 
     auto inline get_pixel(int x, int y) const -> uint32_t {
-        if (x >= size.width)
+        if (x >= size.width) {
             return 0;
-        if (y >= size.height)
+        }
+        if (y >= size.height) {
             return 0;
+        }
         return buffer[(y * size.width) + x];
     }
 

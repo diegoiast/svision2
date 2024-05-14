@@ -112,10 +112,11 @@ auto ScrollBar::on_resize() -> void {
 }
 
 auto ScrollBar::size_hint() const -> Size {
-    if (is_horizontal)
+    if (is_horizontal) {
         return {0, get_padding().get_vertical()};
-    else
+    } else {
         return {get_padding().get_horizontal(), 0};
+    }
 }
 
 auto ScrollBar::set_value(int new_value) -> void {

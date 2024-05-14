@@ -66,10 +66,11 @@ struct DebugWidget : public Widget {
             spdlog::info("Click inside widget, {}", fmt::ptr(this));
             state_pressed = true;
         } else if (event.type == MouseEvents::Release) {
-            if (event.is_local)
+            if (event.is_local) {
                 spdlog::info("Click release inside widget, {}", fmt::ptr(this));
-            else if (state_pressed)
+            } else if (state_pressed) {
                 spdlog::info("Click release outside widget, {}", fmt::ptr(this));
+            }
             state_pressed = false;
             unclick_inside = event.is_local;
         }
@@ -91,8 +92,9 @@ struct DebugWidget : public Widget {
             auto str = fmt::format("{} Position = {}x{} ", state_pressed ? "*" : " ", pos.x, pos.y);
             theme->font.write(content, {4, 4}, str, MakeColor(0xf, 0xf, 0));
         } else {
-            if (state_pressed)
+            if (state_pressed) {
                 theme->font.write(content, {4, 4}, "*", MakeColor(0xf, 0xf, 0));
+            }
         }
 
         content.line(10, 23, 30, 23, 0);

@@ -21,8 +21,9 @@ auto start_repeate_timer(Button *button) -> void {
         button->click_timer = std::make_shared<Timer>(button->autorepeat_start, false, [button]() {
             if (button->state.state == ButtonStates::ClickedInside) {
                 button->repeat_state = RepeatState::Repeating;
-                if (button->on_button_click)
+                if (button->on_button_click) {
                     button->on_button_click(*button);
+                }
                 button->click_timer->stop();
 
                 // We need a new timer, with different timeout.
@@ -36,8 +37,9 @@ auto start_repeate_timer(Button *button) -> void {
         button->click_timer->start();
         break;
     case RepeatState::WaitForFirstRepeat:
-        if (button->on_button_click)
+        if (button->on_button_click) {
             button->on_button_click(*button);
+        }
 
         button->click_timer->stop();
         button->click_timer.reset();
@@ -50,8 +52,9 @@ auto start_repeate_timer(Button *button) -> void {
 
             if (button->state.state != ButtonStates::ClickedInside) {
                 button->repeat_state = RepeatState::Repeating;
-                if (button->on_button_click)
+                if (button->on_button_click) {
                     button->on_button_click(*button);
+                }
             }
         });
         button->click_timer->start();

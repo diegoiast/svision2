@@ -71,10 +71,12 @@ auto ListView::draw() -> void {
         }
         status.is_active = this->current_item == first_item;
         w->position = p;
-        if (size.height < 0)
+        if (size.height < 0) {
             size.height = 0;
-        if (size.width < 0)
+        }
+        if (size.width < 0) {
             size.width = 0;
+        }
         w->content.resize(size);
         adapter->set_content(w, first_item, status);
         if (!w->is_visible()) {
@@ -156,13 +158,15 @@ auto ListView::on_keyboard(const EventKeyboard &event) -> EventPropagation {
     switch (event.key) {
     case KeyCodes::ArrowDown:
         result = EventPropagation::handled;
-        if (this->current_item < adapter->get_count() - 1)
+        if (this->current_item < adapter->get_count() - 1) {
             this->current_item++;
+        }
         break;
     case KeyCodes::ArrowUp:
         result = EventPropagation::handled;
-        if (this->current_item > 0)
+        if (this->current_item > 0) {
             this->current_item--;
+        }
         break;
     case KeyCodes::Home:
         result = EventPropagation::handled;
@@ -175,14 +179,16 @@ auto ListView::on_keyboard(const EventKeyboard &event) -> EventPropagation {
     case KeyCodes::PageDown:
         result = EventPropagation::handled;
         this->current_item += adapter->get_count() / 5;
-        if (this->current_item >= adapter->get_count())
+        if (this->current_item >= adapter->get_count()) {
             this->current_item = adapter->get_count() - 1;
+        }
         break;
     case KeyCodes::PageUp:
         result = EventPropagation::handled;
         this->current_item -= adapter->get_count() / 5;
-        if (this->current_item < 0)
+        if (this->current_item < 0) {
             this->current_item = 0;
+        }
         break;
     default:
         break;

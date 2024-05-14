@@ -157,22 +157,25 @@ struct PlatformWindow {
     auto focus_next_widget() -> void {
         auto l = main_widget.widgets.focused_widget;
         main_widget.widgets.focus_next_widget();
-        if (l != main_widget.widgets.focused_widget)
+        if (l != main_widget.widgets.focused_widget) {
             invalidate();
+        }
     }
 
     auto focus_previous_widget() -> void {
         auto l = main_widget.widgets.focused_widget;
         main_widget.widgets.focus_previous_widget();
-        if (l != main_widget.widgets.focused_widget)
+        if (l != main_widget.widgets.focused_widget) {
             invalidate();
+        }
     }
 
     auto focus_widget(std::shared_ptr<Widget> widget) -> void {
         auto l = main_widget.widgets.focused_widget;
         main_widget.widgets.focus_widget(widget);
-        if (l != main_widget.widgets.focused_widget)
+        if (l != main_widget.widgets.focused_widget) {
             invalidate();
+        }
     }
 
     auto set_cursor(MouseCursor cursor) -> void;

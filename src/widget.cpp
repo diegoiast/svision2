@@ -13,14 +13,18 @@
 #include <spdlog/spdlog.h>
 
 static auto point_in_rect(Position p, Size s, int x, int y) -> bool {
-    if (x < p.x)
+    if (x < p.x) {
         return false;
-    if (y < p.y)
+    }
+    if (y < p.y) {
         return false;
-    if (p.x + s.width < x)
+    }
+    if (p.x + s.width < x) {
         return false;
-    if (p.y + s.height < y)
+    }
+    if (p.y + s.height < y) {
         return false;
+    }
     return true;
 }
 
@@ -198,8 +202,9 @@ auto WidgetCollection::on_mouse_press(const EventMouse &event, std::shared_ptr<W
 auto WidgetCollection::focus_next_widget() -> void {
     auto last_focus_index = -1;
 
-    if (focused_widget)
+    if (focused_widget) {
         last_focus_index = focused_widget->focus_index;
+    }
 
     std::shared_ptr<Widget> best_focus_widget;
     std::shared_ptr<Widget> least_focus_widget;
@@ -234,8 +239,9 @@ auto WidgetCollection::focus_next_widget() -> void {
         best_focus_widget = least_focus_widget;
         if (focused_widget) {
             spdlog::info("No best focus, keeping {}", focused_widget->focus_index);
-        } else
+        } else {
             spdlog::info("No widget in focus");
+        }
     }
 
     focus_widget(best_focus_widget);
@@ -244,8 +250,9 @@ auto WidgetCollection::focus_next_widget() -> void {
 auto WidgetCollection::focus_previous_widget() -> void {
     auto last_focus_index = -1;
 
-    if (focused_widget)
+    if (focused_widget) {
         last_focus_index = focused_widget->focus_index;
+    }
 
     std::shared_ptr<Widget> best_focus_widget;
     std::shared_ptr<Widget> least_focus_widget;
@@ -280,8 +287,9 @@ auto WidgetCollection::focus_previous_widget() -> void {
         best_focus_widget = least_focus_widget;
         if (focused_widget) {
             spdlog::info("No best focus, keeping {}", focused_widget->focus_index);
-        } else
+        } else {
             spdlog::info("No widget in focus");
+        }
     }
 
     focus_widget(best_focus_widget);
@@ -566,10 +574,11 @@ auto PlatformWindow::on_keyboard(const EventKeyboard &event) -> void {
             break;
         */
         case KeyCodes::Tab:
-            if (event.is_shift_pressed())
+            if (event.is_shift_pressed()) {
                 focus_previous_widget();
-            else
+            } else {
                 focus_next_widget();
+            }
             break;
         default:
             if (main_widget.widgets.focused_widget) {

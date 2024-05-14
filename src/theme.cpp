@@ -364,8 +364,9 @@ void ThemeRedmond::draw_listview_item(Bitmap &content, const std::string_view te
     auto text_color = status.is_active ? colors.text_selection_color : colors.text_color;
     auto background_color =
         status.is_active ? colors.text_selection_background : colors.input_background_normal;
-    if (is_hover && !status.is_active)
+    if (is_hover && !status.is_active) {
         background_color = colors.input_background_hover;
+    }
     content.fill(background_color);
     font.write(content, padding, text, text_color);
 }
@@ -552,8 +553,9 @@ auto ThemePlasma::draw_button(Bitmap &content, bool has_focus, bool is_default, 
     if (!is_enabled) {
         border = colors.frame_disabled_color1;
     } else {
-        if (has_focus)
+        if (has_focus) {
             border = colors.frame_hover_color1;
+        }
     }
 
     if (background1 == background2) {
@@ -693,8 +695,9 @@ void ThemePlasma::draw_listview_item(Bitmap &content, const std::string_view tex
     auto text_color = status.is_active ? colors.text_selection_color : colors.text_color;
     auto background_color =
         status.is_active ? colors.text_selection_background : colors.input_background_normal;
-    if (is_hover && !status.is_active)
+    if (is_hover && !status.is_active) {
         background_color = colors.text_selection_background_hover;
+    }
 
     content.fill(background_color);
     auto text_padding = 5;

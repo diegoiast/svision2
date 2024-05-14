@@ -188,9 +188,9 @@ auto ThemeFluent::draw_checkbox(Bitmap &content, bool has_focus, bool is_enabled
 
         switch (shape) {
         case CheckboxShape::Checkbox:
-            if (is_checked)
+            if (is_checked) {
                 content.fill_rounded_rect(p.x, p.y, w.width, w.height, checkbox_background);
-            else {
+            } else {
                 if (state == ButtonStates::ClickedInside) {
                     content.fill_rect(p.x, p.y, w.width, w.height, checkbox_background);
                 } else {
@@ -272,8 +272,9 @@ void ThemeFluent::draw_listview_item(Bitmap &content, const std::string_view tex
     auto text_color = status.is_active ? colors.text_selection_color : colors.text_color;
     auto background_color =
         status.is_active ? colors.text_selection_background : colors.input_background_normal;
-    if (is_hover && !status.is_active)
+    if (is_hover && !status.is_active) {
         background_color = colors.text_selection_background_hover;
+    }
     content.fill(background_color);
 
     auto text_padding = 5;
