@@ -100,7 +100,7 @@ jobs:
           cppcheck_args: --enable=all --disable=unusedFunction,missingInclude  --suppress=missingIncludeSystem --std=c++17 --language=c++
       - name: Run clang-format style check for C/C++/Protobuf programs.
         if: matrix.config.os == 'ubuntu-22.04'
-        uses:   @v4.11.0
+        uses: jidicula/clang-format-action@v4.11.0
         with:
           clang-format-version: '17'
           check-path: ${{ matrix.path }}
