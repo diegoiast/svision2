@@ -132,7 +132,7 @@ int main() {
     auto tabs = w2->add_new<TabWidget>();
     auto bitmap = Bitmap();
 
-    platform.image_loader->loadFile("vampire-riding-a-dinozaur.png", bitmap);
+    platform.image_loader->loadFile("../vampire-riding-a-dinozaur.png", bitmap);
     //    platform.image_loader->loadFile("watering-can-garden-nature-5346272.jpg", bitmap);
 
     tabs->add_new_tab<ImageView>("Tab 1", bitmap);

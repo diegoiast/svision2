@@ -175,6 +175,13 @@ endif()
 # Development demo
 add_executable (demo src/main.cxx )
 target_link_libraries(demo svision2)
+add_custom_command(TARGET demo PRE_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy
+    "${CMAKE_CURRENT_SOURCE_DIR}/vampire-riding-a-dinozaur.png"
+    "${CMAKE_BINARY_DIR}/vampire-riding-a-dinozaur.png"
+    DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/vampire-riding-a-dinozaur.png"
+    COMMENT "Link image to build dir"
+)
 
 # Create a GUI application (no console)
 set_target_properties(demo PROPERTIES WIN32_EXECUTABLE TRUE)
