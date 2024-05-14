@@ -102,7 +102,7 @@ jobs:
         if: matrix.config.os == 'ubuntu-22.04'
         uses: jidicula/clang-format-action@v4.11.0
         with:
-          clang-format-version: '14'
+          clang-format-version: '17'
           check-path: src
       - uses: DoozyX/clang-format-lint-action@v0.16.2
         if: matrix.config.os == 'ubuntu-22.04'
