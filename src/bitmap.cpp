@@ -228,10 +228,13 @@ auto Bitmap::rescale_from(const Bitmap &other, int width, int height) -> void {
 auto Bitmap::fill_rect(int x, int y, int w, int h, uint32_t c) -> void {
     w = std::min(w, size.width);
     h = std::min(h, size.height);
-    for (int row = 0; row < h; row++) {
-        for (int col = 0; col < w; col++) {
-            put_pixel(x + col, y + row, c);
+    auto offset = y * size.width + x;
+    for (int yy = 0; yy < h; yy++) {
+        for (int xx = 0; xx < w; xx++) {
+            this->buffer[offset] = c;
+            offset += 1;
         }
+        offset += this->size.width - w;
     }
 }
 
@@ -246,11 +249,14 @@ auto Bitmap::fill_rect_gradient(int x, int y, int w, int h, uint32_t color1, uin
         return;
     }
     auto gradient = Gradient(color1, color2, h);
+    auto offset = y * size.width + x;
     for (int row = 0; row < h; row++) {
         for (int col = 0; col < w; col++) {
-            put_pixel(x + col, y + row, gradient.get_color());
+            this->buffer[offset] = gradient.get_color();
+            offset += 1;
         }
         gradient.next();
+        offset += this->size.width - w;
     }
 }
 
@@ -505,17 +511,22 @@ auto Bitmap::fill(int x, int y, uint32_t old, uint32_t c) -> void {
 }
 
 auto Bitmap::draw(Position position, const Bitmap &other) -> void {
+    auto other_offset = 0;
+    auto my_offset = position.y * size.width + position.x;
+
     for (auto y = 0; y < other.size.height; y++) {
         auto yy = y + position.y;
-        if (yy > size.height) {
-            break;
-        }
-        for (auto x = 0; x < other.size.width; x++) {
-            auto xx = x + position.x;
-            if (xx > size.width) {
-                break;
+        if (yy >= 0 && yy < size.height) {
+            for (auto x = 0; x < other.size.width; x++) {
+                auto xx = x + position.x;
+                if (xx >= 0 && xx < size.width) {
+                    auto c2 = other.buffer[other_offset];
+                    this->buffer[my_offset] = c2;
+                }
+                other_offset += 1;
+                my_offset += 1;
             }
-            put_pixel(xx, yy, other.get_pixel(x, y));
         }
+        my_offset += size.width - other.size.width;
     }
 }
