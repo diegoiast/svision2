@@ -513,6 +513,8 @@ auto Bitmap::fill(int x, int y, uint32_t old, uint32_t c) -> void {
 auto Bitmap::draw(Position position, const Bitmap &other) -> void {
     auto other_offset = 0;
     auto my_offset = position.y * size.width + position.x;
+    auto my_raw_data = this->buffer.data();
+    auto other_raw_data = other.buffer.data();
 
     for (auto y = 0; y < other.size.height; y++) {
         auto yy = y + position.y;
@@ -520,8 +522,8 @@ auto Bitmap::draw(Position position, const Bitmap &other) -> void {
             for (auto x = 0; x < other.size.width; x++) {
                 auto xx = x + position.x;
                 if (xx >= 0 && xx < size.width) {
-                    auto c2 = other.buffer[other_offset];
-                    this->buffer[my_offset] = c2;
+                    auto c2 = other_raw_data[other_offset];
+                    my_raw_data[my_offset] = c2;
                 }
                 other_offset += 1;
                 my_offset += 1;
