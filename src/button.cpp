@@ -9,9 +9,9 @@
 #include <spdlog/spdlog.h>
 #include <theme.h>
 
-auto start_repeate_timer(Button *button) -> void {
+auto start_repeated_timer(Button *button) -> void {
     if (!button->is_autorepeat) {
-        spdlog::debug("this NOT is a autorepeat button! FAIL!!!");
+        spdlog::debug("this NOT is an autorepeat button!");
         return;
     }
 
@@ -83,7 +83,7 @@ Button::Button(Position pp, Size size, std::string_view text, bool is_default,
 
 auto Button::draw() -> void {
     get_theme()->draw_button(content, has_focus, is_default, is_enabled, has_frame, state.state,
-                             text);
+                             text, icon);
 }
 
 auto Button::on_hover(const EventMouse &) -> void {
@@ -115,7 +115,7 @@ auto Button::on_mouse_click(const EventMouse &event) -> EventPropagation {
         case 1:
             if (is_autorepeat) {
                 if (event.pressed) {
-                    start_repeate_timer(this);
+                    start_repeated_timer(this);
                 } else {
                     spdlog::info("Stopped auto repeat timer");
                     click_timer.reset();

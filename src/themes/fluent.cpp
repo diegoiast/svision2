@@ -75,7 +75,7 @@ auto ThemeFluent::draw_scrollbar_background(Bitmap &content) -> void {
 }
 
 auto ThemeFluent::draw_button(Bitmap &content, bool has_focus, bool is_default, bool is_enabled,
-                              bool has_frame, ButtonStates state, const std::string_view text)
+                              bool has_frame, ButtonStates state, const std::string_view text, const std::shared_ptr<Bitmap> bitmap)
     -> void {
 
     auto text_padding = 5;

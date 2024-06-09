@@ -195,8 +195,8 @@ auto ThemeRedmond::draw_scrollbar_background(Bitmap &content) -> void {
 }
 
 auto ThemeRedmond::draw_button(Bitmap &content, bool has_focus, bool is_default, bool is_enabled,
-                               bool has_frame, ButtonStates state, const std::string_view text)
-    -> void {
+                               bool has_frame, ButtonStates state, const std::string_view text,
+                               const std::shared_ptr<Bitmap> bitmap) -> void {
     (void)(has_focus);
     auto text_padding = 5;
     auto background_color = 0;
@@ -516,8 +516,8 @@ auto ThemePlasma::draw_window_background(Bitmap &content) -> void {
 auto ThemePlasma::draw_scrollbar_background(Bitmap &content) -> void {}
 
 auto ThemePlasma::draw_button(Bitmap &content, bool has_focus, bool is_default, bool is_enabled,
-                              bool has_frame, ButtonStates state, const std::string_view text)
-    -> void {
+                              bool has_frame, ButtonStates state, const std::string_view text,
+                              const std::shared_ptr<Bitmap> icon) -> void {
     auto background1 = colors.button_background_1;
     auto background2 = colors.button_background_2;
     auto border = colors.frame_normal_color1;
@@ -525,6 +525,7 @@ auto ThemePlasma::draw_button(Bitmap &content, bool has_focus, bool is_default, 
 
     switch (state) {
     case ButtonStates::Normal:
+        background1 = has_frame ? colors.button_background_1 : colors.window_background;
         break;
     case ButtonStates::Hovered:
         if (is_enabled) {
@@ -580,9 +581,15 @@ auto ThemePlasma::draw_button(Bitmap &content, bool has_focus, bool is_default, 
     if (is_enabled) {
         // TODO properly center
         auto text_padding = 5;
-        auto text_size = font.text_size(text);
-        auto centered = content.size.centered(text_size, text_padding);
-        font.write(content, centered, text, color);
+
+        if (icon && icon->size.height != 0 && icon->size.width != 0) {
+            auto centered = content.size.centered(icon->size, text_padding);
+            content.draw(centered, *icon.get(), true);
+        } else {
+            auto text_size = font.text_size(text);
+            auto centered = content.size.centered(text_size, text_padding);
+            font.write(content, centered, text, color);
+        }
     }
 }
 

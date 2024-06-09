@@ -11,6 +11,7 @@
 #include <buttonstates.h>
 #include <checkboxshape.h>
 #include <fontprovider.h>
+#include <memory>
 
 struct ColorStyle {
     int32_t window_background = 0;
@@ -79,8 +80,8 @@ struct Theme {
     virtual auto draw_window_background(Bitmap &content) -> void = 0;
     virtual auto draw_scrollbar_background(Bitmap &content) -> void = 0;
     virtual auto draw_button(Bitmap &content, bool has_focus, bool is_default, bool is_enabled,
-                             bool has_frame, ButtonStates state, const std::string_view text)
-        -> void = 0;
+                             bool has_frame, ButtonStates state, const std::string_view text,
+                             const std::shared_ptr<Bitmap> bitmap) -> void = 0;
     virtual auto draw_checkbox(Bitmap &content, bool has_focus, bool is_enabled, bool is_checked,
                                ButtonStates state, const std::string_view text, CheckboxShape shape,
                                const LayoutParams &padding) -> void = 0;
@@ -119,8 +120,8 @@ struct ThemeRedmond : Theme {
     virtual auto draw_window_background(Bitmap &content) -> void override;
     virtual auto draw_scrollbar_background(Bitmap &content) -> void override;
     virtual auto draw_button(Bitmap &content, bool has_focus, bool is_default, bool is_enabled,
-                             bool has_frame, ButtonStates state, const std::string_view text)
-        -> void override;
+                             bool has_frame, ButtonStates state, const std::string_view text,
+                             const std::shared_ptr<Bitmap> bitmap) -> void override;
     virtual auto draw_checkbox(Bitmap &content, bool has_focus, bool is_enabled, bool is_checked,
                                ButtonStates state, const std::string_view text, CheckboxShape shape,
                                const LayoutParams &padding) -> void override;
@@ -155,8 +156,8 @@ struct ThemePlasma : Theme {
     virtual auto draw_window_background(Bitmap &content) -> void override;
     virtual auto draw_scrollbar_background(Bitmap &content) -> void override;
     virtual auto draw_button(Bitmap &content, bool has_focus, bool is_default, bool is_enabled,
-                             bool has_frame, ButtonStates state, const std::string_view text)
-        -> void override;
+                             bool has_frame, ButtonStates state, const std::string_view text,
+                             const std::shared_ptr<Bitmap> icon) -> void override;
     virtual auto draw_checkbox(Bitmap &content, bool has_focus, bool is_enabled, bool is_checked,
                                ButtonStates state, const std::string_view text, CheckboxShape shape,
                                const LayoutParams &padding) -> void override;
