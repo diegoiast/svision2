@@ -44,7 +44,7 @@ auto rgbToHSL(const uint32_t rgb) -> HSL {
     return hsl;
 }
 
-auto hslToRGB(const HSL &hsl) -> int32_t {
+auto hslToRGB(const HSL &hsl, uint8_t alpha = 255) -> int32_t {
     double c = (1 - fabs(2 * hsl.l - 1)) * hsl.s;
     double x = c * (1 - fabs(fmod(hsl.h / 60.0, 2) - 1));
     double m = hsl.l - 0.5 * c;
@@ -77,21 +77,23 @@ auto hslToRGB(const HSL &hsl) -> int32_t {
     }
 
     return MakeColor(static_cast<uint8_t>((r + m) * 255), static_cast<uint8_t>((g + m) * 255),
-                     static_cast<uint8_t>((b + m) * 255));
+                     static_cast<uint8_t>((b + m) * 255), alpha);
 }
 
 auto Darker(uint32_t color, double percentage) -> uint32_t {
+    auto alpha = GetAlpha(color);
     auto hsl = rgbToHSL(color);
     hsl.l -= percentage;
     hsl.l = fmax(0.0f, fmax(0.0f, hsl.l));
-    return hslToRGB(hsl);
+    return hslToRGB(hsl, alpha);
 }
 
 auto Lighter(uint32_t color, double percentage) -> uint32_t {
+    auto alpha = GetAlpha(color);
     auto hsl = rgbToHSL(color);
     hsl.l += percentage;
     hsl.l = fmin(1.0f, fmax(0.0f, hsl.l));
-    return hslToRGB(hsl);
+    return hslToRGB(hsl, alpha);
 }
 
 auto Bitmap::copy_from(const Bitmap &other) -> void {
@@ -510,7 +512,7 @@ auto Bitmap::fill(int x, int y, uint32_t old, uint32_t c) -> void {
     }
 }
 
-auto Bitmap::draw(Position position, const Bitmap &other) -> void {
+auto Bitmap::draw(Position position, const Bitmap &other, bool alpha_blending) -> void {
     auto other_offset = 0;
     auto my_offset = position.y * size.width + position.x;
     auto my_raw_data = this->buffer.data();
@@ -523,7 +525,29 @@ auto Bitmap::draw(Position position, const Bitmap &other) -> void {
                 auto xx = x + position.x;
                 if (xx >= 0 && xx < size.width) {
                     auto c2 = other_raw_data[other_offset];
-                    my_raw_data[my_offset] = c2;
+                    if (!alpha_blending) {
+                        my_raw_data[my_offset] = c2;
+                    } else {
+                        auto foreground = c2;
+                        auto background = my_raw_data[my_offset];
+                        auto alpha = GetAlpha(c2);
+                        auto inv_alpha = 1 - alpha;
+
+                        auto f_red = GetRed(foreground);
+                        auto f_green = GetGreen(foreground);
+                        auto f_blue = GetBlue(foreground);
+                        auto b_red = GetRed(background);
+                        auto b_green = GetGreen(background);
+                        auto b_blue = GetBlue(background);
+                        auto red = f_red * alpha + b_red * inv_alpha;
+                        auto green = f_green * alpha + b_green * inv_alpha;
+                        auto blue = f_blue * alpha + b_blue * inv_alpha;
+
+                        red = fmax(0, fmin(red, 255));
+                        green = fmax(0, fmin(green, 255));
+                        blue = fmax(0, fmin(blue, 255));
+                        my_raw_data[my_offset] = MakeColor(red, green, blue);
+                    }
                 }
                 other_offset += 1;
                 my_offset += 1;

@@ -22,8 +22,12 @@ auto rgbToHSL(const uint32_t rgb) -> HSL;
 
 auto hslToRGB(const HSL &hsl) -> int32_t;
 
-auto constexpr inline MakeColor(uint8_t r, uint8_t g, uint8_t b) -> uint32_t {
-    return r << 16 | g << 8 | b;
+auto constexpr inline MakeColor(uint8_t r, uint8_t g, uint8_t b, uint8_t a = 255) -> uint32_t {
+    return a << 24 | r << 16 | g << 8 | b;
+}
+
+auto constexpr inline GetAlpha(uint32_t color) -> uint8_t {
+    return static_cast<uint8_t>(color >> 24);
 }
 
 auto constexpr inline GetRed(uint32_t color) -> uint8_t {
@@ -149,5 +153,5 @@ struct Bitmap {
                                 uint32_t color2) -> void;
 
     auto fill(int x, int y, uint32_t old, uint32_t color) -> void;
-    auto draw(Position position, const Bitmap &other) -> void;
+    auto draw(Position position, const Bitmap &other, bool alpha_blending = false) -> void;
 };
