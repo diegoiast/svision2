@@ -132,12 +132,13 @@ int main() {
 
     auto list = w2->add_new<Combobox>(std::vector<std::string_view>());
     auto tabs = w2->add_new<TabWidget>();
-    auto bitmap = Bitmap();
+    auto bitmap = std::make_shared<Bitmap>();
+    auto icon = std::make_shared<Bitmap>();
 
-    platform.image_loader->loadFile("../vampire-riding-a-dinozaur.png", bitmap);
-    //    platform.image_loader->loadFile("watering-can-garden-nature-5346272.jpg", bitmap);
+    platform.image_loader->loadFile("../vampire-riding-a-dinozaur.png", *bitmap.get());
+    platform.image_loader->loadFile("../icons/16x16/document-open.png", *icon.get());
 
-    tabs->add_new_tab<ImageView>("Tab 1", bitmap);
+    tabs->add_new_tab<ImageView>("Tab 1", *bitmap);
     tabs->add_new_tab<Label>("Tab with long name", "This is the second widget")
         ->content.background_color = MakeColor(0xaa, 0x22, 0x22);
     tabs->add_new_tab<Label>("Tab 3", "This is the third widget")->content.background_color =
@@ -249,6 +250,15 @@ int main() {
     buttons_layout->margin.set_horizontal(5);
     buttons_layout->margin.set_vertical(5);
     buttons_layout->padding.set_horizontal(10);
+
+    w1->add_new_to_layout<Button>(buttons_layout, "???", true,
+                                  [&platform](auto &button) {
+                                      spdlog::info("image button clicked!");
+                                      platform.exit_loop = false;
+                                  })
+        ->set_has_frame(false)
+        ->set_icon(icon);
+
     buttons_layout->add(std::make_shared<HorizontalSpacer>())->weight = 2;
 
     w1->add_new_to_layout<Button>(buttons_layout, "OK", true, [&platform](auto &button) {
