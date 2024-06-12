@@ -22,7 +22,7 @@ struct LayoutItem {
 
     double weight = 1;
 
-    virtual auto relayout(Position posiition, const Size size) -> void = 0;
+    virtual auto relayout(Position position, const Size size) -> void = 0;
     virtual auto size_hint() const -> Size = 0;
     virtual auto ignore_layout() const -> bool { return false; }
 
