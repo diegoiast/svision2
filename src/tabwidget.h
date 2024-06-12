@@ -28,13 +28,13 @@ struct TabWidget : Widget {
     auto add_new_tab(std::string_view name, Args &&...args) -> std::shared_ptr<T> {
         this->needs_redraw = true;
         headers->add_tab(name);
-        return widgets->add_new<T>(std::forward<Args>(args)...);
+        return stacked_widgets->add_new<T>(std::forward<Args>(args)...);
     }
 
     template <typename T, typename... Args>
     auto add_new_tab(std::string_view name) -> std::shared_ptr<T> {
         headers->add_tab(name);
-        return widgets->add_new<T>();
+        return stacked_widgets->add_new<T>();
     }
 
     auto get_active_tab() const -> size_t { return headers->get_active_tab(); }
@@ -44,5 +44,5 @@ struct TabWidget : Widget {
   private:
     std::shared_ptr<HorizontalLayout> top_layout;
     std::shared_ptr<TabHeader> headers;
-    std::shared_ptr<Stackwidget> widgets;
+    std::shared_ptr<Stackwidget> stacked_widgets;
 };

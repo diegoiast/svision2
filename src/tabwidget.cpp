@@ -11,13 +11,11 @@
 TabWidget::TabWidget() : Widget() {
     layout = std::make_shared<VerticalLayout>();
     top_layout = layout->add(std::make_shared<HorizontalLayout>());
-    top_layout->padding.set(5);
-
     headers = add_new_to_layout<TabHeader>(top_layout);
-    widgets = add_new_to_layout<Stackwidget>(layout);
+    stacked_widgets = add_new_to_layout<Stackwidget>(layout);
 
     headers->on_item_selected = [this](auto &, auto new_index) {
-        widgets->set_current_page(new_index);
+        stacked_widgets->set_current_page(new_index);
         if (on_page_selected) {
             on_page_selected(*this, new_index);
         }
@@ -26,12 +24,12 @@ TabWidget::TabWidget() : Widget() {
 
 auto TabWidget::set_active_page(size_t new_index) -> void {
     this->headers->set_active_tab(new_index);
-    this->widgets->set_current_page(new_index);
+    this->stacked_widgets->set_current_page(new_index);
 }
 
 auto TabWidget::remove_page(size_t position) -> void {
     this->headers->remove_tab(position);
-    this->widgets->remove_page(position);
+    this->stacked_widgets->remove_page(position);
     this->needs_redraw = true;
 }
 
