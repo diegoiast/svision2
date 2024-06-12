@@ -8,9 +8,18 @@
 #include "stackwidget.h"
 
 struct SingleWidgetVisible : LayoutItem {
+    Size saved_size = Size{};
+
     virtual auto relayout(Position position, const Size size) -> void {
+        saved_size = size;
         for (auto &item : sub_items) {
-            item->relayout(position, size);
+            auto w = std::dynamic_pointer_cast<Widget>(item);
+            if (w == nullptr) {
+                continue;
+            }
+            if (w->is_visible()) {
+                item->relayout({0, 0}, size);
+            }
         }
     };
     virtual auto size_hint() const -> Size { return {0, 0}; }
@@ -29,9 +38,12 @@ struct SingleWidgetVisible : LayoutItem {
             }
 
             if (i == c) {
+                w->relayout({0, 0}, saved_size);
                 w->show();
             } else {
-                w->hide();
+                if (w->is_visible()) {
+                    w->hide();
+                }
             }
             i++;
         }
