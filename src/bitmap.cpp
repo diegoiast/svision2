@@ -14,6 +14,20 @@
 #include <cmath>
 #include <spdlog/spdlog.h>
 
+auto blend_colors(uint32_t foreground, uint32_t background, uint8_t alpha) {
+    auto invAlpha = 255 - alpha;
+    auto foreRed = GetRed(foreground);
+    auto foreGreen = GetGreen(foreground);
+    auto foreBlue = GetBlue(foreground);
+    auto backRed = GetRed(background);
+    auto backGreen = GetGreen(background);
+    auto backBlue = GetBlue(background);
+    auto red = (foreRed * alpha + backRed * invAlpha) / 255;
+    auto green = (foreGreen * alpha + backGreen * invAlpha) / 255;
+    auto blue = (foreBlue * alpha + backBlue * invAlpha) / 255;
+    return MakeColor(red, green, blue);
+}
+
 auto rgbToHSL(const uint32_t rgb) -> HSL {
     // Normalize RGB values
     double normR = GetRed(rgb) / 255.0;
@@ -116,10 +130,7 @@ auto Bitmap::blend_pixel(int x, int y, uint32_t color, uint8_t alpha) -> void {
     }
 
     auto color2 = get_pixel(x, y);
-    auto red = ((255 - alpha) * GetRed(color2) + alpha * GetRed(color)) / 255;
-    auto green = ((255 - alpha) * GetGreen(color2) + alpha * GetGreen(color)) / 255;
-    auto blue = ((255 - alpha) * GetBlue(color2) + alpha * GetBlue(color)) / 255;
-    put_pixel(x, y, MakeColor(red, green, blue));
+    put_pixel(x, y, blend_colors(color, color2, alpha));
 }
 
 auto Bitmap::resize(int width, int height) -> void {
@@ -528,25 +539,8 @@ auto Bitmap::draw(Position position, const Bitmap &other, bool alpha_blending) -
                     if (!alpha_blending) {
                         my_raw_data[my_offset] = c2;
                     } else {
-                        auto foreground = c2;
-                        auto background = my_raw_data[my_offset];
                         auto alpha = GetAlpha(c2);
-                        auto inv_alpha = 1 - alpha;
-
-                        auto f_red = GetRed(foreground);
-                        auto f_green = GetGreen(foreground);
-                        auto f_blue = GetBlue(foreground);
-                        auto b_red = GetRed(background);
-                        auto b_green = GetGreen(background);
-                        auto b_blue = GetBlue(background);
-                        auto red = f_red * alpha + b_red * inv_alpha;
-                        auto green = f_green * alpha + b_green * inv_alpha;
-                        auto blue = f_blue * alpha + b_blue * inv_alpha;
-
-                        red = fmax(0, fmin(red, 255));
-                        green = fmax(0, fmin(green, 255));
-                        blue = fmax(0, fmin(blue, 255));
-                        my_raw_data[my_offset] = MakeColor(red, green, blue);
+                        my_raw_data[my_offset] = blend_colors(c2, my_raw_data[my_offset], alpha);
                     }
                 }
                 other_offset += 1;

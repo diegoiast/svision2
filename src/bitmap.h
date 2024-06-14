@@ -18,6 +18,8 @@ struct HSL {
     double l = 0.0;
 };
 
+auto blend_colors(uint32_t foreground, uint32_t background, uint8_t alpha);
+
 auto rgbToHSL(const uint32_t rgb) -> HSL;
 
 auto hslToRGB(const HSL &hsl) -> int32_t;
