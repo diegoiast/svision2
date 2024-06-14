@@ -90,10 +90,10 @@ struct DebugWidget : public Widget {
 
         if (mouse_over) {
             auto str = fmt::format("{} Position = {}x{} ", state_pressed ? "*" : " ", pos.x, pos.y);
-            theme->font.write(content, {4, 4}, str, MakeColor(0xf, 0xf, 0));
+            theme->font->write(content, {4, 4}, str, MakeColor(0xf, 0xf, 0));
         } else {
             if (state_pressed) {
-                theme->font.write(content, {4, 4}, "*", MakeColor(0xf, 0xf, 0));
+                theme->font->write(content, {4, 4}, "*", MakeColor(0xf, 0xf, 0));
             }
         }
 
@@ -115,10 +115,10 @@ int main() {
     int timer_count = 0;
     auto platform = ThePlatform();
     //    platform.default_font = std::make_shared<FontProviderSTB>(platform.default_font_file);
-    //    platform.default_theme = std::make_shared<ThemeFluent>(*platform.default_font);
-    //    platform.default_theme = std::make_shared<ThemeRedmond>(*platform.default_font);
-    //    platform.default_theme = std::make_shared<ThemePlasma>(*platform.default_font, 0xff6737);
-    //    platform.default_theme = std::make_shared<ThemePlasma>(*platform.default_font);
+    //    platform.default_theme = std::make_shared<ThemeFluent>(platform.default_font);
+    //    platform.default_theme = std::make_shared<ThemeRedmond>(platform.default_font);
+    //    platform.default_theme = std::make_shared<ThemePlasma>(platform.default_font, 0xff6737);
+    //    platform.default_theme = std::make_shared<ThemePlasma>(platform.default_font);
     platform.init();
 
     Timer t1(500, true, [&timer_count]() {

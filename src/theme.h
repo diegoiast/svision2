@@ -63,10 +63,10 @@ enum class PaddingStyle { Label, Button, Checkbox, ScrollBar, TabHeader };
 
 struct Theme {
     ColorStyle colors = {};
-    FontProvider &font;
+    std::shared_ptr<FontProvider> font;
     LayoutParams defaultPadding = {10, 10, 10, 10};
 
-    explicit Theme(FontProvider &f) : font(f) {}
+    explicit Theme(std::shared_ptr<FontProvider> f) : font(f) {}
     virtual ~Theme() = default;
 
     auto draw_frame(Bitmap &content, Position position, Size size, FrameStyles style,
@@ -113,7 +113,7 @@ struct ThemeRedmond : Theme {
     static auto get_light_colors() -> ColorStyle;
     static auto get_dark_colors() -> ColorStyle;
 
-    explicit ThemeRedmond(FontProvider &f);
+    explicit ThemeRedmond(std::shared_ptr<FontProvider> f);
 
     virtual auto init() -> void override{};
     virtual auto draw_widget_background(Bitmap &content, bool has_focus) -> void override;
@@ -147,7 +147,8 @@ struct ThemePlasma : Theme {
     static auto get_light_colors(int32_t accent = DefaultAccentLight) -> ColorStyle;
     static auto get_dark_colors(int32_t accent = DefaultAccentLight) -> ColorStyle;
 
-    explicit ThemePlasma(FontProvider &f, int32_t accent = DefaultAccentLight) : Theme(f) {
+    explicit ThemePlasma(std::shared_ptr<FontProvider> f, int32_t accent = DefaultAccentLight)
+        : Theme(f) {
         colors = get_light_colors(accent);
     }
 

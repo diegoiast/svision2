@@ -166,7 +166,7 @@ auto ThemeRedmond::get_dark_colors() -> ColorStyle {
     return colors;
 }
 
-ThemeRedmond::ThemeRedmond(FontProvider &f) : Theme(f) {
+ThemeRedmond::ThemeRedmond(std::shared_ptr<FontProvider> f) : Theme(f) {
     colors = get_light_colors();
     defaultPadding.set_vertical(2);
     defaultPadding.set_horizontal(5);
@@ -251,12 +251,12 @@ auto ThemeRedmond::draw_button(Bitmap &content, bool has_focus, bool is_default,
     }
     draw_frame(content, topleft, content.size, frame_style, frame_size);
 
-    auto text_size = font.text_size(text);
+    auto text_size = font->text_size(text);
     auto content_rect = content.size - (text_padding);
     auto centered = content_rect.centered(text_size);
 
-    font.write(content, centered - shadow_offset, text, 0x00);
-    font.write(content, centered, text, 0xffffff);
+    font->write(content, centered - shadow_offset, text, 0x00);
+    font->write(content, centered, text, 0xffffff);
 }
 
 auto ThemeRedmond::draw_checkbox(Bitmap &content, bool has_focus, bool is_enabled, bool is_checked,
@@ -315,13 +315,14 @@ auto ThemeRedmond::draw_checkbox(Bitmap &content, bool has_focus, bool is_enable
         break;
     }
 
-    auto text_size = font.text_size(text);
+    auto text_size = font->text_size(text);
     auto content_rect = content.size;
     auto centered = content_rect.centeredY(text_size);
     content_rect.width -= padding.get_horizontal();
     content_rect.height -= padding.get_vertical();
     centered.x += checkbox_size + padding.start;
-    font.write(content, centered, text, is_enabled ? foreground_color : colors.text_color_disabled);
+    font->write(content, centered, text,
+                is_enabled ? foreground_color : colors.text_color_disabled);
 
     if (is_checked) {
         auto padding = 4;
@@ -369,14 +370,14 @@ void ThemeRedmond::draw_listview_item(Bitmap &content, const std::string_view te
         background_color = colors.input_background_hover;
     }
     content.fill(background_color);
-    font.write(content, padding, text, text_color);
+    font->write(content, padding, text, text_color);
 }
 
 auto ThemeRedmond::draw_single_tab(Bitmap &content, const int offset, const bool is_active,
                                    const bool is_hover, const LayoutParams &padding,
                                    const std::string_view name) -> int {
     auto active_bg = (colors.window_background);
-    auto tab_size = font.text_size(name);
+    auto tab_size = font->text_size(name);
 
     tab_size.width += padding.get_horizontal();
     tab_size.height += padding.get_vertical();
@@ -393,7 +394,7 @@ auto ThemeRedmond::draw_single_tab(Bitmap &content, const int offset, const bool
                               Lighter(active_bg, 0.05));
         }
     }
-    font.write(content, {offset + padding.start, padding.top}, name, colors.text_color);
+    font->write(content, {offset + padding.start, padding.top}, name, colors.text_color);
     return tab_size.width;
 }
 
@@ -587,9 +588,9 @@ auto ThemePlasma::draw_button(Bitmap &content, bool has_focus, bool is_default, 
             auto centered = content.size.centered(icon->size, text_padding);
             content.draw(centered, *icon.get(), true);
         } else {
-            auto text_size = font.text_size(text);
+            auto text_size = font->text_size(text);
             auto centered = content.size.centered(text_size, text_padding);
-            font.write(content, centered, text, color);
+            font->write(content, centered, text, color);
         }
     }
 }
@@ -670,12 +671,12 @@ auto ThemePlasma::draw_checkbox(Bitmap &content, bool has_focus, bool is_enabled
     }
 
     {
-        auto text_size = font.text_size(text);
+        auto text_size = font->text_size(text);
         auto text_block_size = Size{content.size.width - checkbox_size, checkbox_size};
         auto centered = text_block_size.centeredY(text_size);
         centered.x += checkbox_size;
-        font.write(content, centered, text,
-                   is_enabled ? foreground_color : colors.text_color_disabled);
+        font->write(content, centered, text,
+                    is_enabled ? foreground_color : colors.text_color_disabled);
     }
 }
 
@@ -709,9 +710,9 @@ void ThemePlasma::draw_listview_item(Bitmap &content, const std::string_view tex
 
     content.fill(background_color);
     auto text_padding = 5;
-    auto text_size = font.text_size(text);
+    auto text_size = font->text_size(text);
     auto centered = content.size.centeredY(text_size, text_padding);
-    font.write(content, centered, text, text_color);
+    font->write(content, centered, text, text_color);
 }
 
 auto ThemePlasma::draw_single_tab(Bitmap &content, const int offset, const bool is_active,
@@ -719,7 +720,7 @@ auto ThemePlasma::draw_single_tab(Bitmap &content, const int offset, const bool 
                                   const std::string_view name) -> int {
     auto is_tab_hover = is_hover;
     auto active_bg = colors.window_background;
-    auto tab_size = font.text_size(name);
+    auto tab_size = font->text_size(name);
     tab_size.width += padding.get_horizontal();
     tab_size.height += padding.get_vertical();
 
@@ -747,9 +748,9 @@ auto ThemePlasma::draw_single_tab(Bitmap &content, const int offset, const bool 
     if (is_active) {
         is_tab_hover = false;
     }
-    font.write(content, {offset + padding.start, padding.top}, name,
-               is_tab_hover ? Lighter(colors.button_selected_text, 0.3)
-                            : colors.button_selected_text);
+    font->write(content, {offset + padding.start, padding.top}, name,
+                is_tab_hover ? Lighter(colors.button_selected_text, 0.3)
+                             : colors.button_selected_text);
     return tab_size.width;
 }
 

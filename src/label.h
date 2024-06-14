@@ -29,8 +29,8 @@ struct Label : public Widget {
         auto my_theme = get_theme();
         auto color = my_theme->colors.text_color;
         auto text_padding = my_theme->get_padding().get_horizontal();
-        auto text_size = my_theme->font.text_size(text);
+        auto text_size = my_theme->font->text_size(text);
         auto centered = content.size.centered(text_size, text_padding);
-        my_theme->font.write(content, centered, text, color);
+        my_theme->font->write(content, centered, text, color);
     }
 };

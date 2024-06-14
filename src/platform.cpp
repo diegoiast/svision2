@@ -30,7 +30,9 @@ void Platform::init() {
 
     // TODO - detect GTK and use a GTK theme
     if (!this->default_theme) {
-        default_theme = std::make_shared<ThemePlasma>(*this->default_font);
+        default_theme = std::make_shared<ThemePlasma>(this->default_font);
+    } else {
+        default_theme->font = this->default_font;
     }
 
     if (!this->image_loader) {

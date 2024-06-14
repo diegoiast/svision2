@@ -87,7 +87,7 @@ auto TabHeader::on_hover(const EventMouse &event) -> void {
 
 auto TabHeader::size_hint() const -> Size {
     auto padding_y = this->get_padding().get_vertical();
-    auto hint = this->get_theme()->font.text_size("X");
+    auto hint = this->get_theme()->font->text_size("X");
     hint.width = 0;
     hint.height += padding_y;
     return hint;

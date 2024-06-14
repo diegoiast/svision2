@@ -113,9 +113,9 @@ auto ThemeFluent::draw_button(Bitmap &content, bool has_focus, bool is_default, 
         content.line(2, content.size.height - 1, content.size.width - 4, content.size.height - 1,
                      Darker(background, is_default ? 0.1 : 0.5));
     }
-    auto text_size = font.text_size(text);
+    auto text_size = font->text_size(text);
     auto centered = content.size.centered(text_size, text_padding);
-    font.write(content, centered, text, color);
+    font->write(content, centered, text, color);
 }
 
 auto ThemeFluent::draw_checkbox(Bitmap &content, bool has_focus, bool is_enabled, bool is_checked,
@@ -236,12 +236,12 @@ auto ThemeFluent::draw_checkbox(Bitmap &content, bool has_focus, bool is_enabled
     }
 
     auto text_margin = 5;
-    auto text_size = font.text_size(text);
+    auto text_size = font->text_size(text);
     auto content_rect = content.size;
     auto centered = content_rect.centeredY(text_size);
     centered.x += checkbox_size + text_margin;
-    font.write(content, centered, text,
-               is_enabled ? colors.text_color : colors.text_color_disabled);
+    font->write(content, centered, text,
+                is_enabled ? colors.text_color : colors.text_color_disabled);
 }
 
 auto ThemeFluent::draw_input_background(Bitmap &content, const bool has_focus) -> void {
@@ -278,16 +278,16 @@ void ThemeFluent::draw_listview_item(Bitmap &content, const std::string_view tex
     content.fill(background_color);
 
     auto text_padding = 5;
-    auto text_size = font.text_size(text);
+    auto text_size = font->text_size(text);
     auto centered = content.size.centeredY(text_size, text_padding);
-    font.write(content, centered, text, text_color);
+    font->write(content, centered, text, text_color);
 }
 
 auto ThemeFluent::draw_single_tab(Bitmap &content, const int offset, const bool is_active,
                                   const bool is_hover, const LayoutParams &padding,
                                   const std::string_view name) -> int {
     // https://learn.microsoft.com/en-us/microsoftteams/platform/tabs/design/tabs
-    auto tab_width = font.text_size(name).width;
+    auto tab_width = font->text_size(name).width;
     auto text_color = colors.text_color;
     auto margin_bottom = 1;
     auto line_height = 5;
@@ -303,7 +303,7 @@ auto ThemeFluent::draw_single_tab(Bitmap &content, const int offset, const bool 
         content.fill_rect(offset, content.size.height - 3, content.size.width, 1,
                           bottom_frame_color1);
     }
-    font.write(content, {offset + padding.start, padding.top}, name, text_color);
+    font->write(content, {offset + padding.start, padding.top}, name, text_color);
     return tab_width;
 }
 

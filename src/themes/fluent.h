@@ -16,7 +16,8 @@ struct ThemeFluent : Theme {
     static auto get_light_colors(int32_t accent = DefaultAccentLight) -> ColorStyle;
     static auto get_dark_colors(int32_t accent = DefaultAccentLight) -> ColorStyle;
 
-    explicit ThemeFluent(FontProvider &f, int32_t accent = DefaultAccentLight) : Theme(f) {
+    explicit ThemeFluent(std::shared_ptr<FontProvider> f, int32_t accent = DefaultAccentLight)
+        : Theme(f) {
         colors = get_light_colors(accent);
     }
 

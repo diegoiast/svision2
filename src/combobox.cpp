@@ -42,9 +42,9 @@ auto Combobox::draw() -> void {
     auto my_theme = get_theme();
     auto text_padding = get_padding().get_horizontal();
     auto color = has_focus ? my_theme->colors.text_selection_color : my_theme->colors.text_color;
-    auto text_size = my_theme->font.text_size(text);
+    auto text_size = my_theme->font->text_size(text);
     auto centered = content.size.centeredY(text_size, text_padding);
-    my_theme->font.write(content, centered, text, color);
+    my_theme->font->write(content, centered, text, color);
 }
 
 auto Combobox::on_mouse(const EventMouse &event) -> EventPropagation {
@@ -130,12 +130,12 @@ struct ComboboxList : ListView {
 };
 
 auto Combobox::size_hint() const -> Size {
-    auto s = get_theme()->font.text_size("X");
+    auto s = get_theme()->font->text_size("X");
     return {0, s.height + this->get_padding().get_vertical()};
 }
 
 auto Combobox::on_resize() -> void {
-    auto s = get_theme()->font.text_size("X");
+    auto s = get_theme()->font->text_size("X");
     s.height += get_padding().get_vertical();
     s.width = s.height;
 

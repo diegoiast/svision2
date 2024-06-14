@@ -94,7 +94,7 @@ auto Checkbox::on_keyboard(const EventKeyboard &event) -> EventPropagation {
 auto Checkbox::size_hint() const -> Size {
     auto p = get_padding();
     auto hint = Size{};
-    auto font_height = this->get_theme()->font.text_size("X").height;
+    auto font_height = this->get_theme()->font->text_size("X").height;
     hint.height = font_height + p.get_vertical();
     return hint;
 }

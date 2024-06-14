@@ -33,7 +33,7 @@ auto TextField::draw() -> void {
     theme->draw_input_background(content, has_focus);
     Widget::draw();
 
-    auto text_size = theme->font.text_size(text);
+    auto text_size = theme->font->text_size(text);
     auto p = get_padding();
 
     // TODO - we need to find where the text clips - properly
@@ -49,7 +49,8 @@ auto TextField::draw() -> void {
         content.fill_rect(p.start, p.top, selection_width, content.size.height - p.get_vertical(),
                           theme->colors.text_selection_background);
     }
-    theme->font.write(content, Position{p.start, center_y}, display_text, theme->colors.text_color);
+    theme->font->write(content, Position{p.start, center_y}, display_text,
+                       theme->colors.text_color);
 
     if (this->cursor_on && this->has_focus) {
         auto position_x = p.start + (cursor_position - display_from) * 8;
@@ -208,7 +209,7 @@ auto TextField::on_remove() -> void { timer.stop(); }
 auto TextField::size_hint() const -> Size {
     // TODO: Size of text is not correct. We also need to calculate the yMin and yMax for example
     auto t = get_text().size() != 0 ? get_text() : "X";
-    auto s = get_theme()->font.text_size(t);
+    auto s = get_theme()->font->text_size(t);
     return {0, s.height + this->get_padding().get_vertical()};
 }
 
