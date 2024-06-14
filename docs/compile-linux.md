@@ -10,7 +10,7 @@ libraries - and python pip.
 
 ``` bash
 apt install build-essential libx11-dev cmake ninja-build python3-pip clang-format
-pip3 install conan==1.61
+pip3 install conan==1.64.1
 ```
 
 > *NOTE*

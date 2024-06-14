@@ -13,7 +13,7 @@ not only you get a useble GCC, but also Ninja and qgood IDE.
  3. Python - I get the python from the Microsoft store, seems like the best idea.
  4. Ninja - make sure `c:\Qt\Tools\Ninja\` is on your path, or copy the `ninja.exe` so
     somewhere on your path.
- 5. Conan - from Windows Terminal write `pip install conan==1.61.0`
+ 5. Conan - from Windows Terminal write `pip install conan==1.64.1`
 
 Start QtCreator - and open the `CMakeLists.txt` for this project. It will probably
 fail at the `cmake` step. This is because `cmake` cannot execute `conan`.

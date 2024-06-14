@@ -59,7 +59,7 @@ jobs:
         with:
           python-version: '3.11'
       - name: Install conan
-        run: pip3 install conan==1.61.0
+        run: pip3 install conan==1.64.1
       - name: Install cmake-format
         run: pip3 install cmake-format
       - name: Setup MSVC (optional)

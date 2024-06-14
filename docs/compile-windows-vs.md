@@ -17,7 +17,7 @@ I found the best way to work on git on Windows is to use [GitHub Desktop](https:
      - UNpack the zip (a single `ninja.exe`) into `%HOMEDRIVE%%HOMEPATH%\ninja`
        (usually `c:\user\diego\ninja`).  
  5. Conan
-      - from Windows Terminal write `pip install conan==1.61.0`
+      - from Windows Terminal write `pip install conan==1.64.1`
  6. Setup environment variable `%PATH%` - to contain the needed path
      - Visit <https://helpdeskgeek.com/windows-10/add-windows-path-environment-variable/>
        to understand how to do this.
