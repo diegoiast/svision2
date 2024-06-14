@@ -6,6 +6,7 @@
  */
 
 #include "theme.h"
+#include <string>
 
 auto Theme::draw_frame(Bitmap &content, Position position, Size size, FrameStyles style,
                        FrameSize frame_size) -> void {
@@ -87,7 +88,7 @@ auto Theme::draw_frame(Bitmap &content, Position position, Size size, FrameStyle
 }
 
 auto Theme::draw_tabs(Bitmap &content, bool has_focus, int selected_index, int hover_index,
-                      const LayoutParams &padding, const std::vector<std::string_view> &names)
+                      const LayoutParams &padding, const std::vector<std::string> &names)
     -> std::vector<TabHeaderOffsets> {
     auto tab_offset = std::vector<TabHeaderOffsets>();
 

@@ -39,7 +39,7 @@ struct TabWidget : Widget {
 
     auto get_active_tab() const -> size_t { return headers->get_active_tab(); }
 
-    auto page_names() const -> std::vector<std::string_view> { return headers->names; }
+    auto page_names() const -> std::vector<std::string> & { return headers->names; }
 
   private:
     std::shared_ptr<HorizontalLayout> top_layout;

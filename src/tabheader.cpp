@@ -14,7 +14,7 @@ TabHeader::TabHeader() : Widget() { this->padding_style = PaddingStyle::TabHeade
 
 auto TabHeader::add_tab(const std::string_view name) -> int {
     this->needs_redraw = true;
-    this->names.push_back(name);
+    this->names.push_back(std::string(name));
     return this->names.size() - 1;
 }
 

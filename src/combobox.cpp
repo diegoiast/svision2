@@ -10,9 +10,9 @@
 #include "listview.h"
 #include "theme.h"
 
-Combobox::Combobox(const std::vector<std::string_view> &strings) : Combobox({}, 0, strings) {}
+Combobox::Combobox(const std::vector<std::string> &strings) : Combobox({}, 0, strings) {}
 
-Combobox::Combobox(Position position, int width, const std::vector<std::string_view> &strings)
+Combobox::Combobox(Position position, int width, const std::vector<std::string> &strings)
     : Widget(position, {0, 0}, 0) {
     this->strings = strings;
     this->can_focus = true;
@@ -189,7 +189,7 @@ auto Combobox::set_active_index(int index) -> void {
     this->invalidate();
 }
 
-auto Combobox::set_items(const std::vector<std::string_view> &new_strings) -> void {
+auto Combobox::set_items(const std::vector<std::string> &new_strings) -> void {
     this->strings = new_strings;
     if (this->selected_item >= this->strings.size()) {
         this->selected_item = this->strings.size();

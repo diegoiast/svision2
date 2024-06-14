@@ -12,7 +12,7 @@
 #include <widget.h>
 
 struct Label : public Widget {
-    std::string_view text;
+    std::string text;
 
     Label(std::string_view text) : Widget({}, {}, 0) {
         this->text = text;

@@ -10,7 +10,7 @@
 #include <widget.h>
 
 struct TabHeader : Widget {
-    std::vector<std::string_view> names;
+    std::vector<std::string> names;
     std::function<void(TabHeader &, int)> on_item_selected = {};
 
     TabHeader();

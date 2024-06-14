@@ -23,7 +23,7 @@ struct Button : Widget {
     bool has_frame = true;
     std::shared_ptr<Bitmap> icon;
 
-    std::string_view text;
+    std::string text;
     std::function<void(Button &)> on_button_click;
     AbstractButtonState state;
 
@@ -83,7 +83,7 @@ struct Button : Widget {
         return std::dynamic_pointer_cast<Button>(this->shared_from_this());
     }
 
-    auto set_icon(std::shared_ptr<Bitmap> icon) { 
+    auto set_icon(std::shared_ptr<Bitmap> icon) {
         this->icon = icon;
         return std::dynamic_pointer_cast<Button>(this->shared_from_this());
     }

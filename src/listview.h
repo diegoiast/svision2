@@ -27,9 +27,9 @@ struct ItemAdapter {
 };
 
 struct ListItemAdapter : ItemAdapter {
-    std::vector<std::string_view> strings;
+    std::vector<std::string> strings;
 
-    explicit ListItemAdapter(const std::vector<std::string_view> &s) { this->strings = s; };
+    explicit ListItemAdapter(const std::vector<std::string> &s) { this->strings = s; };
     virtual auto get_count() const -> size_t override { return strings.size(); }
     virtual auto get_widget(size_t position, std::shared_ptr<Theme> theme) -> PWidget override;
     virtual auto set_content(PWidget widget, size_t position, ItemStatus status) -> void override;

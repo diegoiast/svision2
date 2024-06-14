@@ -130,7 +130,7 @@ int main() {
     auto w2 = platform.open_window(300, 300, 640, 480, "test 2");
     w2->main_widget.layout->padding.set_vertical(2);
 
-    auto list = w2->add_new<Combobox>(std::vector<std::string_view>());
+    auto list = w2->add_new<Combobox>(std::vector<std::string>());
     auto tabs = w2->add_new<TabWidget>();
     auto bitmap = std::make_shared<Bitmap>();
     auto icon = std::make_shared<Bitmap>();
@@ -158,8 +158,12 @@ int main() {
 
     auto b1 = std::make_shared<Button>("+")
                   ->set_on_click([&tabs](auto &button) {
-                      tabs->add_new_tab<Label>("Tab", "This is a dynamic tab");
-                      MakeColor(0x33, 0xaa, 0x22);
+                      auto count = tabs->page_names().size() + 1;
+                      auto tab_title = fmt::format("Tab {} ", count);
+                      auto tab_content = fmt::format("This is dynamic tab #{} ", count);
+
+                      tabs->add_new_tab<Label>(tab_title, tab_content)->content.background_color =
+                          MakeColor(0x11 * count, 0xaa, 0x22 + (7 * count));
                   })
                   ->set_auto_shrink(true)
                   ->set_has_frame(false);
@@ -191,7 +195,7 @@ int main() {
 
     //    l_right->margin.set(5);
     w1->add_new_to_layout<ListView>(l_left)->adapter =
-        std::make_shared<ListItemAdapter>(std::vector<std::string_view>{
+        std::make_shared<ListItemAdapter>(std::vector<std::string>{
             "Option 1 (default)",
             "Option 2",
             "Option 3",
@@ -215,7 +219,7 @@ int main() {
         spdlog::info("Selected item {} with text {}", index, button.text);
     };
     rb->radio_buttons[1]->is_enabled = false;
-    w1->add_new_to_layout<Combobox>(l_right, std::vector<std::string_view>{
+    w1->add_new_to_layout<Combobox>(l_right, std::vector<std::string>{
                                                  "Spring",
                                                  "Summer",
                                                  "Autumn/Fall",
