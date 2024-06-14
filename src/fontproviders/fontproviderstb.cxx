@@ -119,6 +119,7 @@ void FontProviderSTB::write(Bitmap &bitmap, Position position, const std::string
                 }
             }
         }
+        stbtt_FreeBitmap(bitmapBuffer, 0);
         x += static_cast<int>(advance * scale);
         last_point = code_point;
     }
