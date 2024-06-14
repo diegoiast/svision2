@@ -334,7 +334,7 @@ static LRESULT CALLBACK svision_wndproc(HWND hwnd, UINT msg, WPARAM wParam, LPAR
 }
 static constexpr auto WINDOW_CLASS_NAME = L"svision2";
 
-PlatformWin32::PlatformWin32() {}
+PlatformWin32::PlatformWin32() { default_font_file = "c:\\Windows\\Fonts\\arial.ttf"; }
 
 auto PlatformWin32::platform_init() -> void {
     spdlog::set_level(spdlog::level::info);
@@ -347,8 +347,6 @@ auto PlatformWin32::platform_init() -> void {
     wc.hInstance = hInstance;
     wc.lpszClassName = WINDOW_CLASS_NAME;
     RegisterClassExW(&wc);
-
-    default_font_file = "c:\\Windows\\Fonts\\arial.ttf";
 
     spdlog::info("PlatformWin32 initialized");
 }

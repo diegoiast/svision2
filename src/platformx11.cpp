@@ -177,6 +177,8 @@ struct PlatformWindowX11 : public PlatformWindow {
     }
 };
 
+PlatformX11::PlatformX11() { default_font_file = SVISION_X11_TTF_PATH SVISION_X11_TTF_FILENAME; }
+
 auto PlatformX11::platform_init() -> void {
     spdlog::set_level(spdlog::level::info);
     dpy = XOpenDisplay(NULL);
@@ -188,7 +190,6 @@ auto PlatformX11::platform_init() -> void {
         return;
     }
 
-    default_font_file = SVISION_X11_TTF_PATH SVISION_X11_TTF_FILENAME;
     spdlog::info("PlatformX11 initialized");
 }
 

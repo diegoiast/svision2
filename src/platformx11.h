@@ -29,6 +29,8 @@ struct PlatformX11 : Platform {
     int screen = -1;
     Atom wmDeleteMessage = None;
 
+    PlatformX11();
+
     virtual auto platform_init() -> void override;
     virtual auto done() -> void override;
     virtual auto open_window(int x, int y, int width, int height, const std::string_view title)
