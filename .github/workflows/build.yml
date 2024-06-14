@@ -15,15 +15,18 @@ jobs:
       fail-fast: false
       matrix:
         config: 
-        - {
-            name: "Windows MSVC",
-            build_dir: "windows-msvc",
-            os: windows-latest,
-            build_type: "Release",
-            cc: "cl",
-            cxx: "cl",
-            generators: "Ninja"
-          }
+# disabled until conan supports cl=140 see 
+#      https://github.com/conan-io/cmake-conan/issues/472
+#      https://developercommunity.visualstudio.com/t/Update-to-VS-1710-breaks-conancmake/10679189?sort=newest&topics=visual
+#        - {
+#            name: "Windows MSVC",
+#            build_dir: "windows-msvc",
+#            os: windows-latest,
+#            build_type: "Release",
+#            cc: "cl",
+#            cxx: "cl",
+#            generators: "Ninja"
+#          }
         - {
             name: "Windows MinGW",
             build_dir: "windows-mingw",
