@@ -9,13 +9,14 @@ namespace {
 #include "stb/stb_image.h"
 
 struct ImageDecoderSTB : public ImageDecoder {
-    auto decode(const std::string &filename, Bitmap &bitmap) -> bool {
+    auto decode(const std::string &filename) -> std::shared_ptr<Bitmap> override {
         int width, height, channels;
         unsigned char *data =
             stbi_load(filename.c_str(), &width, &height, &channels, STBI_rgb_alpha);
         if (data) {
-            spdlog::info("Decoding {} using STB decoder...", filename);
-            bitmap.size = {width, height};
+            spdlog::info("Decoded {} using STB decoder...", filename);
+            auto bitmap = std::make_shared<Bitmap>();
+            bitmap->size = {width, height};
             size_t numPixels = width * height;
             for (size_t i = 0; i < numPixels; ++i) {
                 uint32_t pixel = 0;
@@ -23,14 +24,14 @@ struct ImageDecoderSTB : public ImageDecoder {
                     pixel |= static_cast<uint32_t>(data[i * 4 + c]) << (c * 8);
                 }
                 pixel |= static_cast<uint32_t>(data[i * 4 + 3]) << 24;
-                bitmap.buffer.push_back(pixel);
+                bitmap->buffer.push_back(pixel);
             }
 
             stbi_image_free(data);
-            return true;
+            return bitmap;
         } else {
             spdlog::error("Failed to decode {} using STB decoder", filename);
-            return false;
+            return {};
         }
     }
 };
@@ -50,11 +51,12 @@ auto ImageLoader::registerDecoder(std::unique_ptr<ImageDecoder> decompressor) ->
     decoders.push_back(std::move(decompressor));
 }
 
-auto ImageLoader::loadFile(const std::string &filename, Bitmap &bitmap) -> bool {
+auto ImageLoader::loadFile(const std::string &filename) -> std::shared_ptr<Bitmap> {
     for (const auto &decoder : decoders) {
-        if (decoder->decode(filename, bitmap)) {
-            return true;
+        auto bitmap = decoder->decode(filename);
+        if (bitmap) {
+            return bitmap;
         }
     }
-    return false;
+    return {};
 }

@@ -152,8 +152,8 @@ int main() {
     auto bitmap = std::make_shared<Bitmap>();
     auto icon = std::make_shared<Bitmap>();
 
-    platform.image_loader->loadFile("../vampire-riding-a-dinozaur.png", *bitmap.get());
-    platform.image_loader->loadFile("../icons/16x16/document-open.png", *icon.get());
+    bitmap = platform.image_loader->loadFile("../vampire-riding-a-dinozaur.png");
+    icon = platform.image_loader->loadFile("../icons/16x16/document-open.png");
 
     tabs->add_new_tab<ImageView>("Tab 1", *bitmap);
     tabs->add_new_tab<Label>("Tab with long name", "This is the second widget")

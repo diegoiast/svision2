@@ -11,7 +11,7 @@
 #include <string>
 
 struct ImageDecoder {
-    virtual auto decode(const std::string &filename, Bitmap &bitmap) -> bool = 0;
+    virtual auto decode(const std::string &filename) -> std::shared_ptr<Bitmap> = 0;
     virtual ~ImageDecoder() = default;
 };
 
@@ -20,7 +20,7 @@ struct ImageLoader {
     ~ImageLoader();
 
     auto registerDecoder(std::unique_ptr<ImageDecoder> decompressor) -> void;
-    auto loadFile(const std::string &filename, Bitmap &bitmap) -> bool;
+    auto loadFile(const std::string &filename) -> std::shared_ptr<Bitmap>;
 
   private:
     std::vector<std::unique_ptr<ImageDecoder>> decoders;
