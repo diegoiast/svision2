@@ -1,4 +1,5 @@
 #include <button.h>
+#include <image/loaders.hpp>
 #include <layout.h>
 #include <toolbar.hpp>
 
@@ -16,7 +17,15 @@ auto Toolbar::size_hint() const -> Size {
     return hint;
 }
 
-auto Toolbar::add_shortcut(P<Shortcut> s) -> P<Toolbar> {
+auto Toolbar::add_shortcut(int id, std::string_view title, std::string_view icon,
+                           std::function<void(Shortcut &, int)> callback)
+    -> std::shared_ptr<Toolbar> {
+    auto s = std::make_shared<Shortcut>(id, title, icon, callback);
+    return add_shortcut(s);
+}
+
+auto Toolbar::add_shortcut(std::shared_ptr<Shortcut> s) -> std::shared_ptr<Toolbar> {
+    auto icon = std::shared_ptr<Bitmap>();
     auto b = add_new<Button>(s->title, false,
                              [s](auto &) {
                                  if (s->on_trigger) {
@@ -25,5 +34,8 @@ auto Toolbar::add_shortcut(P<Shortcut> s) -> P<Toolbar> {
                              })
                  ->set_has_frame(false)
                  ->set_auto_shrink(true);
+    if ((icon = window->platform->image_loader->loadFile(s->icon_name))) {
+        b->set_icon(icon);
+    }
     return std::static_pointer_cast<Toolbar>(this->shared_from_this());
 }

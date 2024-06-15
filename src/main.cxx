@@ -199,9 +199,9 @@ int main() {
 #if 1
     auto w1 = platform.open_window(100, 100, 640, 480, "test 1");
     w1->add_new<Toolbar>()
-        ->add_shortcut(std::make_shared<Shortcut>(100, "Open", callback))
-        ->add_shortcut(std::make_shared<Shortcut>(101, "Save", callback))
-        ->add_shortcut(std::make_shared<Shortcut>(102, "Quit", callback));
+        ->add_shortcut(100, "Open", "../icons/16x16/document-open.png", callback)
+        ->add_shortcut(101, "Save", "../icons/16x16/document-save.png", callback)
+        ->add_shortcut(102, "Quit", "../icons/16x16/application-exit.png", callback);
     auto l = w1->add_new<Label>("test 1 - Hello world! glqi שלום עולם");
     l->frame = {FrameStyles::Normal, FrameSize::SingleFrame};
     l->weight = 0.3;
