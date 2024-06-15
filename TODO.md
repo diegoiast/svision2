@@ -125,7 +125,7 @@ Random list of things to be implemented on this library
     2. CopyPasta - clipboard manager, ala CopyQ
     3. SVComm - Nortoma/Midnight/Total Commander clone - dual panel file manager
 5. Bugs
-    1. Mouse hover with subwidgets is borked.
+    1. ~~Mouse hover with subwidgets is borked.~~
     2. TabWidget changing tab flickers
     3. Changing theme on the fly does not work
     4. TabWidget/TabHeader on Redmond theme - height is wrong.

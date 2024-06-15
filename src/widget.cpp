@@ -399,17 +399,20 @@ auto Widget::on_mouse(const EventMouse &event) -> EventPropagation {
 
 auto Widget::on_hover(const EventMouse &event) -> void {
     for (auto &w : widgets.widgets) {
-        w->on_hover(event);
+        if (!point_in_rect(w->position, w->content.size, event.x, event.y)) {
+            continue;
+        }
+
+        auto local_event = event;
+        local_event.is_local = true;
+        local_event.x = event.x - w->position.x;
+        local_event.y = event.y - w->position.y;
+        w->on_hover(local_event);
+        w->on_mouse_enter();
     }
 };
 
-auto Widget::on_mouse_enter() -> void {
-    for (auto &w : widgets.widgets) {
-        w->on_mouse_enter();
-    }
-    // TODO - this is not needed strictly, we can remove when we fix listview
-    invalidate();
-}
+auto Widget::on_mouse_enter() -> void {}
 
 auto Widget::on_mouse_leave() -> void {
     for (auto &w : widgets.widgets) {
