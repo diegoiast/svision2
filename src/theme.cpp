@@ -571,7 +571,7 @@ auto ThemePlasma::draw_button(Bitmap &content, bool has_focus, bool is_default, 
                                    background2);
     }
 
-    if (has_frame || state != ButtonStates::Normal) {
+    if (has_frame || state != ButtonStates::Normal || has_focus) {
         content.draw_rounded_rectangle(0, 0, content.size.width, content.size.height - 1, 5, border,
                                        border);
         content.line(2, content.size.height - 1, content.size.width - 2, content.size.height - 1,

@@ -33,6 +33,7 @@ auto Toolbar::add_shortcut(std::shared_ptr<Shortcut> s) -> std::shared_ptr<Toolb
                                  }
                              })
                  ->set_has_frame(false)
+                 ->set_can_focus(false)
                  ->set_auto_shrink(true);
     if ((icon = window->platform->image_loader->loadFile(s->icon_name))) {
         b->set_icon(icon);

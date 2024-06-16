@@ -54,6 +54,11 @@ struct Button : Widget {
     auto set_auto_repeat(int64_t repeat_millies, int64_t repeat_start = 500) -> void;
     auto disable_auto_repeat() -> void;
 
+    auto set_can_focus(bool new_state) -> std::shared_ptr<Button> {
+        this->can_focus = new_state;
+        return std::dynamic_pointer_cast<Button>(this->shared_from_this());
+    }
+
     auto set_is_default(bool new_state) -> std::shared_ptr<Button> {
         this->is_default = new_state;
         this->needs_redraw = true;
