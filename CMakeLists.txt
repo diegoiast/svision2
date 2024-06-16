@@ -185,6 +185,14 @@ add_custom_command(TARGET demo PRE_BUILD
     COMMENT "Link image to build dir"
 )
 
+add_custom_command(TARGET demo PRE_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+    "${CMAKE_CURRENT_SOURCE_DIR}/icons"
+    "${CMAKE_BINARY_DIR}/icons"
+    DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/icons"
+    COMMENT "Copy icons to build dir"
+)
+
 # Create a GUI application (no console)
 set_target_properties(demo PROPERTIES WIN32_EXECUTABLE TRUE)
 
