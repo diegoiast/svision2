@@ -9,6 +9,13 @@
 
 #include <widget.h>
 
+enum class TabPosition {
+    Top,
+    Bottom,
+    Start,
+    End
+};
+
 struct TabHeader : Widget {
     std::vector<std::string> names;
     std::function<void(TabHeader &, int)> on_item_selected = {};
@@ -28,7 +35,9 @@ struct TabHeader : Widget {
 
   private:
     std::vector<TabHeaderOffsets> tab_offset;
+    TabPosition tab_position;
 
     int active_tab = 0;
     int hover_tab = -1;
 };
+

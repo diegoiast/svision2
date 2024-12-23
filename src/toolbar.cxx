@@ -7,6 +7,8 @@ Toolbar::Toolbar() {
     this->layout = std::make_shared<HorizontalLayout>();
     this->layout->padding.set_horizontal(5);
     this->padding_style = PaddingStyle::TabHeader;
+    this->layout->padding.start = 0;
+    this->layout->padding.end = 5;
 }
 
 auto Toolbar::size_hint() const -> Size {
@@ -40,3 +42,4 @@ auto Toolbar::add_shortcut(std::shared_ptr<Shortcut> s) -> std::shared_ptr<Toolb
     }
     return std::static_pointer_cast<Toolbar>(this->shared_from_this());
 }
+
