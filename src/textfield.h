@@ -48,6 +48,6 @@ struct TextField : Widget {
 
     Timer timer;
     bool cursor_on = false;
-    int cursor_position = 0;
-    int display_from = 0;
+    size_t cursor_position = 0;
+    size_t display_from = 0;
 };

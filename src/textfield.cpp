@@ -247,9 +247,6 @@ auto TextField::ensure_cursor_visible() -> void {
     if (cursor_position > text.length()) {
         cursor_position = text.length();
     }
-    if (display_from < 0) {
-        display_from = 0;
-    }
     if (selection.end < selection.start) {
         selection.end = selection.start;
     }

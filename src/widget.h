@@ -77,7 +77,7 @@ struct Widget : std::enable_shared_from_this<Widget>, LayoutItem {
     virtual auto on_keyboard(const EventKeyboard &) -> EventPropagation;
     virtual auto on_remove() -> void;
     virtual auto on_resize() -> void;
-    virtual auto size_hint() const -> Size override { return {0, 0}; };
+    virtual auto size_hint() const -> Size override { return {0, 0}; }
     virtual auto ignore_layout() const -> bool override { return !is_widget_visible; }
 
     // TODO - make sure this T derives from `Widget`
